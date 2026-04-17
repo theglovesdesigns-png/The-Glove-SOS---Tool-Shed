@@ -6,6 +6,7 @@
 // ============================================================
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import SettingsPanel from './SettingsPanel.jsx';
 
 // ---- CONSTANTS ----
 const BLOG_CATEGORIES = [
@@ -231,8 +232,20 @@ const makeSlug = (title) =>
 // MAIN COMPONENT
 // ============================================================
 export default function BlogGenerator() {
-  const [tab, setTab] = useState('ideas'); // ideas | generator | queue | importer
+  const [tab, setTab] = useState('ideas'); // ideas | generator | queue | importer | settings
   const [apiKey, setApiKey] = useState(localStorage.getItem('gemini_key') || '');
+
+  // Keep local apiKey in sync when Settings saves a new value
+  useEffect(() => {
+    const onStorage = () => setApiKey(localStorage.getItem('gemini_key') || '');
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+  useEffect(() => {
+    if (tab === 'settings') return;
+    const latest = localStorage.getItem('gemini_key') || '';
+    if (latest !== apiKey) setApiKey(latest);
+  }, [tab]); // re-read after leaving settings
 
   // IDEAS
   const [ideas, setIdeas] = useState(() => {
@@ -1114,12 +1127,19 @@ Newsletter must include:
 
       {!apiKey && (
         <div style={{ background: 'rgba(184,134,11,0.1)', border: '1px solid rgba(184,134,11,0.3)', color: '#f0b429', padding: '10px 14px', borderRadius: 8, fontSize: 12, marginBottom: 14 }}>
-          ⚠️ No Gemini API key set. Go to <strong>Settings</strong> tab and enter your key.
+          ⚠️ No Gemini API key set.{' '}
+          <button
+            style={{ background: 'none', border: 'none', color: '#f0b429', textDecoration: 'underline', cursor: 'pointer', font: 'inherit', padding: 0 }}
+            onClick={() => setTab('settings')}
+          >
+            Open Settings
+          </button>{' '}
+          to add your key.
         </div>
       )}
 
       <div style={s.tabs}>
-        {[['ideas', `💡 Ideas (${ideas.length})`], ['generator', '✨ Generator'], ['importer', '📥 Import Docs'], ['queue', '📋 Queue']].map(([id, label]) => (
+        {[['ideas', `💡 Ideas (${ideas.length})`], ['generator', '✨ Generator'], ['importer', '📥 Import Docs'], ['queue', '📋 Queue'], ['settings', '⚙️ Settings']].map(([id, label]) => (
           <button key={id} style={s.tab(tab === id)} onClick={() => setTab(id)}>{label}</button>
         ))}
       </div>
@@ -1128,6 +1148,7 @@ Newsletter must include:
       {tab === 'generator' && renderGenerator()}
       {tab === 'importer'  && renderImporter()}
       {tab === 'queue'     && renderQueue()}
+      {tab === 'settings'  && <SettingsPanel onSignOut={() => { window.location.hash = '#/'; window.location.reload(); }} />}
     </div>
   );
 }

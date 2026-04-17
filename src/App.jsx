@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import BlogGenerator from './components/BlogGenerator.jsx'
+import LandingPage from './components/LandingPage.jsx'
 
 // ── Simple password gate so only JB can access ──────────────
 // Change this password to whatever you want
@@ -40,10 +41,15 @@ const s = {
     fontFamily: "'Space Grotesk', system-ui",
     letterSpacing: '0.06em', textTransform: 'uppercase'
   },
+  backLink: {
+    marginTop: 18, fontSize: 12, color: 'rgba(255,255,255,0.55)',
+    background: 'none', border: 'none', cursor: 'pointer',
+    fontFamily: "'Space Grotesk', system-ui", letterSpacing: '0.06em',
+  },
   err: { fontSize: 12, color: '#ff6b87', marginTop: 8 }
 }
 
-function LoginScreen({ onLogin }) {
+function LoginScreen({ onLogin, onBack }) {
   const [pw, setPw] = useState('')
   const [err, setErr] = useState('')
 
@@ -72,30 +78,54 @@ function LoginScreen({ onLogin }) {
         />
         <button style={s.btn} onClick={attempt}>Enter Tool Shed</button>
         {err && <div style={s.err}>{err}</div>}
+        {onBack && (
+          <button style={s.backLink} onClick={onBack}>← Back to landing page</button>
+        )}
       </div>
     </div>
   )
 }
 
+// ── Hash-based route: '#/' = landing, '#/admin' = admin gate/app ──
+const readRoute = () => (window.location.hash === '#/admin' ? 'admin' : 'landing')
+
 export default function App() {
+  const [route, setRoute] = useState(readRoute)
   const [authed, setAuthed] = useState(false)
+
+  useEffect(() => {
+    const onHash = () => setRoute(readRoute())
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
 
   useEffect(() => {
     // Stay logged in for 24 hours
     const saved = localStorage.getItem('toolshed_auth')
     if (saved) {
-      const { ts } = JSON.parse(saved)
-      if (Date.now() - ts < 24 * 60 * 60 * 1000) setAuthed(true)
-      else localStorage.removeItem('toolshed_auth')
+      try {
+        const { ts } = JSON.parse(saved)
+        if (Date.now() - ts < 24 * 60 * 60 * 1000) setAuthed(true)
+        else localStorage.removeItem('toolshed_auth')
+      } catch {
+        localStorage.removeItem('toolshed_auth')
+      }
     }
   }, [])
+
+  const goAdmin = () => { window.location.hash = '#/admin' }
+  const goLanding = () => { window.location.hash = '#/' }
 
   const handleLogin = () => {
     setAuthed(true)
     localStorage.setItem('toolshed_auth', JSON.stringify({ ts: Date.now() }))
   }
 
-  if (!authed) return <LoginScreen onLogin={handleLogin} />
+  if (route === 'landing') {
+    return <LandingPage onEnterAdmin={goAdmin} />
+  }
 
+  // route === 'admin'
+  if (!authed) return <LoginScreen onLogin={handleLogin} onBack={goLanding} />
   return <BlogGenerator />
 }
