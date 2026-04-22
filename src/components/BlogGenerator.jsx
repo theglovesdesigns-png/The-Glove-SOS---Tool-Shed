@@ -5,6 +5,10 @@
 // Drop into Lovable: src/components/BlogGenerator.jsx
 // ============================================================
 
+```javascript
+import SidebarWrapper from './SidebarWrapper.jsx';
+```
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import SettingsPanel from './SettingsPanel.jsx';
 
@@ -1117,13 +1121,12 @@ Newsletter must include:
     </div>
   );
 
-  // ── MAIN RENDER ────────────────────────────────────────────
-  return (
-    <div style={s.wrap}>
-      <div style={s.header}>
-        <div style={s.titleText}>THE GLOVE SOS — TOOL SHED</div>
-        <div style={s.subtitle}>TheGloveSOS Tool Shed — AI Content System</div>
-      </div>
+   // ── MAIN RENDER ────────────────────────────────────────────
+      ```javascript
+      return (
+        <SidebarWrapper currentTab={tab} onTabChange={setTab}>
+          <div style={s.wrap}>
+    ```
 
       {!apiKey && (
         <div style={{ background: 'rgba(184,134,11,0.1)', border: '1px solid rgba(184,134,11,0.3)', color: '#f0b429', padding: '10px 14px', borderRadius: 8, fontSize: 12, marginBottom: 14 }}>
@@ -1138,17 +1141,13 @@ Newsletter must include:
         </div>
       )}
 
-      <div style={s.tabs}>
-        {[['ideas', `💡 Ideas (${ideas.length})`], ['generator', '✨ Generator'], ['importer', '📥 Import Docs'], ['queue', '📋 Queue'], ['settings', '⚙️ Settings']].map(([id, label]) => (
-          <button key={id} style={s.tab(tab === id)} onClick={() => setTab(id)}>{label}</button>
-        ))}
-      </div>
-
+      
       {tab === 'ideas'     && renderIdeas()}
       {tab === 'generator' && renderGenerator()}
       {tab === 'importer'  && renderImporter()}
       {tab === 'queue'     && renderQueue()}
       {tab === 'settings'  && <SettingsPanel onSignOut={() => { window.location.hash = '#/'; window.location.reload(); }} />}
     </div>
+    </SidebarWrapper>
   );
 }
