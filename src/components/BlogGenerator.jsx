@@ -1120,12 +1120,10 @@ Newsletter must include:
     </div>
   );
 
-   // ── MAIN RENDER ────────────────────────────────────────────
-      ```javascript
-      return (
-        <SidebarWrapper currentTab={tab} onTabChange={setTab}>
-          <div style={s.wrap}>
-    ```
+// ── MAIN RENDER ────────────────────────────────────────────
+  return (
+    <SidebarWrapper currentTab={tab} onTabChange={setTab}>
+      <div style={s.wrap}>
 
       {!apiKey && (
         <div style={{ background: 'rgba(184,134,11,0.1)', border: '1px solid rgba(184,134,11,0.3)', color: '#f0b429', padding: '10px 14px', borderRadius: 8, fontSize: 12, marginBottom: 14 }}>
