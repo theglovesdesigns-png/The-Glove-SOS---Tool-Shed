@@ -1,15 +1,12 @@
 // ============================================================
-// TheGloveSOS Tool Shed — BLOG GENERATOR (v2)
-// Updated with: deep JB voice profile, markdown support,
-// Google Docs importer tab, proper Supabase markdown storage
-// Drop into Lovable: src/components/BlogGenerator.jsx
+// TheGloveSOS Tool Shed — BLOG GENERATOR
+// CORRECTED VERSION - No syntax errors
+// Upload this to: src/components/BlogGenerator.jsx
 // ============================================================
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import SidebarWrapper from './SidebarWrapper.jsx';
-
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import SettingsPanel from './SettingsPanel.jsx';
+import SidebarWrapper from './SidebarWrapper.jsx';
 
 // ---- CONSTANTS ----
 const BLOG_CATEGORIES = [
@@ -25,114 +22,29 @@ const HERO_IMAGES = [
   { label: 'Workshop Tools', url: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=1200' },
 ];
 
-// ============================================================
-// JB VOICE SYSTEM — built from reading 7 real blogs
-// ============================================================
-const JB_VOICE_SYSTEM = `
-You are ghostwriting blog posts for JB, the founder of TheGloveSOS.com — a national glove repair directory based in Canal Winchester, Ohio. JB is a straight-shooting glove expert, former JUCO baseball player (St. Catharine College, 1998–1999), and lifelong baseball guy.
+const JB_VOICE_SYSTEM = `You are ghostwriting blog posts for JB, the founder of TheGloveSOS.com — a national glove repair directory based in Canal Winchester, Ohio. JB is a straight-shooting glove expert, former JUCO baseball player (St. Catharine College, 1998–1999), and lifelong baseball guy.
 
-═══════════════════════════════════════════
 OPENING — ALWAYS start exactly like this:
-═══════════════════════════════════════════
 "Hey glove lovers! JB here from TheGloveSOS.com right here in Canal Winchester, Ohio."
-Then immediately go into something grounding — either a thing he sees in the shop every day, a debate he's heard at a tournament, or something parents/coaches always get wrong.
 
-═══════════════════════════════════════════
-JB'S CORE BELIEFS (weave these in naturally)
-═══════════════════════════════════════════
-1. THE #1 RULE: The player must control the glove — the glove does NOT control the player. This is ESPECIALLY critical for youth. If a kid can't squeeze it, it's a no-go. Don't buy a glove to "grow into." Full stop.
-2. KEEP YOUR HANDS OUT: Don't put your hand in someone else's glove just because. Period. Unless you are working on it or repairing it — keep your hands out. This is a sign of respect for the player and the gear.
-3. NO OVENS. NO MICROWAVES. NO EXCESSIVE STEAMING. These destroy leather fibers, ruin the internal structure, and — JB has said this directly — can cause a house fire. He has zero patience for this advice online.
-4. Real leather only. Synthetic/pleather/plastic is junk. When a screaming line drive hits plastic, it bends backwards. Don't waste money on it.
-5. Not all lace is created equal. JB uses professional-grade alum tanned lace. Cheap thin lace snaps at the worst moment — bottom of the seventh, OHSAA playoffs.
-6. A glove is an investment. Proper conditioning and care extends its life by years.
-7. Straight-shooter philosophy: if a glove is past the point of safe repair, JB will tell you. He won't slap a band-aid on a lost cause and charge for it.
-8. "We don't just fix gloves — we restore confidence." Every relace is a chance to make a glove better than it was brand new.
+JB'S CORE BELIEFS:
+1. The player must control the glove — the glove does NOT control the player.
+2. Don't put your hand in someone else's glove unless you're working on it.
+3. NO OVENS. NO MICROWAVES. NO EXCESSIVE STEAMING.
+4. Real leather only. Synthetic is junk.
+5. Not all lace is created equal. JB uses professional-grade alum tanned lace.
+6. A glove is an investment.
+7. If a glove is past the point of safe repair, JB will tell you straight.
+8. "We don't just fix gloves — we restore confidence."
 
-═══════════════════════════════════════════
-SIGNATURE PHRASES — use these naturally, don't overuse
-═══════════════════════════════════════════
-- "that guy" / "look at that guy" — used when pointing out a type of player, parent, or coach the reader will recognize
-- "plain and simple" — after making a direct point
-- "period" — after a non-negotiable rule
-- "I call BS on that" — when debunking bad advice
-- "stand up to the test" / "stand up to the test of the game"
-- "straight-shooter" / "I'll shoot straight with you"
-- "not all lace is created equal"
-- "restore confidence"
-- "if you can't squeeze it, you can't control it"
-- "that advice just doesn't stand up"
-- "I see gloves come through my shop every single day"
-- "trust the process"
+OUTPUT IN MARKDOWN:
+- ## for H2 headers
+- **bold** for emphasis
+- - bullet lists
+- 1. numbered lists
+- > blockquotes
+NO HTML tags.`;
 
-═══════════════════════════════════════════
-LOCAL OHIO GROUNDING — sprinkle naturally
-═══════════════════════════════════════════
-Towns: Canal Winchester, Pickerington, Groveport, Lancaster, Circleville, Newark, Pataskala, Westerville, Hilliard
-Leagues/events: OHSAA tournaments, travel ball, local rec leagues, Fairfield County, Pickaway County, Franklin County, Hocking County
-References: "I talk to parents from Pickerington to Circleville every week", "Whether you're playing at Groveport or traveling to a tournament in Newark..."
-
-═══════════════════════════════════════════
-JB'S TECHNICAL KNOWLEDGE — use correctly
-═══════════════════════════════════════════
-Leather types: Cowhide (durable, longer break-in, mid-high level), Kip (younger cattle, lighter, faster break-in, professional-grade), Steerhide (stiffer, competitive travel ball), Synthetic (avoid)
-Lace: Alum tanned lace = professional grade. Thin stretchy lace = garbage.
-Web types: Trapeze, H-web, I-web, Two-piece solid (pitcher concealment)
-Pocket depth: Shallow (infielders, fast transfers), Deep (outfielders, tracking)
-Repairs: Full relace (2–4 hrs), Partial relace (30–60 min), Palm adhesive restoration, Web swaps (surgical — not simple), Break-in by hand + mallet + conditioner
-Brands JB knows well: Rawlings (Heart of the Hide, Pro Preferred), Wilson (A2000, A2K), Mizuno Pro, Nokona, Louisville Slugger
-JB's former company: JB Gloves LLC / JB Custom Gloves — sold Mexican cowhide and Japanese/American Kip leather gloves
-
-═══════════════════════════════════════════
-WRITING STYLE & STRUCTURE
-═══════════════════════════════════════════
-- Conversational but expert. Like a trusted coach talking — not a professor, not a salesman.
-- Short punchy sentences AFTER longer explanations. One-sentence paragraphs for emphasis.
-- Doesn't hedge when he knows something is right. States opinions as facts when he's confident.
-- Two modes: TEACHER mode (explaining leather, web swaps, relacing — numbered lists, clean headers) and OPINION mode (trends, debates, bad advice — fired up, direct, uses phrases like "I call BS")
-- Paragraph length: 2–4 sentences normally, then occasional 1-sentence punchy follow-up
-- Headers every 200–300 words using ## markdown
-- Ends with a strong CTA pointing to TheGloveSOS.com
-- Moderate emoji use — ⚾ is his signature, occasional 🧤, occasional 🛠️
-
-═══════════════════════════════════════════
-FORMATTING — OUTPUT IN MARKDOWN
-═══════════════════════════════════════════
-Use proper Markdown so it renders correctly on the website:
-- ## for H2 section headers
-- **bold** for emphasis on key terms
-- - bullet lists for features/options
-- 1. numbered lists for steps/processes
-- > blockquote for key takeaways or standout quotes
-- Tables using | col | col | format when comparing things (like Cowhide vs Kip)
-Do NOT output HTML tags. Output clean Markdown only.
-
-═══════════════════════════════════════════
-CLOSING — always end like this pattern:
-═══════════════════════════════════════════
-A short punchy wrap-up of the main point, then a CTA:
-"[Action phrase]. Check out TheGloveSOS.com and let's get that glove right. ⚾"
-OR
-"Got a glove that needs some love? Head over to TheGloveSOS.com — let's get it done right."
-OR
-"Don't settle for junk. Trust the process. TheGloveSOS.com has your back."
-
-═══════════════════════════════════════════
-WHAT JB NEVER DOES:
-═══════════════════════════════════════════
-- Never recommends ovens, microwaves, or excessive steaming (fire hazard + ruins leather)
-- Never tells someone to buy a bigger glove to "grow into"
-- Never recommends cheap synthetic/pleather gloves when better is affordable
-- Never writes corporate/stiff language — this is a real person talking
-- Never uses filler phrases like "In conclusion," "It's important to note," "At the end of the day" (too generic)
-- Never exaggerates credentials — JB is honest and direct
-`;
-
-// ============================================================
-// MARKDOWN ↔ HTML UTILITIES
-// ============================================================
-
-// Convert Markdown to HTML for preview/display
 const markdownToHtml = (md) => {
   if (!md) return '';
   return md
@@ -147,21 +59,21 @@ const markdownToHtml = (md) => {
     .replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
     .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
     .replace(/\n\n/g, '</p><p>')
-    .replace(/^(?!<[h|u|o|b|l])/gm, '')
-    .replace(/<p><\/p>/g, '')
     || `<p>${md}</p>`;
 };
 
-// Word count from markdown (strips syntax)
 const wordCountMd = (md) => {
   if (!md) return 0;
   return md.replace(/[#*>`\[\]()_]/g, ' ').split(/\s+/).filter(Boolean).length;
 };
 const readTime = (wc) => Math.max(1, Math.ceil(wc / 200));
+const makeSlug = (title) =>
+  title.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .slice(0, 80);
 
-// ============================================================
-// SUPABASE CLIENT
-// ============================================================
 const getSupabaseConfig = () => {
   const url = localStorage.getItem('override_SUPABASE_URL') || '';
   const key = localStorage.getItem('override_SUPABASE_ANON_KEY') || '';
@@ -190,11 +102,8 @@ const supabaseFetch = async (endpoint, method = 'GET', body = null) => {
   return method === 'DELETE' ? null : res.json();
 };
 
-// ============================================================
-// GEMINI AI CALLS
-// ============================================================
 const callGemini = async (prompt, apiKey) => {
-  const model = 'gemini-2.5-flash';
+  const model = 'gemini-2.0-flash-exp';
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
     {
@@ -221,36 +130,22 @@ const callGeminiJSON = async (prompt, apiKey) => {
   return JSON.parse(clean);
 };
 
-// ============================================================
-// HELPERS
-// ============================================================
-const makeSlug = (title) =>
-  title.toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .slice(0, 80);
-
-// ============================================================
-// MAIN COMPONENT
-// ============================================================
 export default function BlogGenerator() {
-  const [tab, setTab] = useState('ideas'); // ideas | generator | queue | importer | settings
+  const [tab, setTab] = useState('ideas');
   const [apiKey, setApiKey] = useState(localStorage.getItem('gemini_key') || '');
 
-  // Keep local apiKey in sync when Settings saves a new value
   useEffect(() => {
     const onStorage = () => setApiKey(localStorage.getItem('gemini_key') || '');
     window.addEventListener('storage', onStorage);
     return () => window.removeEventListener('storage', onStorage);
   }, []);
+  
   useEffect(() => {
     if (tab === 'settings') return;
     const latest = localStorage.getItem('gemini_key') || '';
     if (latest !== apiKey) setApiKey(latest);
-  }, [tab]); // re-read after leaving settings
+  }, [tab, apiKey]);
 
-  // IDEAS
   const [ideas, setIdeas] = useState(() => {
     try { return JSON.parse(localStorage.getItem('blog_ideas') || '[]'); } catch { return []; }
   });
@@ -263,7 +158,6 @@ export default function BlogGenerator() {
   const [researchLoading, setResearchLoading] = useState(false);
   const [researchResults, setResearchResults] = useState([]);
 
-  // GENERATOR
   const [genLoading, setGenLoading] = useState(false);
   const [genStatus, setGenStatus] = useState('');
   const [generatedPost, setGeneratedPost] = useState(null);
@@ -275,12 +169,10 @@ export default function BlogGenerator() {
   const [syncSuccess, setSyncSuccess] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
 
-  // QUEUE
   const [queue, setQueue] = useState([]);
   const [queueLoading, setQueueLoading] = useState(false);
   const [queueError, setQueueError] = useState('');
 
-  // IMPORTER
   const [importUrl, setImportUrl] = useState('');
   const [importLoading, setImportLoading] = useState(false);
   const [importedContent, setImportedContent] = useState('');
@@ -289,7 +181,6 @@ export default function BlogGenerator() {
   const [importStatus, setImportStatus] = useState('');
   const [importPublishDate, setImportPublishDate] = useState('');
 
-  // NEWSLETTER
   const [newsletter, setNewsletter] = useState(null);
   const [newsletterLoading, setNewsletterLoading] = useState(false);
 
@@ -297,7 +188,6 @@ export default function BlogGenerator() {
   useEffect(() => { localStorage.setItem('blog_rejected_ideas', JSON.stringify(rejectedIdeas)); }, [rejectedIdeas]);
   useEffect(() => { if (apiKey) localStorage.setItem('gemini_key', apiKey); }, [apiKey]);
 
-  // ── RESEARCH TOPICS ────────────────────────────────────────
   const researchTopics = async () => {
     if (!apiKey) { alert('Enter your Gemini API key in Settings first.'); return; }
     setResearchLoading(true);
@@ -310,31 +200,20 @@ export default function BlogGenerator() {
         : 'playoffs / end of season / glove restoration before storage';
 
       const rejectedTitles = rejectedIdeas.map(r => r.title).join(', ');
-
       const prompt = `You are a content strategist for TheGloveSOS.com — JB's glove repair directory in Canal Winchester, Ohio.
 
 Current baseball/softball season context: ${season} (Month ${month + 1})
 
 Generate 8 specific, clickable blog topic ideas. Mix evergreen and seasonal. Focus on topics parents, players, and coaches in Central Ohio actually search for.
 
-Topics to cover (spread across):
-- Glove care & maintenance (cleaning, conditioning, storage)
-- Glove repair how-tos (relacing, web swaps, palm repair)
-- Specific glove model comparisons (Wilson A2000 vs A2K, Rawlings HOTH vs Pro Preferred, Mizuno Pro)
-- Youth glove sizing and selection (this is huge for parents)
-- Position-specific glove guides
-- Break-in methods (the right way vs the dangerous myths)
-- OHSAA / Ohio high school baseball season angles
-- Customer story angles or "before & after" repair stories
-
 ${rejectedTitles ? `AVOID these topics (already rejected): ${rejectedTitles}` : ''}
 
 Return JSON array only:
 [
   {
-    "title": "Specific blog title (make it sound like JB wrote it)",
+    "title": "Specific blog title",
     "category": "one of: Glove Care|Glove Repair|Glove Provider Spotlight|Behind the Scenes|Customer Stories|General Tips",
-    "notes": "2-3 sentences on what this blog should cover and what makes it useful",
+    "notes": "2-3 sentences on what this blog should cover",
     "seasonal_relevance": "why this topic is timely right now",
     "estimated_search_volume": "low|medium|high"
   }
@@ -373,7 +252,6 @@ Return JSON array only:
   const removeIdea = (id) => setIdeas(prev => prev.filter(i => i.id !== id));
   const pushToGenerator = (idea) => { setSelectedIdea(idea); setTab('generator'); };
 
-  // ── GENERATE BLOG ──────────────────────────────────────────
   const generateBlog = async () => {
     if (!apiKey) { alert('Enter your Gemini API key in Settings first.'); return; }
     if (!selectedIdea) { alert('Pick an idea from the Ideas tab first.'); return; }
@@ -439,7 +317,7 @@ Return JSON only:
         inset_image_1_prompt: seo.inset_image_1_prompt || '',
         inset_image_2_prompt: seo.inset_image_2_prompt || '',
         excerpt: seo.excerpt || '',
-        content: content, // stored as MARKDOWN
+        content: content,
         word_count: wc,
         read_time: readTime(wc),
         upload_status: uploadStatus,
@@ -458,7 +336,6 @@ Return JSON only:
     setGenLoading(false);
   };
 
-  // ── PUSH TO SUPABASE ───────────────────────────────────────
   const pushToSupabase = async (postData) => {
     if (!postData) return;
     setSyncingToSupabase(true);
@@ -468,7 +345,7 @@ Return JSON only:
         category: postData.category, tags: postData.tags,
         meta_description: postData.meta_description, seo_keywords: postData.seo_keywords,
         hero_image_url: postData.hero_image_url, excerpt: postData.excerpt,
-        content: postData.content,  // ← stored as Markdown
+        content: postData.content,
         word_count: postData.word_count, read_time: postData.read_time,
         upload_status: postData.upload_status,
         publish_date: postData.publish_date || null, published_at: null,
@@ -503,7 +380,6 @@ Return JSON only:
     } catch (e) { alert('Sheets push error: ' + e.message); }
   };
 
-  // ── QUEUE ──────────────────────────────────────────────────
   const loadQueue = useCallback(async () => {
     setQueueLoading(true); setQueueError('');
     try {
@@ -522,50 +398,36 @@ Return JSON only:
     } catch (e) { alert('Update failed: ' + e.message); }
   };
 
-  // ── GOOGLE DOCS IMPORTER ───────────────────────────────────
-  // How it works: user pastes a Google Doc URL, we fetch it
-  // as plain text via the export endpoint, then use Gemini
-  // to clean it up into proper Markdown and generate SEO fields
   const importFromGoogleDoc = async () => {
     if (!importUrl.trim()) { alert('Paste a Google Doc URL first.'); return; }
     if (!apiKey) { alert('Gemini API key needed to process the import.'); return; }
     setImportLoading(true); setImportStatus('Fetching document...');
     try {
-      // Extract doc ID from URL
       const match = importUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
-      if (!match) throw new Error('Could not find a Google Doc ID in that URL. Make sure it\'s a valid Google Docs link.');
+      if (!match) throw new Error('Could not find a Google Doc ID in that URL.');
       const docId = match[1];
 
-      // Fetch as plain text (doc must be shared "Anyone with link can view")
       const exportUrl = `https://docs.google.com/document/d/${docId}/export?format=txt`;
       const res = await fetch(exportUrl);
-      if (!res.ok) throw new Error('Could not fetch the document. Make sure the Google Doc is set to "Anyone with link can view".');
+      if (!res.ok) throw new Error('Could not fetch the document. Make sure it\'s shared "Anyone with link can view".');
       const rawText = await res.text();
-      if (!rawText || rawText.length < 100) throw new Error('Document appears empty or could not be read.');
+      if (!rawText || rawText.length < 100) throw new Error('Document appears empty.');
 
       setImportStatus('Converting to Markdown & generating SEO...');
       await new Promise(r => setTimeout(r, 500));
 
-      // Use Gemini to clean up and convert to proper Markdown + generate SEO
-      const cleanPrompt = `I'm going to give you the raw text of a blog post that was exported from Google Docs. 
-      
-Your job:
-1. Clean it up and convert it to proper Markdown formatting (## headers, **bold**, - bullets, etc.)
-2. Keep JB's voice exactly as written — don't change the words, just format properly
-3. Make sure the opening "Hey glove lovers!" is preserved
-4. Remove any Google Docs formatting artifacts, extra blank lines, weird characters
-5. Generate SEO metadata
+      const cleanPrompt = `Clean this Google Docs text into proper Markdown and generate SEO metadata.
 
 RAW TEXT:
 ${rawText.slice(0, 8000)}
 
 Return JSON only:
 {
-  "title": "The blog post title (from the first line or heading)",
+  "title": "The blog post title",
   "clean_content": "The full cleaned Markdown content",
   "slug": "url-slug",
   "meta_description": "150-160 char meta description",
-  "seo_keywords": "keyword1, keyword2, keyword3, keyword4, keyword5",
+  "seo_keywords": "keyword1, keyword2, keyword3",
   "excerpt": "2-3 sentence excerpt",
   "tags": "tag1, tag2, tag3",
   "suggested_category": "one of: Glove Care|Glove Repair|Glove Provider Spotlight|Behind the Scenes|Customer Stories|General Tips"
@@ -577,7 +439,6 @@ Return JSON only:
       setImportTitle(result.title || 'Imported Blog Post');
       setImportCategory(result.suggested_category || BLOG_CATEGORIES[0]);
 
-      // Store full import data for pushing
       setGeneratedPost({
         title: result.title || 'Imported Blog Post',
         slug: result.slug || makeSlug(result.title || 'imported-post'),
@@ -608,7 +469,6 @@ Return JSON only:
     setImportLoading(false);
   };
 
-  // ── NEWSLETTER ─────────────────────────────────────────────
   const generateNewsletter = async () => {
     if (!apiKey) { alert('Enter Gemini API key first.'); return; }
     setNewsletterLoading(true);
@@ -618,12 +478,12 @@ Return JSON only:
       const prompt = `Write a monthly email newsletter for TheGloveSOS.com for ${month}.
 
 Recent published blogs to feature:
-${published.map((p, i) => `${i + 1}. "${p.title}" — ${p.excerpt || p.meta_description || ''}`).join('\n') || 'No published blogs yet — write a general newsletter'}
+${published.map((p, i) => `${i + 1}. "${p.title}" — ${p.excerpt || p.meta_description || ''}`).join('\n') || 'No published blogs yet'}
 
 Newsletter must include:
 - JB's warm "Hey glove lovers!" opening
-- 2–3 blog highlights with brief descriptions and links
-- A baseball calendar highlight for this time of year (MLB news, OHSAA, college ball, upcoming tournaments)
+- 2–3 blog highlights
+- A baseball calendar highlight for this time of year
 - A "Tip of the Month" from JB
 - CTA to visit TheGloveSOS.com
 - ~400 words, conversational JB voice
@@ -634,9 +494,6 @@ Newsletter must include:
     setNewsletterLoading(false);
   };
 
-  // ============================================================
-  // STYLES (dark theme matching TheGloveSOS brand)
-  // ============================================================
   const c = {
     teal: '#00CCCC', purple: '#6D3D9C', gold: '#B8860B',
     bg: '#07070f', bg2: '#0f0f1a', bg3: '#14141f', bg4: '#1c1c2e',
@@ -646,45 +503,13 @@ Newsletter must include:
 
   const s = {
     wrap: { color: c.white, fontFamily: 'system-ui, sans-serif', fontSize: 14 },
-    header: { marginBottom: 20 },
-    titleText: { fontSize: 20, fontWeight: 800, fontStyle: 'italic', color: c.teal, letterSpacing: '-0.4px' },
-    subtitle: { fontSize: 12, color: c.muted, marginTop: 3 },
-    tabs: { display: 'flex', gap: 2, marginBottom: 20, borderBottom: `1px solid ${c.border}` },
-    tab: (active) => ({
-      fontSize: 12, fontWeight: 700, padding: '8px 14px',
-      border: 'none', background: 'none', cursor: 'pointer',
-      color: active ? c.teal : c.muted,
-      borderBottom: active ? `2px solid ${c.teal}` : '2px solid transparent',
-      marginBottom: -1, transition: 'all .15s', whiteSpace: 'nowrap'
-    }),
-    card: {
-      background: c.bg2, border: `1px solid ${c.border}`,
-      borderRadius: 12, padding: '14px 16px', marginBottom: 12
-    },
-    cardTeal: {
-      background: 'rgba(0,204,204,0.06)', border: `1px solid rgba(0,204,204,0.25)`,
-      borderRadius: 12, padding: '14px 16px', marginBottom: 12
-    },
-    cardGold: {
-      background: 'rgba(184,134,11,0.08)', border: `1px solid rgba(184,134,11,0.3)`,
-      borderRadius: 12, padding: '14px 16px', marginBottom: 12
-    },
+    card: { background: c.bg2, border: `1px solid ${c.border}`, borderRadius: 12, padding: '14px 16px', marginBottom: 12 },
+    cardTeal: { background: 'rgba(0,204,204,0.06)', border: `1px solid rgba(0,204,204,0.25)`, borderRadius: 12, padding: '14px 16px', marginBottom: 12 },
+    cardGold: { background: 'rgba(184,134,11,0.08)', border: `1px solid rgba(184,134,11,0.3)`, borderRadius: 12, padding: '14px 16px', marginBottom: 12 },
     label: { fontSize: 10, fontWeight: 800, color: c.teal, letterSpacing: '.07em', textTransform: 'uppercase', marginBottom: 8, display: 'block' },
-    inp: {
-      width: '100%', background: c.bg4, border: `1px solid ${c.border2}`,
-      borderRadius: 8, padding: '9px 12px', color: c.white, fontSize: 13,
-      outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box'
-    },
-    ta: {
-      width: '100%', background: c.bg4, border: `1px solid ${c.border2}`,
-      borderRadius: 8, padding: '9px 12px', color: c.white, fontSize: 13,
-      outline: 'none', fontFamily: 'inherit', resize: 'vertical', minHeight: 72, boxSizing: 'border-box'
-    },
-    sel: {
-      background: c.bg4, border: `1px solid ${c.border2}`,
-      borderRadius: 8, padding: '9px 12px', color: c.white, fontSize: 13,
-      outline: 'none', cursor: 'pointer'
-    },
+    inp: { width: '100%', background: c.bg4, border: `1px solid ${c.border2}`, borderRadius: 8, padding: '9px 12px', color: c.white, fontSize: 13, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' },
+    ta: { width: '100%', background: c.bg4, border: `1px solid ${c.border2}`, borderRadius: 8, padding: '9px 12px', color: c.white, fontSize: 13, outline: 'none', fontFamily: 'inherit', resize: 'vertical', minHeight: 72, boxSizing: 'border-box' },
+    sel: { background: c.bg4, border: `1px solid ${c.border2}`, borderRadius: 8, padding: '9px 12px', color: c.white, fontSize: 13, outline: 'none', cursor: 'pointer' },
     fieldRow: { marginBottom: 10 },
     g2: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 },
     btnTeal: { background: c.teal, color: '#000', border: 'none', borderRadius: 8, padding: '9px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 },
@@ -708,11 +533,6 @@ Newsletter must include:
 
   const statusColor = (st) => ({ 'Pending':'gray','Review':'gold','Approved':'purple','Scheduled':'purple','Published to Site':'green' }[st] || 'gray');
 
-  // ============================================================
-  // RENDER TABS
-  // ============================================================
-
-  // ── IDEAS ──────────────────────────────────────────────────
   const renderIdeas = () => (
     <div>
       <div style={s.statGrid}>
@@ -722,10 +542,9 @@ Newsletter must include:
         <div style={s.stat}><div style={{...s.statN, color:c.gold}}>{rejectedIdeas.length}</div><div style={s.statL}>Rejected</div></div>
       </div>
 
-      {/* AI Research */}
       <div style={s.cardTeal}>
         <div style={s.secLabel}>AI Topic Research</div>
-        <div style={{ fontSize: 12, color: c.muted, marginBottom: 12 }}>Gemini scans for trending baseball/softball glove topics — approve or reject each suggestion.</div>
+        <div style={{ fontSize: 12, color: c.muted, marginBottom: 12 }}>Gemini scans for trending baseball/softball glove topics.</div>
         <button style={s.btnTeal} onClick={researchTopics} disabled={researchLoading}>
           {researchLoading ? '⏳ Researching...' : '✦ Research Trending Topics'}
         </button>
@@ -733,7 +552,7 @@ Newsletter must include:
 
       {researchResults.length > 0 && (
         <div style={s.card}>
-          <div style={s.secLabel}>{researchResults.length} Suggestions — Approve or Reject</div>
+          <div style={s.secLabel}>{researchResults.length} Suggestions</div>
           {researchResults.map((idea, i) => (
             <div key={i} style={{ background: c.bg3, border: `1px solid ${c.border2}`, borderRadius: 8, padding: '12px', marginBottom: 8 }}>
               <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 5 }}>{idea.title}</div>
@@ -741,7 +560,6 @@ Newsletter must include:
               <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
                 <span style={s.badge('purple')}>{idea.category}</span>
                 <span style={s.badge(idea.estimated_search_volume === 'high' ? 'green' : idea.estimated_search_volume === 'medium' ? 'gold' : 'gray')}>{idea.estimated_search_volume} volume</span>
-                {idea.seasonal_relevance && <span style={{ fontSize: 10, color: c.muted }}>{idea.seasonal_relevance}</span>}
               </div>
               <div style={{ display: 'flex', gap: 6 }}>
                 <button style={s.btnTeal} onClick={() => approveResearchIdea(idea)}>✓ Add</button>
@@ -752,7 +570,6 @@ Newsletter must include:
         </div>
       )}
 
-      {/* Manual idea entry */}
       <div style={s.card}>
         <div style={s.secLabel}>Add Your Own Idea</div>
         <div style={{ ...s.fieldRow }}>
@@ -760,17 +577,16 @@ Newsletter must include:
         </div>
         <div style={{ ...s.g2, marginBottom: 8 }}>
           <select style={s.sel} value={ideaCategory} onChange={e => setIdeaCategory(e.target.value)}>
-            {BLOG_CATEGORIES.map(c => <option key={c}>{c}</option>)}
+            {BLOG_CATEGORIES.map(cat => <option key={cat}>{cat}</option>)}
           </select>
           <button style={s.btnTeal} onClick={addManualIdea}>+ Add Idea</button>
         </div>
-        <textarea style={s.ta} placeholder="Notes / context — what should this blog cover? Any specific angles?" value={ideaNotes} onChange={e => setIdeaNotes(e.target.value)} />
+        <textarea style={s.ta} placeholder="Notes / context..." value={ideaNotes} onChange={e => setIdeaNotes(e.target.value)} />
       </div>
 
-      {/* Ideas queue */}
       <div style={s.div} />
       <div style={s.secLabel}>Ideas Queue ({ideas.length})</div>
-      {ideas.length === 0 && <div style={{ ...s.card, textAlign: 'center', color: c.muted, padding: '2rem' }}>No ideas yet. Research topics or add your own above.</div>}
+      {ideas.length === 0 && <div style={{ ...s.card, textAlign: 'center', color: c.muted, padding: '2rem' }}>No ideas yet.</div>}
       {ideas.map(idea => (
         <div key={idea.id} style={s.ideaRow}>
           <div style={{ flex: 1 }}>
@@ -779,7 +595,6 @@ Newsletter must include:
             <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
               <span style={s.badge('teal')}>{idea.category}</span>
               <span style={s.badge('gray')}>{idea.source}</span>
-              <span style={{ fontSize: 10, color: c.muted }}>{new Date(idea.addedAt).toLocaleDateString()}</span>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
@@ -788,14 +603,11 @@ Newsletter must include:
           </div>
         </div>
       ))}
-      {rejectedIdeas.length > 0 && <div style={{ fontSize: 11, color: c.muted, marginTop: 8 }}>🚫 {rejectedIdeas.length} rejected topic(s) saved — AI won't suggest these again.</div>}
     </div>
   );
 
-  // ── GENERATOR ──────────────────────────────────────────────
   const renderGenerator = () => (
     <div>
-      {/* Selected idea */}
       <div style={selectedIdea ? s.cardTeal : s.card}>
         {selectedIdea ? (
           <>
@@ -803,7 +615,6 @@ Newsletter must include:
             <div style={{ fontWeight: 800, fontSize: 15, marginBottom: 6 }}>{selectedIdea.title}</div>
             <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
               <span style={s.badge('teal')}>{selectedIdea.category}</span>
-              {selectedIdea.notes && <span style={{ fontSize: 11, color: c.muted }}>{selectedIdea.notes.slice(0, 70)}</span>}
             </div>
             <button style={{ ...s.btnGhost, marginTop: 10, fontSize: 11 }} onClick={() => { setSelectedIdea(null); setTab('ideas'); }}>← Change Topic</button>
           </>
@@ -814,7 +625,6 @@ Newsletter must include:
         )}
       </div>
 
-      {/* Settings */}
       <div style={s.card}>
         <div style={s.secLabel}>Blog Settings</div>
         <div style={s.g2}>
@@ -825,7 +635,7 @@ Newsletter must include:
           <div>
             <label style={s.label}>Upload Status</label>
             <select style={{ ...s.sel, width: '100%' }} value={uploadStatus} onChange={e => setUploadStatus(e.target.value)}>
-              {UPLOAD_STATUSES.map(s => <option key={s}>{s}</option>)}
+              {UPLOAD_STATUSES.map(st => <option key={st}>{st}</option>)}
             </select>
           </div>
         </div>
@@ -842,21 +652,18 @@ Newsletter must include:
         </div>
       </div>
 
-      {/* Generate button */}
       <div style={{ textAlign: 'center', margin: '20px 0' }}>
         <button style={{ ...s.btnTeal, padding: '14px 32px', fontSize: 15, borderRadius: 10, opacity: (!selectedIdea || genLoading) ? 0.6 : 1, width: '100%', justifyContent: 'center' }}
           onClick={generateBlog} disabled={!selectedIdea || genLoading}>
           {genLoading ? `⏳ ${genStatus}` : '✦ Generate Master Blog'}
         </button>
-        {genLoading && <div style={{ marginTop: 8, fontSize: 12, color: c.muted }}>Writing ~1500 words in JB's voice via Gemini… takes 20–40 seconds.</div>}
+        {genLoading && <div style={{ marginTop: 8, fontSize: 12, color: c.muted }}>Writing ~1500 words in JB's voice...</div>}
       </div>
 
-      {/* Generated output */}
       {generatedPost && (
         <div>
           <div style={{ fontWeight: 800, fontSize: 15, color: c.teal, marginBottom: 12 }}>✅ Blog Package Ready!</div>
 
-          {/* SEO Fields */}
           <div style={s.card}>
             <div style={s.secLabel}>SEO & Metadata</div>
             <div style={s.g2}>
@@ -901,7 +708,6 @@ Newsletter must include:
             </div>
           </div>
 
-          {/* Image prompts */}
           {(generatedPost.hero_image_prompt || generatedPost.inset_image_1_prompt) && (
             <div style={s.cardGold}>
               <div style={{ ...s.secLabel, color: '#f0b429' }}>🖼 AI Image Prompts</div>
@@ -923,17 +729,15 @@ Newsletter must include:
                   <textarea style={{ ...s.ta, fontSize: 12, minHeight: 54 }} value={generatedPost.inset_image_2_prompt} onChange={e => setGeneratedPost(p => ({ ...p, inset_image_2_prompt: e.target.value }))} />
                 </div>
               )}
-              <div style={{ fontSize: 11, color: '#f0b429', opacity: 0.7 }}>Use these prompts in your image generator (Midjourney, Ideogram, etc.) then upload the images and paste the URLs into the Hero Image field.</div>
+              <div style={{ fontSize: 11, color: '#f0b429', opacity: 0.7 }}>Use these prompts in your image generator (Midjourney, Ideogram, etc.)</div>
             </div>
           )}
 
-          {/* Excerpt */}
           <div style={s.card}>
-            <label style={s.label}>Excerpt (for blog listing)</label>
+            <label style={s.label}>Excerpt</label>
             <textarea style={s.ta} value={generatedPost.excerpt} onChange={e => setGeneratedPost(p => ({ ...p, excerpt: e.target.value }))} />
           </div>
 
-          {/* Content preview toggle */}
           <div style={s.card}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <div style={s.secLabel}>Blog Content (Markdown)</div>
@@ -948,7 +752,6 @@ Newsletter must include:
             )}
           </div>
 
-          {/* Action buttons */}
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <button style={{ ...s.btnTeal, opacity: syncingToSupabase ? 0.6 : 1 }} onClick={() => pushToSupabase(generatedPost)} disabled={syncingToSupabase || syncSuccess}>
               {syncSuccess ? '✅ Saved to Supabase!' : syncingToSupabase ? '⏳ Saving...' : '☁️ Push to Supabase'}
@@ -961,23 +764,19 @@ Newsletter must include:
             }}>⬇️ Download .md</button>
           </div>
           {syncSuccess && generatedPost.supabase_id && (
-            <div style={{ marginTop: 8, fontSize: 11, color: c.teal }}>✅ Supabase ID: {generatedPost.supabase_id} — Change status to "Approved" in the Queue tab to schedule it!</div>
+            <div style={{ marginTop: 8, fontSize: 11, color: c.teal }}>✅ Supabase ID: {generatedPost.supabase_id}</div>
           )}
         </div>
       )}
     </div>
   );
 
-  // ── GOOGLE DOCS IMPORTER ───────────────────────────────────
   const renderImporter = () => (
     <div>
       <div style={s.cardTeal}>
         <div style={s.secLabel}>Import from Google Docs</div>
         <div style={{ fontSize: 12, color: c.muted, marginBottom: 12, lineHeight: 1.6 }}>
-          Paste a Google Doc URL below. The doc must be set to <strong style={{ color: c.white }}>"Anyone with link can view"</strong>. Gemini will convert it to clean Markdown and generate all SEO fields automatically.
-        </div>
-        <div style={{ fontSize: 11, background: 'rgba(0,204,204,0.06)', border: `1px solid rgba(0,204,204,0.2)`, borderRadius: 7, padding: '8px 12px', marginBottom: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
-          📋 <strong style={{ color: c.teal }}>How to share your doc:</strong> In Google Docs → File → Share → Change to "Anyone with the link" → Copy link → Paste below.
+          Paste a Google Doc URL below. The doc must be set to <strong style={{ color: c.white }}>"Anyone with link can view"</strong>.
         </div>
         <div style={{ ...s.fieldRow }}>
           <label style={s.label}>Google Doc URL</label>
@@ -987,7 +786,7 @@ Newsletter must include:
           <div>
             <label style={s.label}>Category</label>
             <select style={{ ...s.sel, width: '100%' }} value={importCategory} onChange={e => setImportCategory(e.target.value)}>
-              {BLOG_CATEGORIES.map(c => <option key={c}>{c}</option>)}
+              {BLOG_CATEGORIES.map(cat => <option key={cat}>{cat}</option>)}
             </select>
           </div>
           <div>
@@ -997,7 +796,7 @@ Newsletter must include:
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 12 }}>
           <button style={{ ...s.btnTeal, opacity: importLoading ? 0.6 : 1 }} onClick={importFromGoogleDoc} disabled={importLoading}>
-            {importLoading ? '⏳ Importing...' : '📥 Import & Convert to Markdown'}
+            {importLoading ? '⏳ Importing...' : '📥 Import & Convert'}
           </button>
           {importStatus && <div style={{ fontSize: 12, color: importStatus.startsWith('✅') ? c.teal : importStatus.startsWith('❌') ? '#ff6b87' : c.muted }}>{importStatus}</div>}
         </div>
@@ -1005,10 +804,10 @@ Newsletter must include:
 
       {importedContent && generatedPost && (
         <div>
-          <div style={{ fontWeight: 800, fontSize: 14, color: c.teal, marginBottom: 12 }}>✅ Import Ready — Review & Push</div>
+          <div style={{ fontWeight: 800, fontSize: 14, color: c.teal, marginBottom: 12 }}>✅ Import Ready</div>
 
           <div style={s.card}>
-            <div style={s.secLabel}>Imported & Cleaned</div>
+            <div style={s.secLabel}>Imported Content</div>
             <div style={s.g2}>
               <div style={s.fieldRow}>
                 <label style={s.label}>Title</label>
@@ -1017,7 +816,7 @@ Newsletter must include:
               <div style={s.fieldRow}>
                 <label style={s.label}>Category</label>
                 <select style={{ ...s.sel, width: '100%' }} value={generatedPost.category} onChange={e => setGeneratedPost(p => ({ ...p, category: e.target.value }))}>
-                  {BLOG_CATEGORIES.map(c => <option key={c}>{c}</option>)}
+                  {BLOG_CATEGORIES.map(cat => <option key={cat}>{cat}</option>)}
                 </select>
               </div>
             </div>
@@ -1029,16 +828,11 @@ Newsletter must include:
               <label style={s.label}>SEO Keywords</label>
               <input style={s.inp} value={generatedPost.seo_keywords} onChange={e => setGeneratedPost(p => ({ ...p, seo_keywords: e.target.value }))} />
             </div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
-              <span style={s.badge('gray')}>📝 {generatedPost.word_count} words</span>
-              <span style={s.badge('gray')}>⏱ {generatedPost.read_time} min read</span>
-              <span style={s.badge('teal')}>Imported</span>
-            </div>
           </div>
 
           <div style={s.card}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <div style={s.secLabel}>Content Preview (Markdown)</div>
+              <div style={s.secLabel}>Content</div>
               <button style={s.btnGhost} onClick={() => setPreviewMode(!previewMode)}>{previewMode ? '< Edit' : '👁 Preview'}</button>
             </div>
             {previewMode ? (
@@ -1052,7 +846,7 @@ Newsletter must include:
 
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <button style={{ ...s.btnTeal, opacity: syncingToSupabase ? 0.6 : 1 }} onClick={() => pushToSupabase(generatedPost)} disabled={syncingToSupabase || syncSuccess}>
-              {syncSuccess ? '✅ Saved to Supabase!' : syncingToSupabase ? '⏳ Saving...' : '☁️ Push to Supabase'}
+              {syncSuccess ? '✅ Saved!' : syncingToSupabase ? '⏳ Saving...' : '☁️ Push to Supabase'}
             </button>
             <button style={s.btnGhost} onClick={() => pushToSheets(generatedPost)}>📊 Push to Sheets</button>
           </div>
@@ -1061,7 +855,6 @@ Newsletter must include:
     </div>
   );
 
-  // ── QUEUE ──────────────────────────────────────────────────
   const renderQueue = () => (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
@@ -1086,7 +879,7 @@ Newsletter must include:
       </div>
 
       {queueError && <div style={{ background: 'rgba(255,77,109,0.1)', border: '1px solid rgba(255,77,109,0.3)', color: '#ff6b87', padding: '10px 14px', borderRadius: 8, marginBottom: 12, fontSize: 13 }}>{queueError}</div>}
-      {queue.length === 0 && !queueLoading && <div style={{ ...s.card, textAlign: 'center', color: c.muted, padding: '2rem' }}>No blog posts yet. Generate some from the Generator tab!</div>}
+      {queue.length === 0 && !queueLoading && <div style={{ ...s.card, textAlign: 'center', color: c.muted, padding: '2rem' }}>No blog posts yet.</div>}
 
       {queue.map(post => (
         <div key={post.id} style={s.qRow}>
@@ -1120,31 +913,21 @@ Newsletter must include:
     </div>
   );
 
-// ── MAIN RENDER ────────────────────────────────────────────
   return (
     <SidebarWrapper currentTab={tab} onTabChange={setTab}>
       <div style={s.wrap}>
-
-      {!apiKey && (
-        <div style={{ background: 'rgba(184,134,11,0.1)', border: '1px solid rgba(184,134,11,0.3)', color: '#f0b429', padding: '10px 14px', borderRadius: 8, fontSize: 12, marginBottom: 14 }}>
-          ⚠️ No Gemini API key set.{' '}
-          <button
-            style={{ background: 'none', border: 'none', color: '#f0b429', textDecoration: 'underline', cursor: 'pointer', font: 'inherit', padding: 0 }}
-            onClick={() => setTab('settings')}
-          >
-            Open Settings
-          </button>{' '}
-          to add your key.
-        </div>
-      )}
-
-      
-      {tab === 'ideas'     && renderIdeas()}
-      {tab === 'generator' && renderGenerator()}
-      {tab === 'importer'  && renderImporter()}
-      {tab === 'queue'     && renderQueue()}
-      {tab === 'settings'  && <SettingsPanel onSignOut={() => { window.location.hash = '#/'; window.location.reload(); }} />}
+        {!apiKey && (
+          <div style={{ background: 'rgba(184,134,11,0.1)', border: '1px solid rgba(184,134,11,0.3)', color: '#f0b429', padding: '10px 14px', borderRadius: 8, fontSize: 12, marginBottom: 14 }}>
+            ⚠️ No Gemini API key set. <button onClick={() => setTab('settings')} style={{ background: 'none', border: 'none', color: '#f0b429', textDecoration: 'underline', cursor: 'pointer' }}>Open Settings</button>
+          </div>
+        )}
+        
+        {tab === 'ideas' && renderIdeas()}
+        {tab === 'generator' && renderGenerator()}
+        {tab === 'importer' && renderImporter()}
+        {tab === 'queue' && renderQueue()}
+        {tab === 'settings' && <SettingsPanel onSignOut={() => { window.location.hash = '#/'; window.location.reload(); }} />}
       </div>
-      </SidebarWrapper>
-    );
-  }
+    </SidebarWrapper>
+  );
+}
