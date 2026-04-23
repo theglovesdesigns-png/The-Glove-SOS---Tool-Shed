@@ -5,9 +5,8 @@
 // Drop into Lovable: src/components/BlogGenerator.jsx
 // ============================================================
 
-```javascript
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import SidebarWrapper from './SidebarWrapper.jsx';
-```
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import SettingsPanel from './SettingsPanel.jsx';
