@@ -1144,7 +1144,7 @@ Newsletter must include:
       {tab === 'importer'  && renderImporter()}
       {tab === 'queue'     && renderQueue()}
       {tab === 'settings'  && <SettingsPanel onSignOut={() => { window.location.hash = '#/'; window.location.reload(); }} />}
-    </div>
-    </SidebarWrapper>
-  );
-}
+      </div>
+      </SidebarWrapper>
+    );
+  }
