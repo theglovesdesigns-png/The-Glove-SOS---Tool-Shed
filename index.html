@@ -1,20 +1,842 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TheGloveSOS — Tool Shed</title>
-    <meta name="robots" content="noindex,nofollow" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Bebas+Neue&family=Nunito:ital,wght@1,900&display=swap" rel="stylesheet">
-    <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { background: #000; color: #fff; }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TheGloveSOS — Blog System</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07070f;--bg2:#0f0f1a;--bg3:#14141f;--bg4:#1a1a28;
+  --teal:#00cccc;--teal2:#00aaaa;--teal-dim:rgba(0,204,204,.1);
+  --purple:#6d3d9c;--purple2:#8b52c4;--purple-dim:rgba(109,61,156,.15);
+  --gold:#f0a500;--gold2:#ffc233;--gold-dim:rgba(240,165,0,.1);
+  --text:#f0f0f8;--text2:#a0a0c0;--text3:#505070;
+  --border:rgba(0,204,204,.15);--border2:rgba(0,204,204,.28);
+  --green:#00cc88;--red:#cc3344;--orange:#ff8c42;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px}
+#app{display:flex;height:100vh}
+
+/* SIDEBAR */
+#sidebar{width:228px;min-width:228px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:width .25s;overflow:hidden}
+#sidebar.col{width:54px;min-width:54px}
+.sb-hdr{padding:14px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-logo{width:34px;height:34px;min-width:34px;background:linear-gradient(135deg,var(--purple),var(--teal));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:#fff;letter-spacing:1px}
+.sb-brand{overflow:hidden}
+.sb-name{font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;color:var(--teal);white-space:nowrap}
+.sb-sub{font-size:10px;color:var(--text3);white-space:nowrap;margin-top:1px}
+.sb-tog{margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:17px;padding:2px;min-width:20px}
+.sb-tog:hover{color:var(--teal)}
+.sb-sec{padding:8px 0}
+.sb-lbl{padding:4px 14px 6px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1.4px;white-space:nowrap}
+.sb-it{display:flex;align-items:center;gap:11px;padding:9px 14px;cursor:pointer;border-left:3px solid transparent;transition:all .15s;white-space:nowrap;overflow:hidden;user-select:none}
+.sb-it:hover{background:var(--teal-dim)}
+.sb-it.active{background:var(--teal-dim);border-left-color:var(--teal);color:var(--teal)}
+.sb-ico{font-size:16px;min-width:20px;text-align:center}
+.sb-txt{font-size:13px;font-weight:500}
+.sb-bdg{margin-left:auto;background:var(--purple);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px}
+.col .sb-txt,.col .sb-lbl,.col .sb-name,.col .sb-sub,.col .sb-bdg{display:none}
+.sb-foot{margin-top:auto;padding:12px 14px;border-top:1px solid var(--border)}
+.sb-stat{font-size:11px;color:var(--text3);line-height:1.9;white-space:nowrap}
+.sb-stat b{color:var(--teal)}
+.col .sb-foot-in{display:none}
+
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:11px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.tb-ico{font-size:21px}
+.tb-title{font-family:'Oswald',sans-serif;font-size:19px;font-weight:600;letter-spacing:.4px}
+.tb-badge{background:var(--teal-dim);border:1px solid var(--border2);color:var(--teal);font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600}
+.tb-sub{font-size:12px;color:var(--text3);margin-left:auto}
+.content{flex:1;overflow-y:auto;padding:20px}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px}
+.card-ttl{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;color:var(--teal);margin-bottom:14px;display:flex;align-items:center;gap:8px;letter-spacing:.4px}
+
+/* FORMS */
+label{font-size:12px;color:var(--text2);display:block;margin-bottom:4px;font-weight:500}
+input[type=text],input[type=url],input[type=number],input[type=password],input[type=date],select,textarea{
+  width:100%;background:var(--bg3);border:1px solid rgba(0,204,204,.18);border-radius:8px;
+  color:var(--text);padding:9px 11px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(0,204,204,.09)}
+textarea{resize:vertical;line-height:1.6}
+select option{background:var(--bg3)}
+.fg{margin-bottom:13px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-teal{background:var(--teal);color:#07070f}.btn-teal:not(:disabled):hover{background:var(--teal2)}
+.btn-purple{background:var(--purple);color:#fff}.btn-purple:not(:disabled):hover{background:var(--purple2)}
+.btn-gold{background:var(--gold);color:#07070f}.btn-gold:not(:disabled):hover{background:var(--gold2)}
+.btn-out{background:transparent;border:1px solid var(--border2);color:var(--text2)}.btn-out:not(:disabled):hover{border-color:var(--teal);color:var(--teal)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-xs{padding:4px 8px;font-size:11px}
+.bg{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:600;white-space:nowrap}
+.b-pen{background:rgba(255,140,66,.12);color:var(--orange)}
+.b-rev{background:rgba(240,165,0,.12);color:var(--gold)}
+.b-app{background:rgba(0,204,136,.12);color:var(--green)}
+.b-sch{background:rgba(109,61,156,.2);color:var(--purple2)}
+.b-pub{background:rgba(0,204,204,.12);color:var(--teal)}
+.b-def{background:rgba(80,80,112,.15);color:var(--text3)}
+.b-new{background:rgba(0,204,204,.1);color:var(--teal)}
+.b-inp{background:rgba(109,61,156,.15);color:var(--purple2)}
+.b-rev2{background:rgba(204,68,85,.12);color:var(--red)}
+
+/* OUTPUT */
+.obox{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:13px;font-size:13px;line-height:1.75;white-space:pre-wrap;overflow-y:auto;color:var(--text2);min-height:42px}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg3);border-radius:12px 12px 0 0}
+.tab{padding:10px 18px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s}
+.tab:hover{color:var(--text2)}.tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+.tpanel{display:none;padding:16px;background:var(--bg3);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px}
+.tpanel.active{display:block}
+
+/* TABLE */
+.twrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+table.dt{width:100%;border-collapse:collapse;font-size:12px}
+table.dt th{background:var(--bg3);color:var(--text3);font-weight:600;padding:9px 11px;text-align:left;border-bottom:1px solid var(--border);text-transform:uppercase;font-size:10px;letter-spacing:.7px;white-space:nowrap}
+table.dt td{padding:9px 11px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+table.dt tr:hover td{background:var(--teal-dim)}
+
+/* STATS */
+.sgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:18px}
+.scard{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:15px;text-align:center}
+.scard:hover{border-color:var(--teal)}
+.snum{font-family:'Oswald',sans-serif;font-size:30px;font-weight:700;color:var(--teal);line-height:1}
+.slbl{font-size:10px;color:var(--text3);margin-top:5px;text-transform:uppercase;letter-spacing:.7px}
+
+/* ALERTS */
+.alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.a-ok{background:rgba(0,204,136,.1);border:1px solid var(--green);color:var(--green)}
+.a-err{background:rgba(204,51,68,.1);border:1px solid var(--red);color:var(--red)}
+.a-inf{background:var(--teal-dim);border:1px solid var(--border2);color:var(--teal)}
+
+/* PUSH BAR */
+.pbar{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:15px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:11px;margin-top:14px}
+.plbl{font-size:13px;color:var(--text2)}.plbl strong{color:var(--teal)}
+
+/* TOGGLE */
+.trow{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}
+.trow:last-child{border:none}
+.tinfo{font-size:13px;color:var(--text)}.tinfo small{display:block;font-size:11px;color:var(--text3);margin-top:2px}
+.tog{width:40px;height:22px;background:var(--bg4);border-radius:11px;position:relative;cursor:pointer;border:1px solid var(--border2);transition:all .2s;flex-shrink:0}
+.tog.on{background:var(--teal);border-color:var(--teal)}.tog::after{content:'';width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:left .2s}
+.tog.on::after{left:20px}
+
+/* IDEAS */
+.icard{display:flex;align-items:flex-start;gap:12px;padding:13px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:9px;transition:border-color .15s}
+.icard:hover{border-color:var(--teal)}
+.ibody{flex:1;min-width:0}
+.ittl{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.imeta{font-size:11px;color:var(--text3)}
+
+/* PAGE HEADER */
+.ph{margin-bottom:20px}.ph h2{font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;letter-spacing:.4px}
+.ph p{font-size:13px;color:var(--text3);margin-top:4px}
+
+/* MISC */
+.hint{font-size:11px;color:var(--text3);margin-top:3px}
+.spin{width:17px;height:17px;border:2px solid rgba(0,204,204,.2);border-top-color:var(--teal);border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0}
+@keyframes sp{to{transform:rotate(360deg)}}
+.abar{height:2px;background:linear-gradient(90deg,var(--purple),var(--teal),var(--gold));border-radius:2px;margin-bottom:18px;opacity:.5}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:rgba(0,204,204,.2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,204,204,.4)}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sb-hdr">
+    <div class="sb-logo">SOS</div>
+    <div class="sb-brand">
+      <div class="sb-name">TheGloveSOS</div>
+      <div class="sb-sub">Blog System v1.0</div>
+    </div>
+    <button class="sb-tog" onclick="toggleSB()">&#9664;</button>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Content</div>
+    <div class="sb-it active" onclick="nav('generator')"><span class="sb-ico">✍️</span><span class="sb-txt">Blog Generator</span></div>
+    <div class="sb-it" onclick="nav('queue')"><span class="sb-ico">📋</span><span class="sb-txt">Blog Queue</span><span class="sb-bdg" id="bdg-q">0</span></div>
+    <div class="sb-it" onclick="nav('ideas')"><span class="sb-ico">💡</span><span class="sb-txt">Blog Ideas</span><span class="sb-bdg" id="bdg-i">0</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Tools</div>
+    <div class="sb-it" onclick="nav('newsletter')"><span class="sb-ico">📰</span><span class="sb-txt">Newsletter</span></div>
+    <div class="sb-it" onclick="nav('research')"><span class="sb-ico">🔍</span><span class="sb-txt">Research Hub</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">System</div>
+    <div class="sb-it" onclick="nav('settings')"><span class="sb-ico">⚙️</span><span class="sb-txt">Settings</span></div>
+  </div>
+  <div class="sb-foot">
+    <div class="sb-foot-in">
+      <div class="sb-stat">Queue: <b id="sf-q">0</b> blogs</div>
+      <div class="sb-stat">Ideas: <b id="sf-i">0</b> pending</div>
+      <div class="sb-stat" style="margin-top:6px;color:rgba(0,204,204,.3);font-size:10px">theglovesos.com</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div class="topbar">
+    <span class="tb-ico">🧤</span>
+    <div class="tb-title" id="tb-t">Blog Generator</div>
+    <span class="tb-badge">TheGloveSOS.com</span>
+    <div class="tb-sub" id="tb-s">Generate complete, SEO-optimized blog content</div>
+  </div>
+  <div class="content">
+
+  <!-- ====== GENERATOR ====== -->
+  <div class="page active" id="page-generator">
+    <div class="abar"></div>
+    <div class="card">
+      <div class="card-ttl">✍️ Blog Generator</div>
+      <div class="fg"><label>Blog Title / Topic *</label>
+        <input type="text" id="g-title" placeholder="e.g. How to Properly Re-lace a Baseball Glove at Home"/></div>
+      <div class="r2">
+        <div class="fg"><label>Category *</label>
+          <select id="g-cat">
+            <option value="">— Select Category —</option>
+            <option>Glove Care</option><option>Glove Repair</option><option>Glove Provider Spotlight</option>
+            <option>Behind the Scenes</option><option>Customer Stories</option><option>General Tips</option>
+          </select></div>
+        <div class="fg"><label>Target Word Count</label>
+          <select id="g-wc">
+            <option value="1200">1,200 words</option><option value="1500" selected>1,500 words</option>
+            <option value="1800">1,800 words</option><option value="2000">2,000+ words</option>
+          </select></div>
+      </div>
+      <div class="fg"><label>Details &amp; Context — What should this blog cover?</label>
+        <textarea id="g-det" rows="3" placeholder="Angle, key points, seasonal tie-ins, relevant events, what makes this topic important for glove repair/care players..."></textarea></div>
+      <div class="r2">
+        <div class="fg"><label>🏆 JB's Expert Take — Your Secret Sauce</label>
+          <textarea id="g-exp" rows="3" placeholder="Your personal opinion, experience, unique take on this topic — your voice..."></textarea></div>
+        <div class="fg"><label>🧬 Brand DNA — Core Philosophies</label>
+          <textarea id="g-dna" rows="3" placeholder="TheGloveSOS mission, key phrases, values. National glove repair directory connecting players with trusted local shops..."></textarea></div>
+      </div>
+      <div class="fg"><label>Reference Blog URLs for Voice Matching (comma separated)</label>
+        <input type="text" id="g-refs" placeholder="https://theglovesos.com/blog/..."/></div>
+      <div id="g-al"></div>
+      <div class="bg">
+        <button class="btn btn-teal" id="g-btn" onclick="genBlog()">✨ Generate Master Blog</button>
+        <button class="btn btn-out btn-sm" onclick="clearGen()">Clear Form</button>
+      </div>
+    </div>
+
+    <div id="g-out" style="display:none">
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="tabs">
+          <div class="tab active" onclick="swTab(0)">📝 Content</div>
+          <div class="tab" onclick="swTab(1)">🎨 Visual Strategy</div>
+          <div class="tab" onclick="swTab(2)">🔍 SEO &amp; Meta</div>
+          <div class="tab" onclick="swTab(3)">📦 Full Markdown</div>
+        </div>
+        <div class="tpanel active" id="tp0">
+          <div id="o-con" class="obox" style="max-height:480px"></div>
+        </div>
+        <div class="tpanel" id="tp1">
+          <div class="fg"><label>🖼️ Hero Image Prompt</label><div id="o-hero" class="obox" style="max-height:100px"></div></div>
+          <div class="fg"><label>📱 Social Image Prompt (1:1 Square)</label><div id="o-soc" class="obox" style="max-height:100px"></div></div>
+          <div class="fg"><label>▶️ YouTube / Thumbnail Prompt</label><div id="o-thu" class="obox" style="max-height:100px"></div></div>
+          <div class="fg"><label>📸 In-Blog Insert Image Prompts (3)</label><div id="o-ins" class="obox" style="max-height:120px"></div></div>
+        </div>
+        <div class="tpanel" id="tp2">
+          <div class="r2">
+            <div class="fg"><label>SEO Title</label><div id="o-st" class="obox" style="max-height:60px"></div></div>
+            <div class="fg"><label>URL Slug</label><div id="o-sl" class="obox" style="max-height:60px"></div></div>
+          </div>
+          <div class="fg"><label>Meta Description (150-160 chars)</label><div id="o-md" class="obox" style="max-height:80px"></div></div>
+          <div class="r2">
+            <div class="fg"><label>SEO Keywords</label><div id="o-kw" class="obox" style="max-height:80px"></div></div>
+            <div class="fg"><label>Tags</label><div id="o-tg" class="obox" style="max-height:80px"></div></div>
+          </div>
+          <div class="fg"><label>Excerpt</label><div id="o-ex" class="obox" style="max-height:90px"></div></div>
+          <div class="r3">
+            <div class="fg"><label>Word Count</label><div id="o-wc" class="obox" style="max-height:44px"></div></div>
+            <div class="fg"><label>Read Time</label><div id="o-rt" class="obox" style="max-height:44px"></div></div>
+            <div class="fg"><label>Author</label><div id="o-au" class="obox" style="max-height:44px">JB</div></div>
+          </div>
+          <div class="fg"><label>Social Caption (Instagram / TikTok)</label><div id="o-cap" class="obox" style="max-height:90px"></div></div>
+          <div class="r2">
+            <div class="fg"><label>Internal Link Suggestions</label><div id="o-int" class="obox" style="max-height:80px"></div></div>
+            <div class="fg"><label>External Link Suggestions</label><div id="o-ext" class="obox" style="max-height:80px"></div></div>
+          </div>
+          <div class="fg"><label>Hero Image Alt Text</label><div id="o-alt" class="obox" style="max-height:60px"></div></div>
+          <div class="r2">
+            <div class="fg"><label>Blog URL</label><div id="o-url" class="obox" style="max-height:44px"></div></div>
+            <div class="fg"><label>Publish Date</label><input type="date" id="o-pd"/></div>
+          </div>
+        </div>
+        <div class="tpanel" id="tp3">
+          <div class="fg"><label>Full Markdown — ready for Supabase / Lovable</label>
+            <div id="o-mk" class="obox" style="max-height:480px"></div></div>
+          <div class="bg" style="margin-top:9px">
+            <button class="btn btn-out btn-sm" onclick="copyMD()">📋 Copy Markdown</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pbar">
+        <div class="plbl">Ready? Push: <strong>Blog Queue → Google Sheets → Supabase → Lovable (theglovesos.com)</strong></div>
+        <div class="bg">
+          <select id="ps-status" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:8px 11px;border-radius:8px;font-size:13px">
+            <option value="Pending">Save as Pending</option>
+            <option value="Review">Send to Review</option>
+            <option value="Approved">Mark Approved</option>
+            <option value="Scheduled">Schedule</option>
+          </select>
+          <input type="date" id="ps-date" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:8px 11px;border-radius:8px;font-size:13px"/>
+          <button class="btn btn-teal" onclick="pushQ()">🚀 Push to Blog Queue</button>
+          <button class="btn btn-purple btn-sm" onclick="pushSB()">⬆ Supabase</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== BLOG QUEUE ====== -->
+  <div class="page" id="page-queue">
+    <div class="ph"><h2>Blog Queue</h2><p>Track every blog — Pending → Review → Approved → Scheduled → Published to Site</p></div>
+    <div class="sgrid">
+      <div class="scard"><div class="snum" id="qs-tot">0</div><div class="slbl">Total</div></div>
+      <div class="scard"><div class="snum" id="qs-pen">0</div><div class="slbl">Pending</div></div>
+      <div class="scard"><div class="snum" id="qs-app">0</div><div class="slbl">Approved</div></div>
+      <div class="scard"><div class="snum" id="qs-sch">0</div><div class="slbl">Scheduled</div></div>
+      <div class="scard"><div class="snum" id="qs-pub">0</div><div class="slbl">Published</div></div>
+    </div>
+    <div class="card" style="padding:13px">
+      <div class="bg" style="margin-bottom:13px;flex-wrap:wrap">
+        <input type="text" id="q-srch" placeholder="Search by title or category..." style="flex:1;min-width:170px" oninput="renderQ()"/>
+        <select id="q-fil" onchange="renderQ()" style="width:170px">
+          <option value="">All Status</option>
+          <option>Pending</option><option>Review</option><option>Approved</option><option>Scheduled</option><option>Published to Site</option>
+        </select>
+        <button class="btn btn-out btn-sm" onclick="syncSB()">↓ Sync Supabase</button>
+        <button class="btn btn-teal btn-sm" onclick="pubAll()">🚀 Publish Approved</button>
+      </div>
+      <div class="twrap">
+        <table class="dt">
+          <thead><tr>
+            <th>Upload Status</th><th>Title</th><th>Category</th><th>Author</th>
+            <th>Words</th><th>Read Time</th><th>Publish Date</th><th>Published At</th><th>Blog URL</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="q-tb"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== IDEAS ====== -->
+  <div class="page" id="page-ideas">
+    <div class="ph"><h2>Blog Ideas</h2><p>Capture ideas — push to generator when ready</p></div>
+    <div class="card">
+      <div class="card-ttl">💡 Add New Idea</div>
+      <div class="r2">
+        <div class="fg"><label>Idea Title *</label><input type="text" id="i-t" placeholder="e.g. Why Professional Glove Relacing Beats DIY Every Time"/></div>
+        <div class="r2" style="margin:0">
+          <div class="fg"><label>Priority</label><select id="i-pri"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
+          <div class="fg"><label>Category</label>
+            <select id="i-cat">
+              <option>Glove Care</option><option>Glove Repair</option><option>Glove Provider Spotlight</option>
+              <option>Behind the Scenes</option><option>Customer Stories</option><option>General Tips</option>
+            </select></div>
+        </div>
+      </div>
+      <div class="r2">
+        <div class="fg"><label>Season / Relevance</label>
+          <select id="i-sea"><option>Any</option><option>Offseason</option><option>Spring Training</option><option>In-Season</option><option>Fall Ball</option></select></div>
+        <div class="fg"><label>Target Audience</label>
+          <select id="i-aud"><option>All Players</option><option>Youth Players</option><option>High School</option><option>College</option><option>Adult/Rec</option><option>Coaches</option><option>Parents</option><option>Repair Shops</option></select></div>
+      </div>
+      <div class="fg"><label>Notes / Details</label>
+        <textarea id="i-n" rows="2" placeholder="Angle, key points, provider connection, seasonal hook?"></textarea></div>
+      <div class="fg"><label>Source URL (optional)</label><input type="url" id="i-u" placeholder="https://..."/></div>
+      <div id="i-al"></div>
+      <div class="bg">
+        <button class="btn btn-teal" onclick="saveIdea()">💾 Save Idea</button>
+        <button class="btn btn-out btn-sm" onclick="clearIF()">Clear</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-ttl" style="justify-content:space-between">
+        <span>💡 Saved Ideas</span>
+        <span id="i-ct" style="font-family:'Inter';font-size:12px;color:var(--text3);font-weight:400">(0 ideas)</span>
+      </div>
+      <div id="i-list"><div style="color:var(--text3);text-align:center;padding:26px;font-size:13px">No ideas yet — add your first one above!</div></div>
+    </div>
+  </div>
+
+  <!-- ====== NEWSLETTER ====== -->
+  <div class="page" id="page-newsletter">
+    <div class="ph"><h2>Newsletter Generator</h2><p>Auto-build monthly newsletter from top blogs + baseball/softball events</p></div>
+    <div class="card">
+      <div class="card-ttl">📰 Generate Monthly Newsletter</div>
+      <div class="r3">
+        <div class="fg"><label>Month</label>
+          <select id="nl-mo">
+            <option>January</option><option>February</option><option>March</option><option>April</option>
+            <option>May</option><option>June</option><option>July</option><option>August</option>
+            <option>September</option><option>October</option><option>November</option><option>December</option>
+          </select></div>
+        <div class="fg"><label>Year</label><input type="number" id="nl-yr" value="2026" min="2025" max="2030"/></div>
+        <div class="fg"><label>Top Blogs to Feature</label>
+          <select id="nl-cn"><option value="3">Top 3</option><option value="5" selected>Top 5</option><option value="7">Top 7</option></select></div>
+      </div>
+      <div class="fg"><label>Upcoming Events / Season Highlights (optional)</label>
+        <textarea id="nl-ev" rows="2" placeholder="College World Series June 14 | MLB Draft | Fall ball | Provider spotlight..."></textarea></div>
+      <div id="nl-al"></div>
+      <div class="bg"><button class="btn btn-teal" id="nl-btn" onclick="genNL()">📰 Generate Newsletter</button></div>
+    </div>
+    <div id="nl-out" style="display:none">
+      <div class="card">
+        <div class="card-ttl">Newsletter Preview</div>
+        <div class="r2">
+          <div class="fg"><label>Subject Line</label><div id="nl-su" class="obox" style="max-height:60px"></div></div>
+          <div class="fg"><label>Preheader Text</label><div id="nl-pr" class="obox" style="max-height:60px"></div></div>
+        </div>
+        <div class="fg"><label>Newsletter Body</label>
+          <div id="nl-bo" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:18px;max-height:480px;overflow-y:auto;font-size:13px;line-height:1.85;color:var(--text2)"></div></div>
+        <div class="bg" style="margin-top:11px">
+          <button class="btn btn-purple" onclick="pushNL()">⬆ Push to Supabase</button>
+          <button class="btn btn-out btn-sm" onclick="copyNL()">📋 Copy HTML</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== RESEARCH ====== -->
+  <div class="page" id="page-research">
+    <div class="ph"><h2>Research Hub</h2><p>Find trending glove repair topics, news, and ideas to fuel your content</p></div>
+    <div class="card">
+      <div class="card-ttl">🔍 Research Topics</div>
+      <div class="r2">
+        <div class="fg"><label>Search Topic</label><input type="text" id="r-to" placeholder="e.g. glove relacing tips, softball glove break-in, glove repair near me"/></div>
+        <div class="fg"><label>Focus Area</label>
+          <select id="r-fo">
+            <option>Glove Repair Techniques</option><option>Glove Care &amp; Maintenance</option>
+            <option>Provider Spotlights</option><option>Baseball / Softball News</option>
+            <option>Youth &amp; Coaching</option><option>General Industry</option>
+          </select></div>
+      </div>
+      <div class="bg"><button class="btn btn-teal" id="r-btn" onclick="doResearch()">🔍 Research Now</button></div>
+    </div>
+    <div id="r-out" style="display:none">
+      <div class="card">
+        <div class="card-ttl">Research Results &amp; Blog Ideas Found</div>
+        <div id="r-res" class="obox" style="max-height:440px"></div>
+        <div class="bg" style="margin-top:11px">
+          <button class="btn btn-gold btn-sm" onclick="saveRI()">💡 Save All as Blog Ideas</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SETTINGS ====== -->
+  <div class="page" id="page-settings">
+    <div class="ph"><h2>Settings</h2><p>API keys, Supabase, Google Sheets, and automation for TheGloveSOS.com</p></div>
+    <div class="card">
+      <div class="card-ttl">🔑 API Keys</div>
+      <div class="fg"><label>Anthropic API Key (Claude — required for all AI features)</label>
+        <input type="password" id="s-ant" placeholder="sk-ant-api03-..."/>
+        <div class="hint">Powers Blog Generator, Newsletter, and Research Hub</div></div>
+      <div class="fg"><label>Gemini API Key (optional fallback)</label>
+        <input type="password" id="s-gem" placeholder="AIzaSy..."/></div>
+    </div>
+    <div class="card">
+      <div class="card-ttl">🗄️ Supabase Connection</div>
+      <div class="r2">
+        <div class="fg"><label>Project URL</label><input type="url" id="s-url" placeholder="https://axcavotqlkiujyicrvcp.supabase.co"/></div>
+        <div class="fg"><label>Anon Key</label><input type="password" id="s-key" placeholder="eyJ..."/></div>
+      </div>
+      <div class="r3">
+        <div class="fg"><label>Blog Table</label><input type="text" id="s-tbl" value="blog_posts"/></div>
+        <div class="fg"><label>Ideas Table</label><input type="text" id="s-idt" value="blog_ideas"/></div>
+        <div class="fg"><label>Storage Bucket</label><input type="text" id="s-bkt" value="blog-images"/></div>
+      </div>
+      <div class="bg"><button class="btn btn-out btn-sm" onclick="testSB()">🔌 Test Connection</button></div>
+      <div id="s-sbs" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <div class="card-ttl">📊 Google Sheets</div>
+      <div class="r2">
+        <div class="fg"><label>Google Sheet ID</label>
+          <input type="text" id="s-shid" placeholder="Paste the Sheet ID from the URL"/>
+          <div class="hint">docs.google.com/spreadsheets/d/<b>[ID HERE]</b>/edit</div></div>
+        <div class="fg"><label>Blog Queue Tab Name</label><input type="text" id="s-shtb" value="Blog_Queue"/></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-ttl">📝 Blog Defaults</div>
+      <div class="r3">
+        <div class="fg"><label>Default Author</label><input type="text" id="s-aut" value="JB"/></div>
+        <div class="fg"><label>Min Word Count</label><input type="number" id="s-min" value="1200"/></div>
+        <div class="fg"><label>Max Word Count</label><input type="number" id="s-max" value="1800"/></div>
+      </div>
+      <div class="r2">
+        <div class="fg"><label>Site URL</label><input type="url" id="s-sit" value="https://theglovesos.com"/></div>
+        <div class="fg"><label>Notification Email</label><input type="text" id="s-eml" value="theglovesdesigns@gmail.com"/></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-ttl">⚡ Automation</div>
+      <div class="trow"><div class="tinfo">Auto-Publish (7 AM Daily)<small>Publishes Approved or Scheduled blogs to Supabase automatically</small></div><button class="tog" id="tog-ap" onclick="togS('ap')"></button></div>
+      <div class="trow"><div class="tinfo">Auto Blog Generation<small>Auto-generates new blogs on a weekly schedule</small></div><button class="tog" id="tog-ag" onclick="togS('ag')"></button></div>
+      <div class="trow"><div class="tinfo">Monthly Newsletter (2nd of month)<small>Auto-generates newsletter from top published blogs</small></div><button class="tog on" id="tog-nl" onclick="togS('nl')"></button></div>
+      <div class="trow"><div class="tinfo">Email Notifications<small>Notify theglovesdesigns@gmail.com on publish or errors</small></div><button class="tog on" id="tog-em" onclick="togS('em')"></button></div>
+    </div>
+    <div class="bg">
+      <button class="btn btn-teal" onclick="saveSt()">💾 Save All Settings</button>
+      <button class="btn btn-out btn-sm" onclick="loadSt()">↺ Reload Saved</button>
+    </div>
+    <div id="s-al" style="margin-top:10px"></div>
+  </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+const NM={
+  generator:{t:'Blog Generator',s:'Generate complete SEO-optimized blogs for TheGloveSOS.com'},
+  queue:{t:'Blog Queue',s:'Track all blogs — Pending → Review → Approved → Scheduled → Published to Site'},
+  ideas:{t:'Blog Ideas',s:'Save ideas and push them to the generator when ready'},
+  newsletter:{t:'Newsletter Generator',s:'Auto-build monthly newsletter from top blogs + baseball events'},
+  research:{t:'Research Hub',s:'Find trending glove repair topics to fuel your content'},
+  settings:{t:'Settings',s:'API keys, Supabase, Google Sheets, and automation for TheGloveSOS.com'}
+};
+let S={queue:[],ideas:[],settings:{},togs:{ap:false,ag:false,nl:true,em:true},gen:null,lr:''};
+
+function toggleSB(){const sb=document.getElementById('sidebar');sb.classList.toggle('col');document.querySelector('.sb-tog').innerHTML=sb.classList.contains('col')?'&#9654;':'&#9664;';}
+function nav(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.sb-it').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.sb-it').forEach(x=>{if(x.getAttribute('onclick')?.includes("'"+p+"'"))x.classList.add('active');});
+  document.getElementById('tb-t').textContent=NM[p].t;
+  document.getElementById('tb-s').textContent=NM[p].s;
+  if(p==='queue')renderQ();
+  if(p==='ideas')renderI();
+}
+function counts(){
+  const q=S.queue.length,i=S.ideas.filter(x=>x.status==='New'||x.status==='Pending').length;
+  ['bdg-q','sf-q'].forEach(id=>document.getElementById(id).textContent=q);
+  ['bdg-i','sf-i'].forEach(id=>document.getElementById(id).textContent=i);
+  document.getElementById('qs-tot').textContent=q;
+  document.getElementById('qs-pen').textContent=S.queue.filter(x=>x.uploadStatus==='Pending'||x.uploadStatus==='Review').length;
+  document.getElementById('qs-app').textContent=S.queue.filter(x=>x.uploadStatus==='Approved').length;
+  document.getElementById('qs-sch').textContent=S.queue.filter(x=>x.uploadStatus==='Scheduled').length;
+  document.getElementById('qs-pub').textContent=S.queue.filter(x=>x.uploadStatus==='Published to Site').length;
+}
+function loadSt(){
+  try{const r=localStorage.getItem('gsos_st');if(r){const s=JSON.parse(r);S.settings=s;const m={ant:'s-ant',gem:'s-gem',url:'s-url',key:'s-key',tbl:'s-tbl',idt:'s-idt',bkt:'s-bkt',shid:'s-shid',shtb:'s-shtb',aut:'s-aut',min:'s-min',max:'s-max',sit:'s-sit',eml:'s-eml'};Object.entries(m).forEach(([k,id])=>{if(s[k])document.getElementById(id).value=s[k];});if(s.togs){S.togs={...S.togs,...s.togs};rTogs();}}}catch(e){}
+  try{S.queue=JSON.parse(localStorage.getItem('gsos_q')||'[]');}catch(e){S.queue=[];}
+  try{S.ideas=JSON.parse(localStorage.getItem('gsos_i')||'[]');}catch(e){S.ideas=[];}
+  counts();
+}
+function saveSt(){
+  const m={ant:'s-ant',gem:'s-gem',url:'s-url',key:'s-key',tbl:'s-tbl',idt:'s-idt',bkt:'s-bkt',shid:'s-shid',shtb:'s-shtb',aut:'s-aut',min:'s-min',max:'s-max',sit:'s-sit',eml:'s-eml'};
+  const s={togs:S.togs};Object.entries(m).forEach(([k,id])=>{s[k]=document.getElementById(id).value;});
+  S.settings=s;localStorage.setItem('gsos_st',JSON.stringify(s));
+  showAl('s-al','✅ Settings saved!','ok');
+}
+function togS(k){S.togs[k]=!S.togs[k];rTogs();}
+function rTogs(){['ap','ag','nl','em'].forEach(k=>{const t=document.getElementById('tog-'+k);if(t){if(S.togs[k])t.classList.add('on');else t.classList.remove('on');}});}
+async function testSB(){
+  const url=document.getElementById('s-url').value.trim(),key=document.getElementById('s-key').value.trim(),tbl=document.getElementById('s-tbl').value.trim()||'blog_posts';
+  if(!url||!key){showAl('s-sbs','Enter URL and Key first.','err');return;}
+  try{const r=await fetch(`${url}/rest/v1/${tbl}?select=id&limit=1`,{headers:{apikey:key,Authorization:'Bearer '+key}});if(r.ok)showAl('s-sbs','✅ Connected to Supabase!','ok');else showAl('s-sbs','❌ Failed: HTTP '+r.status,'err');}catch(e){showAl('s-sbs','❌ Error: '+e.message,'err');}
+}
+function gk(){return S.settings.ant||'';}
+
+async function genBlog(){
+  const title=document.getElementById('g-title').value.trim(),cat=document.getElementById('g-cat').value;
+  if(!title){showAl('g-al','Please enter a blog title.','err');return;}
+  if(!cat){showAl('g-al','Please select a category.','err');return;}
+  const key=gk();if(!key){showAl('g-al','⚙️ Add your Anthropic API key in Settings first!','err');return;}
+  const wc=document.getElementById('g-wc').value,det=document.getElementById('g-det').value,exp=document.getElementById('g-exp').value,dna=document.getElementById('g-dna').value,aut=S.settings.aut||'JB';
+  setBL('g-btn',true,'⏳ Generating...');document.getElementById('g-out').style.display='none';clearAl('g-al');
+
+  const prompt=`You are writing a blog for TheGloveSOS.com — the national glove repair directory connecting baseball and softball players with trusted local repair shops across the country.
+
+BRAND & VOICE:
+- TheGloveSOS.com is THE go-to resource for finding professional glove repair near you
+- Voice: Expert, trustworthy, community-focused — players and shops both trust us
+- Tone: Conversational but authoritative. Real knowledge, real passion for the game.
+- Reference finding a local repair shop or provider naturally when it fits
+- Emphasize expertise, quality repair, proper glove care and longevity
+- Never recommend competitor directories
+- Use baseball/softball language naturally ⚾🥎
+- Author is JB — knowledgeable, passionate, writes like a real person
+
+BLOG DETAILS:
+Title: ${title}
+Category: ${cat}
+Target: ${wc} words
+Details: ${det||'(use your expertise)'}
+Expert Take: ${exp||'(write from expert glove perspective)'}
+Brand DNA: ${dna||'TheGloveSOS connects players with trusted local repair shops nationwide. Quality repair matters. Your glove is your most personal piece of equipment.'}
+
+Return EXACTLY this format with these markers:
+
+===BLOG_CONTENT===
+[Full markdown ~${wc} words. ## and ### headers. Numbered and bulleted lists. Conversational, real voice.]
+
+===SEO_TITLE===
+[55-65 chars]
+
+===SLUG===
+[lowercase-url-slug, max 75 chars]
+
+===META_DESCRIPTION===
+[150-160 chars with primary keyword]
+
+===KEYWORDS===
+[12 keywords comma-separated]
+
+===TAGS===
+[10 tags lowercase-hyphenated comma-separated]
+
+===EXCERPT===
+[2-3 sentences ~120 words]
+
+===SOCIAL_CAPTION===
+[Instagram/TikTok caption + 6-8 hashtags including #TheGloveSOS #GloveRepair]
+
+===HERO_IMAGE_PROMPT===
+[Baseball/softball glove close-up, professional repair setting or field, dark moody atmosphere, teal lighting, landscape format]
+
+===SOCIAL_IMAGE_PROMPT===
+[Square 1:1, bold, teal/purple palette, sports photography]
+
+===THUMBNAIL_PROMPT===
+[YouTube thumbnail, high contrast, bold close-up, text overlay space left side]
+
+===INSERT_IMAGE_PROMPTS===
+Insert 1: [prompt]
+Insert 2: [prompt]
+Insert 3: [prompt]
+
+===HERO_ALT_TEXT===
+[Alt text with primary keyword]
+
+===INTERNAL_LINKS===
+[3-4 content suggestions for theglovesos.com/blog/...]
+
+===EXTERNAL_LINKS===
+[2-3 authoritative external source types]`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':key},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4500,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    if(data.error){showAl('g-al','API Error: '+data.error.message,'err');return;}
+    parseBlog(data.content[0].text,title,cat,aut);
+  }catch(e){showAl('g-al','Error: '+e.message,'err');}
+  finally{setBL('g-btn',false,'✨ Generate Master Blog');}
+}
+function ext(txt,tag){const p=txt.split('===');for(let i=0;i<p.length;i++){if(p[i].trim()===tag&&p[i+1]!==undefined)return p[i+1].trim();}return '';}
+function parseBlog(txt,title,cat,aut){
+  const g=t=>ext(txt,t);
+  const con=g('BLOG_CONTENT'),st=g('SEO_TITLE'),sl=g('SLUG'),md=g('META_DESCRIPTION'),kw=g('KEYWORDS'),tg=g('TAGS'),ex=g('EXCERPT'),cap=g('SOCIAL_CAPTION'),hero=g('HERO_IMAGE_PROMPT'),soc=g('SOCIAL_IMAGE_PROMPT'),thu=g('THUMBNAIL_PROMPT'),ins=g('INSERT_IMAGE_PROMPTS'),alt=g('HERO_ALT_TEXT'),intl=g('INTERNAL_LINKS'),extl=g('EXTERNAL_LINKS');
+  const wc=(con||txt).split(/\s+/).filter(Boolean).length,rt=Math.ceil(wc/225);
+  const site=S.settings.sit||'https://theglovesos.com';
+  const slug=sl||title.toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,'-').slice(0,75);
+  const burl=`${site}/blog/${slug}`;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('o-con',con||txt);set('o-st',st||title);set('o-sl',slug);set('o-md',md);set('o-kw',kw);set('o-tg',tg);set('o-ex',ex);set('o-cap',cap);set('o-wc',wc+' words');set('o-rt',rt+' min read');set('o-au',aut);set('o-hero',hero);set('o-soc',soc);set('o-thu',thu);set('o-ins',ins);set('o-int',intl);set('o-ext',extl);set('o-alt',alt);set('o-url',burl);set('o-mk',con||txt);
+  document.getElementById('o-pd').value=new Date().toISOString().split('T')[0];
+  S.gen={title:st||title,slug,category:cat,author:aut,tags:tg,metaDescription:md,seoKeywords:kw,excerpt:ex,markdownContent:con||txt,wordCount:wc,readTime:rt,uploadStatus:'Pending',heroImageURL:'',publishDate:'',publishedAt:'',supabaseId:'',blogUrl:burl,source:'AI',createdAt:new Date().toISOString(),altText:alt};
+  document.getElementById('g-out').style.display='block';swTab(0);
+}
+function swTab(n){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===n));document.querySelectorAll('.tpanel').forEach((p,i)=>p.classList.toggle('active',i===n));}
+function copyMD(){navigator.clipboard.writeText(document.getElementById('o-mk').textContent).then(()=>alert('✅ Markdown copied!')).catch(()=>alert('Select and copy manually.'));}
+function pushQ(){
+  if(!S.gen){showAl('g-al','Generate a blog first.','err');return;}
+  const st=document.getElementById('ps-status').value,dt=document.getElementById('ps-date').value;
+  S.queue.unshift({...S.gen,uploadStatus:st,publishDate:dt,id:Date.now()});
+  localStorage.setItem('gsos_q',JSON.stringify(S.queue));counts();
+  showAl('g-al','✅ Pushed to queue as "'+st+'"!','ok');setTimeout(()=>nav('queue'),1400);
+}
+async function pushSB(){
+  if(!S.gen){showAl('g-al','Generate a blog first.','err');return;}
+  const url=S.settings.url,key=S.settings.key,tbl=S.settings.tbl||'blog_posts';
+  if(!url||!key){showAl('g-al','Add Supabase credentials in Settings.','err');return;}
+  try{
+    const r=await fetch(`${url}/rest/v1/${tbl}`,{method:'POST',headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify({title:S.gen.title,slug:S.gen.slug,category:S.gen.category,author:S.gen.author,tags:S.gen.tags,meta_description:S.gen.metaDescription,seo_keywords:S.gen.seoKeywords,excerpt:S.gen.excerpt,content:S.gen.markdownContent,word_count:S.gen.wordCount,status:'pending',blog_url:S.gen.blogUrl,created_at:new Date().toISOString()})});
+    if(r.ok){const d=await r.json();if(d[0]?.id)S.gen.supabaseId=d[0].id;showAl('g-al','✅ Pushed to Supabase!','ok');}
+    else{const e=await r.json();showAl('g-al','Supabase error: '+(e.message||r.status),'err');}
+  }catch(e){showAl('g-al','Error: '+e.message,'err');}
+}
+function clearGen(){['g-title','g-det','g-exp','g-dna','g-refs'].forEach(id=>document.getElementById(id).value='');document.getElementById('g-cat').selectedIndex=0;document.getElementById('g-out').style.display='none';clearAl('g-al');S.gen=null;}
+
+function renderQ(){
+  const srch=(document.getElementById('q-srch').value||'').toLowerCase(),fil=document.getElementById('q-fil').value;
+  const data=S.queue.filter(b=>{const ms=!srch||b.title.toLowerCase().includes(srch)||(b.category||'').toLowerCase().includes(srch);const mf=!fil||b.uploadStatus===fil;return ms&&mf;});
+  const tb=document.getElementById('q-tb');
+  if(!data.length){tb.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--text3);padding:30px;font-size:13px">No blogs yet — generate your first one in Blog Generator!</td></tr>';return;}
+  const bm={'Pending':'b-pen','Review':'b-rev','Approved':'b-app','Scheduled':'b-sch','Published to Site':'b-pub'};
+  tb.innerHTML=data.map(b=>`
+    <tr>
+      <td><span class="badge ${bm[b.uploadStatus]||'b-def'}">${b.uploadStatus||'Pending'}</span></td>
+      <td style="max-width:190px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500" title="${esc(b.title)}">${esc(b.title)}</div></td>
+      <td style="color:var(--text3)">${b.category||'—'}</td>
+      <td style="color:var(--text3)">${b.author||'JB'}</td>
+      <td style="color:var(--text3)">${b.wordCount||'—'}</td>
+      <td style="color:var(--text3)">${b.readTime?b.readTime+' min':'—'}</td>
+      <td style="color:var(--text3)">${b.publishDate||'—'}</td>
+      <td style="color:var(--text3)">${b.publishedAt||'—'}</td>
+      <td style="max-width:120px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><a href="${esc(b.blogUrl||'')}" style="color:var(--teal);font-size:11px">${b.blogUrl?'View ↗':'—'}</a></div></td>
+      <td>
+        <div style="display:flex;gap:4px;align-items:center">
+          <select onchange="upSt(${b.id},this.value)" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:4px 6px;border-radius:6px;font-size:11px">
+            ${['Pending','Review','Approved','Scheduled','Published to Site'].map(s=>`<option ${b.uploadStatus===s?'selected':''}>${s}</option>`).join('')}
+          </select>
+          <button class="btn btn-xs" style="background:transparent;border:1px solid var(--red);color:var(--red)" onclick="delB(${b.id})">✕</button>
+        </div>
+      </td>
+    </tr>`).join('');
+  counts();
+}
+function upSt(id,status){const b=S.queue.find(x=>x.id===id);if(b){b.uploadStatus=status;if(status==='Published to Site')b.publishedAt=new Date().toISOString().split('T')[0];localStorage.setItem('gsos_q',JSON.stringify(S.queue));counts();renderQ();}}
+function delB(id){if(!confirm('Delete this blog?'))return;S.queue=S.queue.filter(x=>x.id!==id);localStorage.setItem('gsos_q',JSON.stringify(S.queue));renderQ();counts();}
+function pubAll(){const r=S.queue.filter(x=>x.uploadStatus==='Approved'||x.uploadStatus==='Scheduled');if(!r.length){alert('No Approved or Scheduled blogs.');return;}r.forEach(b=>{b.uploadStatus='Published to Site';b.publishedAt=new Date().toISOString().split('T')[0];});localStorage.setItem('gsos_q',JSON.stringify(S.queue));renderQ();counts();alert('✅ '+r.length+' blog(s) marked Published to Site!');}
+async function syncSB(){
+  const url=S.settings.url,key=S.settings.key,tbl=S.settings.tbl||'blog_posts';
+  if(!url||!key){alert('Add Supabase credentials in Settings first.');return;}
+  try{const r=await fetch(`${url}/rest/v1/${tbl}?select=*&order=created_at.desc`,{headers:{apikey:key,Authorization:'Bearer '+key}});const data=await r.json();if(Array.isArray(data)){let added=0;data.forEach(b=>{if(!S.queue.find(x=>x.slug===b.slug)){S.queue.push({id:b.id||Date.now()+Math.random(),title:b.title,slug:b.slug,category:b.category,author:b.author||'JB',uploadStatus:b.status==='published'?'Published to Site':b.status||'Pending',wordCount:b.word_count,readTime:b.read_time,publishDate:b.publish_date,publishedAt:b.published_at,blogUrl:b.blog_url,supabaseId:b.id,metaDescription:b.meta_description,createdAt:b.created_at});added++;}});localStorage.setItem('gsos_q',JSON.stringify(S.queue));renderQ();counts();alert('✅ Synced '+data.length+' blogs ('+added+' new)!');}}catch(e){alert('Sync error: '+e.message);}
+}
+
+function saveIdea(){
+  const t=document.getElementById('i-t').value.trim();if(!t){showAl('i-al','Please enter an idea title.','err');return;}
+  const idea={id:Date.now(),title:t,priority:document.getElementById('i-pri').value,category:document.getElementById('i-cat').value,season:document.getElementById('i-sea').value,audience:document.getElementById('i-aud').value,notes:document.getElementById('i-n').value,sourceUrl:document.getElementById('i-u').value,status:'New',dateFound:new Date().toISOString()};
+  S.ideas.unshift(idea);localStorage.setItem('gsos_i',JSON.stringify(S.ideas));counts();renderI();clearIF();showAl('i-al','✅ Idea saved!','ok');
+  const url=S.settings.url,key=S.settings.key,tbl=S.settings.idt||'blog_ideas';
+  if(url&&key)fetch(`${url}/rest/v1/${tbl}`,{method:'POST',headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({title:idea.title,status:'New',priority:idea.priority,topic_keywords:idea.title,season_relevance:idea.season,target_audience:idea.audience,notes:idea.notes,source_url:idea.sourceUrl,date_found:idea.dateFound})}).catch(()=>{});
+}
+function renderI(){
+  const list=document.getElementById('i-list');document.getElementById('i-ct').textContent='('+S.ideas.length+' idea'+(S.ideas.length===1?'':'s')+')';
+  if(!S.ideas.length){list.innerHTML='<div style="color:var(--text3);text-align:center;padding:26px;font-size:13px">No ideas yet — add your first one above!</div>';return;}
+  const pc={High:'var(--red)',Medium:'var(--gold)',Low:'var(--text3)'};
+  list.innerHTML=S.ideas.map(idea=>`
+    <div class="icard">
+      <div class="ibody">
+        <div class="ittl">${esc(idea.title)}</div>
+        <div class="imeta">${idea.category} &bull; <span style="color:${pc[idea.priority]}">${idea.priority}</span> &bull; ${idea.season} &bull; ${idea.audience}</div>
+        ${idea.notes?`<div style="font-size:12px;color:var(--text2);margin-top:5px">${esc(idea.notes)}</div>`:''}
+      </div>
+      <div class="bg">
+        <button class="btn btn-teal btn-sm" onclick="i2g(${idea.id})">→ Generate</button>
+        <button class="btn btn-xs" style="background:transparent;border:1px solid var(--red);color:var(--red)" onclick="delI(${idea.id})">✕</button>
+      </div>
+    </div>`).join('');
+}
+function i2g(id){const idea=S.ideas.find(x=>x.id===id);if(!idea)return;document.getElementById('g-title').value=idea.title;document.getElementById('g-det').value=idea.notes||'';const sel=document.getElementById('g-cat');for(let i=0;i<sel.options.length;i++){if(sel.options[i].value===idea.category){sel.selectedIndex=i;break;}}idea.status='In Progress';localStorage.setItem('gsos_i',JSON.stringify(S.ideas));nav('generator');}
+function delI(id){if(!confirm('Delete this idea?'))return;S.ideas=S.ideas.filter(x=>x.id!==id);localStorage.setItem('gsos_i',JSON.stringify(S.ideas));renderI();counts();}
+function clearIF(){['i-t','i-n','i-u'].forEach(id=>document.getElementById(id).value='');}
+
+async function genNL(){
+  const key=gk();if(!key){showAl('nl-al','Add Anthropic API key in Settings.','err');return;}
+  const mo=document.getElementById('nl-mo').value,yr=document.getElementById('nl-yr').value,cnt=parseInt(document.getElementById('nl-cn').value),ev=document.getElementById('nl-ev').value;
+  const blogs=S.queue.filter(x=>x.uploadStatus==='Published to Site').slice(0,cnt);
+  const bl=blogs.length?blogs.map((b,i)=>`${i+1}. "${b.title}" (${b.category}) — ${b.blogUrl||'theglovesos.com/blog/'+b.slug}`).join('\n'):'(No published blogs yet)';
+  setBL('nl-btn',true,'⏳ Generating...');
+  const prompt=`Monthly email newsletter for TheGloveSOS.com — national glove repair directory.
+Month: ${mo} ${yr} | Voice: Expert, warm, community-focused. Baseball/softball people trust TheGloveSOS.
+
+TOP BLOGS:\n${bl}
+EVENTS: ${ev||'2-3 relevant baseball/softball events or history facts for '+mo}
+
+===SUBJECT===
+[Subject 45-55 chars]
+
+===PREHEADER===
+[Preview text 85-100 chars]
+
+===BODY===
+[Newsletter HTML. Warm greeting, month recap, featured blogs with Read More links, 2-3 baseball calendar highlights, CTA to find a local repair shop at theglovesos.com, signature from The GloveSOS Team. Inline styles, #00cccc teal accents, dark bg #0f0f1a]`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':key},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();if(data.error){showAl('nl-al','API Error: '+data.error.message,'err');return;}
+    const txt=data.content[0].text;
+    document.getElementById('nl-su').textContent=ext(txt,'SUBJECT');document.getElementById('nl-pr').textContent=ext(txt,'PREHEADER');document.getElementById('nl-bo').innerHTML=ext(txt,'BODY')||txt;document.getElementById('nl-out').style.display='block';
+  }catch(e){showAl('nl-al','Error: '+e.message,'err');}finally{setBL('nl-btn',false,'📰 Generate Newsletter');}
+}
+async function pushNL(){
+  const url=S.settings.url,key=S.settings.key;if(!url||!key){alert('Add Supabase credentials in Settings.');return;}
+  try{const r=await fetch(`${url}/rest/v1/newsletters`,{method:'POST',headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({month:document.getElementById('nl-mo').value,subject:document.getElementById('nl-su').textContent,preheader:document.getElementById('nl-pr').textContent,body:document.getElementById('nl-bo').innerHTML,status:'Draft',generated_by:'AI',date_generated:new Date().toISOString()})});if(r.ok)alert('✅ Newsletter pushed to Supabase!');else{const e=await r.json();alert('Error: '+(e.message||r.status));}}catch(e){alert('Error: '+e.message);}
+}
+function copyNL(){navigator.clipboard.writeText(document.getElementById('nl-bo').innerHTML).then(()=>alert('✅ Copied!')).catch(()=>alert('Copy failed.'));}
+
+async function doResearch(){
+  const key=gk();if(!key){alert('Add API key in Settings first.');return;}
+  const topic=document.getElementById('r-to').value.trim();if(!topic){alert('Enter a search topic.');return;}
+  setBL('r-btn',true,'🔍 Researching...');
+  const prompt=`Research assistant for TheGloveSOS.com — national glove repair directory.
+Topic: ${topic} | Focus: ${document.getElementById('r-fo').value}
+
+===SUMMARY===
+[3-4 sentences on why this matters for glove repair/care audience]
+
+===BLOG_IDEAS===
+1. [Title] | Category: [cat] | Angle: [1-sentence]
+2. [Title] | Category: [cat] | Angle: [angle]
+3. [Title] | Category: [cat] | Angle: [angle]
+4. [Title] | Category: [cat] | Angle: [angle]
+5. [Title] | Category: [cat] | Angle: [angle]
+
+===KEYWORDS===
+[12 SEO keywords comma-separated]
+
+===SOURCES===
+[3-4 authoritative source types]
+
+===PROVIDER_ANGLE===
+[How this topic connects players to local repair providers via theglovesos.com]`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':key},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1400,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();if(data.error){alert('API Error: '+data.error.message);return;}
+    document.getElementById('r-res').textContent=data.content[0].text;document.getElementById('r-out').style.display='block';S.lr=data.content[0].text;
+  }catch(e){alert('Error: '+e.message);}finally{setBL('r-btn',false,'🔍 Research Now');}
+}
+function saveRI(){
+  if(!S.lr){alert('Run research first.');return;}
+  const sec=ext(S.lr,'BLOG_IDEAS');const lines=sec.split('\n').filter(l=>l.trim()&&/^\d+\./.test(l.trim()));
+  lines.forEach(line=>{const c=line.replace(/^\d+\.\s*/,'').split('|');const t=c[0]?.trim();const cm=(c[1]||'').match(/Category:\s*(.+)/i);const am=(c[2]||'').match(/Angle:\s*(.+)/i);if(t)S.ideas.unshift({id:Date.now()+Math.random(),title:t,priority:'Medium',category:cm?cm[1].trim():'Glove Repair',season:'Any',audience:'All Players',notes:am?am[1].trim():'',sourceUrl:'',status:'New',dateFound:new Date().toISOString()});});
+  localStorage.setItem('gsos_i',JSON.stringify(S.ideas));counts();alert('✅ '+lines.length+' ideas saved!');
+}
+
+function showAl(id,msg,type){const el=document.getElementById(id);if(!el)return;el.innerHTML=`<div class="alert a-${type}">${msg}</div>`;setTimeout(()=>{if(el)el.innerHTML='';},4500);}
+function clearAl(id){const el=document.getElementById(id);if(el)el.innerHTML='';}
+function setBL(id,loading,txt){const b=document.getElementById(id);if(!b)return;b.disabled=loading;b.innerHTML=loading?`<div class="spin"></div>${txt}`:txt;}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  loadSt();rTogs();
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('nl-mo').value=months[new Date().getMonth()];
+  document.getElementById('ps-date').value=new Date().toISOString().split('T')[0];
+});
+</script>
+</body>
 </html>
