@@ -156,7 +156,10 @@ tr:hover td{background:var(--tdim)}
 <!-- SIDEBAR -->
 <div id="sb">
   <div class="sh">
-    <div class="slogo">SOS</div>
+    <div class="slogo" id="sbLogo">
+      <img id="sbLogoImg" src="" alt="SOS" style="width:32px;height:32px;object-fit:contain;border-radius:7px;display:none;"/>
+      <span id="sbLogoText">SOS</span>
+    </div>
     <div><div class="sname">TheGloveSOS</div><div class="ssub">Blog System v2.0</div></div>
     <button class="stog" id="sb-tog">&#9664;</button>
   </div>
@@ -1079,9 +1082,33 @@ el('saveResBtn').addEventListener('click', function() {
 // ─────────────────────────────────────────────
 function loadLogoPreview(url) {
   if (!url) return;
+  // Settings preview
   var img = el('logoImg'), ph = el('logoPlaceholder');
   if (img) { img.src = url; img.style.display = 'block'; }
   if (ph) ph.style.display = 'none';
+  // Sidebar logo — replace SOS square with actual logo
+  var sbImg = el('sbLogoImg'), sbTxt = el('sbLogoText'), sbLogo = el('sbLogo');
+  if (sbImg && sbTxt && sbLogo) {
+    sbImg.src = url;
+    sbImg.style.display = 'block';
+    sbTxt.style.display = 'none';
+    sbLogo.style.background = 'transparent';
+    sbLogo.style.padding = '0';
+  }
+}
+
+function clearLogoPreview() {
+  var img = el('logoImg'), ph = el('logoPlaceholder');
+  if (img) { img.src = ''; img.style.display = 'none'; }
+  if (ph) ph.style.display = 'block';
+  // Restore SOS placeholder
+  var sbImg = el('sbLogoImg'), sbTxt = el('sbLogoText'), sbLogo = el('sbLogo');
+  if (sbImg && sbTxt && sbLogo) {
+    sbImg.style.display = 'none';
+    sbTxt.style.display = 'block';
+    sbLogo.style.background = '';
+    sbLogo.style.padding = '';
+  }
 }
 
 el('sLogoFile').addEventListener('change', function() {
@@ -1120,9 +1147,8 @@ el('uploadLogoBtn').addEventListener('click', async function() {
 });
 
 el('removeLogoBtn').addEventListener('click', async function() {
-  var img = el('logoImg'), ph = el('logoPlaceholder');
-  if (img) { img.src = ''; img.style.display = 'none'; }
-  if (ph) ph.style.display = 'block';
+  clearLogoPreview();
+  localStorage.removeItem('gsos_logo');
   try { await sbUpsert('app_settings', [{ key: 'logo_url', value: '' }]); } catch(e) {}
 });
 
