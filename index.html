@@ -505,7 +505,7 @@ table.dt tr:hover td{background:var(--teal-dim)}
       <div class="trow"><div class="tinfo">Email Notifications<small>Notify theglovesdesigns@gmail.com on publish or errors</small></div><button class="tog on" id="tog-em" onclick="togS('em')"></button></div>
     </div>
     <div class="bg">
-      <button class="btn btn-teal" onclick="saveSt()">💾 Save All Settings</button>
+      <button class="btn btn-teal" id="s-save-btn" onclick="saveSt()">💾 Save All Settings</button>
       <button class="btn btn-out btn-sm" onclick="loadSt()">↺ Reload Saved</button>
     </div>
     <div id="s-al" style="margin-top:10px"></div>
@@ -524,7 +524,103 @@ const NM={
   research:{t:'Research Hub',s:'Find trending glove repair topics to fuel your content'},
   settings:{t:'Settings',s:'API keys, Supabase, Google Sheets, and automation for TheGloveSOS.com'}
 };
-let S={queue:[],ideas:[],settings:{},togs:{ap:false,ag:false,nl:true,em:true},gen:null,lr:''};
+
+// Bootstrap — only the anon key is stored locally, everything else lives in Supabase
+const SB_URL='https://axcavotqlkiujyicrvcp.supabase.co';
+let S={queue:[],ideas:[],settings:{url:SB_URL,key:''},togs:{ap:false,ag:false,nl:true,em:true},gen:null,lr:''};
+
+// ── Supabase fetch helpers ──
+function sbH(k){return{apikey:k||S.settings.key,Authorization:'Bearer '+(k||S.settings.key),'Content-Type':'application/json'};}
+async function sbFetch(path,opts={}){
+  const r=await fetch((S.settings.url||SB_URL)+path,{...opts,headers:{...sbH(),...(opts.headers||{})}});
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||'HTTP '+r.status);}
+  return r.json().catch(()=>({}));
+}
+
+// ── Load all settings FROM Supabase (works on any device) ──
+async function loadSt(){
+  // Get bootstrap anon key from local storage — this is the ONLY thing stored locally
+  const bk=localStorage.getItem('gsos_bk')||'';
+  if(bk){S.settings.key=bk;}
+
+  if(!S.settings.key){
+    showAl('s-al','👋 First time setup: enter your Supabase URL and Anon Key below, then click Save. Settings will sync to all devices after that.','inf');
+    document.getElementById('s-url').value=SB_URL;
+    return;
+  }
+
+  showAl('s-al','⏳ Loading settings from Supabase...','inf');
+  try{
+    const rows=await sbFetch('/rest/v1/app_settings?select=key,value');
+    const m={};rows.forEach(r=>m[r.key]=r.value);
+    S.settings={
+      ant:m.anthropic_api_key||'',url:m.supabase_url||SB_URL,key:m.supabase_anon_key||bk,
+      tbl:m.blog_table||'blog_posts',idt:m.ideas_table||'blog_ideas',bkt:m.storage_bucket||'blog-images',
+      shid:m.sheet_id||'',shtb:m.sheet_tab||'Blog_Queue',aut:m.default_author||'JB',
+      min:m.min_word_count||'1200',max:m.max_word_count||'1800',
+      sit:m.site_url||'https://theglovesos.com',eml:m.notification_email||'theglovesdesigns@gmail.com'
+    };
+    S.togs={ap:m.auto_publish==='true',ag:m.auto_generate==='true',nl:m.auto_newsletter!=='false',em:m.email_notify!=='false'};
+    // Fill form fields
+    const fm={ant:'s-ant',url:'s-url',key:'s-key',tbl:'s-tbl',idt:'s-idt',bkt:'s-bkt',shid:'s-shid',shtb:'s-shtb',aut:'s-aut',min:'s-min',max:'s-max',sit:'s-sit',eml:'s-eml'};
+    Object.entries(fm).forEach(([k,id])=>{const el=document.getElementById(id);if(el&&S.settings[k])el.value=S.settings[k];});
+    rTogs();
+    if(S.settings.key)localStorage.setItem('gsos_bk',S.settings.key);
+    clearAl('s-al');
+  }catch(e){
+    showAl('s-al','⚠️ Could not load settings: '+e.message,'err');
+  }
+  // Load blog queue from Supabase
+  try{
+    const blogs=await sbFetch('/rest/v1/'+(S.settings.tbl||'blog_posts')+'?select=*&order=created_at.desc&limit=100');
+    if(Array.isArray(blogs))S.queue=blogs.map(b=>({id:b.id,title:b.title,slug:b.slug,category:b.category,author:b.author||'JB',uploadStatus:b.upload_status||'Pending',wordCount:b.word_count,readTime:b.read_time,publishDate:b.publish_date,publishedAt:b.published_at,blogUrl:b.blog_url,supabaseId:b.id,metaDescription:b.meta_description,tags:b.tags,createdAt:b.created_at}));
+  }catch(e){S.queue=[];}
+  // Load ideas from Supabase
+  try{
+    const ideas=await sbFetch('/rest/v1/'+(S.settings.idt||'blog_ideas')+'?select=*&order=created_at.desc&limit=200');
+    if(Array.isArray(ideas))S.ideas=ideas.map(i=>({id:i.id,title:i.title,priority:i.priority||'Medium',category:i.category||'Glove Repair',season:i.season_relevance||'Any',audience:i.target_audience||'All Players',notes:i.notes||'',sourceUrl:i.source_url||'',status:i.status||'New',dateFound:i.date_found}));
+  }catch(e){S.ideas=[];}
+  counts();
+}
+
+// ── Save all settings TO Supabase ──
+async function saveSt(){
+  const url=document.getElementById('s-url').value.trim();
+  const key=document.getElementById('s-key').value.trim();
+  if(!url||!key){showAl('s-al','❌ Supabase URL and Anon Key are required.','err');return;}
+  // Save bootstrap key locally — this is the ONLY local save
+  localStorage.setItem('gsos_bk',key);
+  S.settings.url=url;S.settings.key=key;
+  setBL('s-save-btn',true,'⏳ Saving...');
+  const rows=[
+    {key:'anthropic_api_key',value:document.getElementById('s-ant').value.trim()},
+    {key:'supabase_url',value:url},
+    {key:'supabase_anon_key',value:key},
+    {key:'blog_table',value:document.getElementById('s-tbl').value.trim()||'blog_posts'},
+    {key:'ideas_table',value:document.getElementById('s-idt').value.trim()||'blog_ideas'},
+    {key:'storage_bucket',value:document.getElementById('s-bkt').value.trim()||'blog-images'},
+    {key:'sheet_id',value:document.getElementById('s-shid').value.trim()},
+    {key:'sheet_tab',value:document.getElementById('s-shtb').value.trim()||'Blog_Queue'},
+    {key:'default_author',value:document.getElementById('s-aut').value.trim()||'JB'},
+    {key:'min_word_count',value:document.getElementById('s-min').value.trim()||'1200'},
+    {key:'max_word_count',value:document.getElementById('s-max').value.trim()||'1800'},
+    {key:'site_url',value:document.getElementById('s-sit').value.trim()||'https://theglovesos.com'},
+    {key:'notification_email',value:document.getElementById('s-eml').value.trim()||'theglovesdesigns@gmail.com'},
+    {key:'auto_publish',value:String(S.togs.ap)},
+    {key:'auto_generate',value:String(S.togs.ag)},
+    {key:'auto_newsletter',value:String(S.togs.nl)},
+    {key:'email_notify',value:String(S.togs.em)},
+  ];
+  try{
+    await sbFetch('/rest/v1/app_settings?on_conflict=key',{method:'POST',headers:{Prefer:'resolution=merge-duplicates'},body:JSON.stringify(rows)});
+    // Reload from Supabase to confirm
+    await loadSt();
+    showAl('s-al','✅ All settings saved to Supabase — works on every device automatically!','ok');
+  }catch(e){
+    showAl('s-al','❌ Save failed: '+e.message,'err');
+  }finally{
+    setBL('s-save-btn',false,'💾 Save All Settings');
+  }
 
 function toggleSB(){const sb=document.getElementById('sidebar');sb.classList.toggle('col');document.querySelector('.sb-tog').innerHTML=sb.classList.contains('col')?'&#9654;':'&#9664;';}
 function nav(p){
@@ -547,22 +643,12 @@ function counts(){
   document.getElementById('qs-sch').textContent=S.queue.filter(x=>x.uploadStatus==='Scheduled').length;
   document.getElementById('qs-pub').textContent=S.queue.filter(x=>x.uploadStatus==='Published to Site').length;
 }
-function loadSt(){
-  try{const r=localStorage.getItem('gsos_st');if(r){const s=JSON.parse(r);S.settings=s;const m={ant:'s-ant',gem:'s-gem',url:'s-url',key:'s-key',tbl:'s-tbl',idt:'s-idt',bkt:'s-bkt',shid:'s-shid',shtb:'s-shtb',aut:'s-aut',min:'s-min',max:'s-max',sit:'s-sit',eml:'s-eml'};Object.entries(m).forEach(([k,id])=>{if(s[k])document.getElementById(id).value=s[k];});if(s.togs){S.togs={...S.togs,...s.togs};rTogs();}}}catch(e){}
-  try{S.queue=JSON.parse(localStorage.getItem('gsos_q')||'[]');}catch(e){S.queue=[];}
-  try{S.ideas=JSON.parse(localStorage.getItem('gsos_i')||'[]');}catch(e){S.ideas=[];}
-  counts();
-}
-function saveSt(){
-  const m={ant:'s-ant',gem:'s-gem',url:'s-url',key:'s-key',tbl:'s-tbl',idt:'s-idt',bkt:'s-bkt',shid:'s-shid',shtb:'s-shtb',aut:'s-aut',min:'s-min',max:'s-max',sit:'s-sit',eml:'s-eml'};
-  const s={togs:S.togs};Object.entries(m).forEach(([k,id])=>{s[k]=document.getElementById(id).value;});
-  S.settings=s;localStorage.setItem('gsos_st',JSON.stringify(s));
-  showAl('s-al','✅ Settings saved!','ok');
+// settings handled by Supabase — see loadSt/saveSt above
 }
 function togS(k){S.togs[k]=!S.togs[k];rTogs();}
 function rTogs(){['ap','ag','nl','em'].forEach(k=>{const t=document.getElementById('tog-'+k);if(t){if(S.togs[k])t.classList.add('on');else t.classList.remove('on');}});}
 async function testSB(){
-  const url=document.getElementById('s-url').value.trim(),key=document.getElementById('s-key').value.trim(),tbl=document.getElementById('s-tbl').value.trim()||'blog_posts';
+  const url=document.getElementById('s-url').value.trim()||S.settings.url,key=document.getElementById('s-key').value.trim()||S.settings.key,tbl=document.getElementById('s-tbl').value.trim()||S.settings.tbl||'blog_posts';
   if(!url||!key){showAl('s-sbs','Enter URL and Key first.','err');return;}
   try{const r=await fetch(`${url}/rest/v1/${tbl}?select=id&limit=1`,{headers:{apikey:key,Authorization:'Bearer '+key}});if(r.ok)showAl('s-sbs','✅ Connected to Supabase!','ok');else showAl('s-sbs','❌ Failed: HTTP '+r.status,'err');}catch(e){showAl('s-sbs','❌ Error: '+e.message,'err');}
 }
