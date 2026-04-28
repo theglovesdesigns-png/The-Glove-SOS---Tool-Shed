@@ -443,9 +443,9 @@ tr:hover td{background:var(--tdim)}
     </div>
     <div class="cd">
       <div class="cdt">🤖 API Keys</div>
-      <div class="fg"><label>Google Gemini API Key</label>
-        <input type="password" id="sAnt" placeholder="AIzaSy..."/>
-        <div class="hint">Get yours at aistudio.google.com — saved to Supabase, never stored in browser</div></div>
+      <div class="fg"><label>Anthropic API Key (Claude)</label>
+        <input type="password" id="sAnt" placeholder="sk-ant-api03-..."/>
+        <div class="hint">Get yours at console.anthropic.com — saved to Supabase, never stored in browser</div></div>
     </div>
     <div class="cd">
       <div class="cdt">🗄️ Supabase Tables</div>
@@ -662,7 +662,7 @@ async function loadSettings() {
     var rows = await sbGet('app_settings', 'select=key,value');
     var m = {};
     rows.forEach(function(r){ m[r.key] = r.value; });
-    if (m.gemini_api_key) ST.ant = m.gemini_api_key;
+    if (m.anthropic_api_key) ST.ant = m.anthropic_api_key;
     if (m.supabase_url)      ST.url = m.supabase_url;
     if (m.supabase_anon_key) ST.key = m.supabase_anon_key;
     if (m.blog_table)        ST.tbl = m.blog_table;
@@ -734,7 +734,7 @@ el('saveStBtn').addEventListener('click', async function() {
   ST.url = url; ST.key = key;
   setBtn('saveStBtn', true, '⏳ Saving...');
   var rows = [
-    { key: 'gemini_api_key',  value: val('sAnt') },
+    { key: 'anthropic_api_key',  value: val('sAnt') },
     { key: 'supabase_url',       value: url },
     { key: 'supabase_anon_key',  value: key },
     { key: 'blog_table',         value: val('sTbl') || 'blog_posts' },
@@ -785,21 +785,19 @@ el('gBtn').addEventListener('click', async function() {
   var title = val('gTitle'), cat = val('gCat');
   if (!title) { showAl('gAl', 'Please enter a blog title.', 'er'); return; }
   if (!cat)   { showAl('gAl', 'Please select a category.', 'er'); return; }
-  if (!ST.ant){ showAl('gAl', '⚙️ Add your Google Gemini API key in Settings first!', 'er'); return; }
+  if (!ST.ant){ showAl('gAl', '⚙️ Add your Anthropic API key in Settings first!', 'er'); return; }
   var wc = val('gWc') || '1500', det = val('gDet'), exp = val('gExp'), dna = val('gDna');
   setBtn('gBtn', true, '⏳ Generating...'); hide('gOut'); clearAl('gAl');
   var prompt = 'You are writing a blog for TheGloveSOS.com — the national glove repair directory.\n\nBRAND VOICE: Expert, trustworthy, community-focused. Real knowledge, real passion. Conversational but authoritative. Reference finding a local repair shop naturally when it fits. Never mention competitor directories.\n\nBLOG DETAILS:\nTitle: ' + title + '\nCategory: ' + cat + '\nTarget: ' + wc + ' words\nDetails: ' + (det||'use your expertise') + '\nExpert Take: ' + (exp||'write from expert glove perspective') + '\nBrand DNA: ' + (dna||'TheGloveSOS connects players with trusted local repair shops nationwide. Quality repair matters. Your glove is your most personal piece of equipment.') + '\n\nReturn EXACTLY these sections with === markers:\n\n===BLOG_CONTENT===\n[Full markdown ~' + wc + ' words. ## and ### headers. Conversational, real voice.]\n\n===SEO_TITLE===\n[55-65 chars]\n\n===SLUG===\n[lowercase-url-slug]\n\n===META_DESCRIPTION===\n[150-160 chars with primary keyword]\n\n===KEYWORDS===\n[12 keywords comma-separated]\n\n===TAGS===\n[10 tags lowercase-hyphenated comma-separated]\n\n===EXCERPT===\n[2-3 sentences ~120 words]\n\n===SOCIAL_CAPTION===\n[Caption + 6-8 hashtags including #TheGloveSOS #GloveRepair]\n\n===HERO_IMAGE_PROMPT===\n[Baseball/softball glove, moody teal lighting, landscape format]\n\n===SOCIAL_IMAGE_PROMPT===\n[Square 1:1, bold, teal/purple palette]\n\n===THUMBNAIL_PROMPT===\n[YouTube thumbnail, high contrast, text overlay space]\n\n===INSERT_IMAGE_PROMPTS===\nInsert 1: [prompt]\nInsert 2: [prompt]\nInsert 3: [prompt]\n\n===INTERNAL_LINKS===\n[3-4 content suggestions for theglovesos.com/blog/...]\n\n===EXTERNAL_LINKS===\n[2-3 authoritative source types]';
   try {
-    var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + ST.ant, {
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 4500, temperature: 0.7 } })
+      headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'x-api-key': ST.ant },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4500, messages: [{ role: 'user', content: prompt }] })
     });
     var data = await res.json();
     if (data.error) { showAl('gAl', 'API Error: ' + data.error.message, 'er'); return; }
-    var txt = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text;
-    if (!txt) { showAl('gAl', 'No response from Gemini — check your API key.', 'er'); return; }
-    parseBlog(txt, title, cat);
+    parseBlog(data.content[0].text, title, cat);
   } catch(e) { showAl('gAl', 'Error: ' + e.message, 'er'); }
   finally { setBtn('gBtn', false, '✨ Generate Master Blog'); }
 });
@@ -999,18 +997,17 @@ function renderIdeas() {
 // NEWSLETTER
 // ─────────────────────────────────────────────
 el('nlBtn').addEventListener('click', async function() {
-  if (!ST.ant) { showAl('nlAl','Add your Google Gemini API key in Settings.','er'); return; }
+  if (!ST.ant) { showAl('nlAl','Add your Anthropic API key in Settings.','er'); return; }
   var mo=val('nlMo'), yr=val('nlYr'), cnt=parseInt(val('nlCnt')||'5'), ev=val('nlEv');
   var blogs = QUEUE.filter(function(x){ return x.uploadStatus==='Published to Site'; }).slice(0,cnt);
   var bl = blogs.length ? blogs.map(function(b,i){ return (i+1)+'. "'+b.title+'" ('+b.category+') — '+(b.blogUrl||'theglovesos.com/blog/'+b.slug); }).join('\n') : '(No published blogs yet)';
   setBtn('nlBtn',true,'⏳ Generating...');
   var prompt = 'Monthly newsletter for TheGloveSOS.com — national glove repair directory.\nMonth: '+mo+' '+yr+'\nVoice: Expert, warm, community-focused.\n\nTOP BLOGS:\n'+bl+'\nEVENTS: '+(ev||'2-3 relevant baseball/softball events for '+mo)+'\n\n===SUBJECT===\n[Subject 45-55 chars]\n\n===PREHEADER===\n[Preview text 85-100 chars]\n\n===BODY===\n[Newsletter HTML. Warm greeting, month recap, featured blogs with Read More links, 2-3 baseball calendar highlights, CTA to find local repair at theglovesos.com. Use inline styles, #00cccc teal accents.]';
   try {
-    var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+ST.ant, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:2000,temperature:0.7}})});
+    var res = await fetch('https://api.anthropic.com/v1/messages', {method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':ST.ant},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})});
     var data = await res.json();
     if (data.error){showAl('nlAl','API Error: '+data.error.message,'er');return;}
-    var txt = data.candidates && data.candidates[0].content.parts[0].text;
-    if (!txt){showAl('nlAl','No response from Gemini.','er');return;}
+    var txt = data.content[0].text;
     setTxt('nlSubj',extr(txt,'SUBJECT')); setTxt('nlPre',extr(txt,'PREHEADER'));
     el('nlBody').innerHTML = extr(txt,'BODY')||txt;
     show('nlOut');
@@ -1030,16 +1027,14 @@ el('nlCopyBtn').addEventListener('click', function() {
 // RESEARCH
 // ─────────────────────────────────────────────
 el('resBtn').addEventListener('click', async function() {
-  if (!ST.ant){alert('Add your Google Gemini API key in Settings.');return;}
+  if (!ST.ant){alert('Add your Anthropic API key in Settings.');return;}
   var topic=val('rTopic'); if(!topic){alert('Enter a search topic.');return;}
   setBtn('resBtn',true,'🔍 Researching...');
   var prompt='Research assistant for TheGloveSOS.com.\nTopic: '+topic+'\nFocus: '+val('rFocus')+'\n\n===SUMMARY===\n[3-4 sentences why this matters for glove repair audience]\n\n===BLOG_IDEAS===\n1. [Title] | Category: [cat] | Angle: [1-sentence]\n2. [Title] | Category: [cat] | Angle: [angle]\n3. [Title] | Category: [cat] | Angle: [angle]\n4. [Title] | Category: [cat] | Angle: [angle]\n5. [Title] | Category: [cat] | Angle: [angle]\n\n===KEYWORDS===\n[12 SEO keywords comma-separated]\n\n===SOURCES===\n[3-4 authoritative source types]';
   try {
-    var res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+ST.ant,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:1400,temperature:0.7}})});
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':ST.ant},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1400,messages:[{role:'user',content:prompt}]})});
     var data=await res.json(); if(data.error){alert('API Error: '+data.error.message);return;}
-    var rtxt=data.candidates&&data.candidates[0].content.parts[0].text;
-    if(!rtxt){alert('No response from Gemini.');return;}
-    el('resResults').textContent=rtxt; show('resOut'); LASTRES=rtxt;
+    el('resResults').textContent=data.content[0].text; show('resOut'); LASTRES=data.content[0].text;
   }catch(e){alert('Error: '+e.message);}
   finally{setBtn('resBtn',false,'🔍 Research Now');}
 });
