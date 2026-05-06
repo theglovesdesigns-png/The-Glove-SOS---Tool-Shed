@@ -173,6 +173,7 @@ tr:hover td{background:var(--tdim)}
     <div class="slbl">Tools</div>
     <div class="sit" data-page="newsletter"><span class="sico">📰</span><span class="stxt">Newsletter</span></div>
     <div class="sit" data-page="research"><span class="sico">🔍</span><span class="stxt">Research Hub</span></div>
+    <div class="sit" data-page="images"><span class="sico">🎨</span><span class="stxt">Image Studio</span></div>
   </div>
   <div class="ssec">
     <div class="slbl">System</div>
@@ -451,6 +452,19 @@ tr:hover td{background:var(--tdim)}
         <div class="hint">Saved encrypted in Supabase — never in your browser or code. For maximum security, deploy the Edge Function (see docs) so the key never touches the browser at all.</div></div>
     </div>
     <div class="cd">
+      <div class="cdt">🎙️ JB's Voice Profile — Pre-filled on Every Blog</div>
+      <div class="fg">
+        <label>JB's Expert Background & Voice</label>
+        <textarea id="sVoice" rows="4" placeholder="e.g. I've been repairing gloves for 15+ years. I believe every player deserves a glove that performs at its best. I always say — take care of your glove and your glove will take care of you. I speak from experience, keep it real, never corporate..."></textarea>
+        <div class="hint">This pre-fills the Expert Take field on every blog so you never have to retype it</div>
+      </div>
+      <div class="fg">
+        <label>Brand DNA — Core Philosophies (pre-filled on every blog)</label>
+        <textarea id="sDna" rows="4" placeholder="e.g. TheGloveSOS connects players with trusted local glove repair shops nationwide. Quality repair matters. Your glove is your most personal piece of equipment. Never bash competitors. Community first. Education over sales..."></textarea>
+        <div class="hint">These values are injected into every blog automatically — your brand voice stays consistent</div>
+      </div>
+    </div>
+    <div class="cd">
       <div class="cdt">🖼️ Brand Logo</div>
       <div class="r2">
         <div class="fg">
@@ -515,6 +529,92 @@ tr:hover td{background:var(--tdim)}
     <div id="sAl" style="margin-top:10px"></div>
   </div>
 
+
+  <!-- ===== IMAGE STUDIO ===== -->
+  <div class="pg" id="pg-images">
+    <div class="ph"><h2>Image Studio</h2><p>Generate image prompts, edit photos, and save to Supabase storage</p></div>
+
+    <!-- Prompt Generator -->
+    <div class="cd">
+      <div class="cdt">✨ Image Prompt Generator</div>
+      <div class="r2">
+        <div class="fg"><label>What is this image for?</label>
+          <select id="imgType">
+            <option value="hero">Hero / Banner Image</option>
+            <option value="social">Social Media (Square)</option>
+            <option value="thumbnail">YouTube Thumbnail</option>
+            <option value="product">Product / Glove Closeup</option>
+            <option value="background">Custom Background</option>
+            <option value="composite">Composite (Glove + Background)</option>
+          </select></div>
+        <div class="fg"><label>Blog or Context (optional)</label>
+          <input type="text" id="imgContext" placeholder="e.g. blog about re-lacing a Wilson A2000"/></div>
+      </div>
+      <div class="fg"><label>Additional Details</label>
+        <textarea id="imgDetails" rows="2" placeholder="e.g. focus on the lacing detail, dark moody lighting, close-up of palm pocket, show wear and character..."></textarea></div>
+      <div class="bg"><button class="btn bt" id="imgPromptBtn">✨ Generate Image Prompt</button></div>
+      <div id="imgPromptOut" style="display:none;margin-top:14px">
+        <div class="fg"><label>Generated Prompt — copy into your image generator (Midjourney, DALL-E, Firefly, etc.)</label>
+          <div id="imgPromptTxt" class="ob" style="max-height:140px;border-color:rgba(0,204,204,.3)"></div></div>
+        <div class="bg" style="margin-top:8px">
+          <button class="btn bo bsm" id="copyImgPromptBtn">📋 Copy Prompt</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photo Upload & Edit -->
+    <div class="cd">
+      <div class="cdt">📸 Upload & Save Image to Supabase</div>
+      <div class="r2">
+        <div class="fg">
+          <label>Upload Image (JPG, PNG, WEBP — max 10MB)</label>
+          <input type="file" id="imgFile" accept="image/jpeg,image/png,image/webp" style="padding:6px 11px;cursor:pointer"/>
+          <div class="hint">Recommended sizes: Hero 1200×628px | Social 1080×1080px | Thumbnail 1280×720px</div>
+        </div>
+        <div class="fg">
+          <label>Save to Folder</label>
+          <select id="imgFolder">
+            <option value="blog-images/hero">Hero Images</option>
+            <option value="blog-images/social">Social Images</option>
+            <option value="blog-images/thumbnails">Thumbnails</option>
+            <option value="blog-images/products">Product Photos</option>
+            <option value="blog-images/misc">Misc / Other</option>
+          </select>
+          <div class="fg" style="margin-top:10px"><label>Custom File Name (optional)</label>
+            <input type="text" id="imgName" placeholder="e.g. wilson-a2000-relacing-hero"/></div>
+        </div>
+      </div>
+      <div id="imgPreviewWrap" style="display:none;margin-bottom:14px">
+        <label>Preview</label>
+        <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;padding:12px;text-align:center">
+          <img id="imgPreview" src="" style="max-height:200px;max-width:100%;border-radius:6px;object-fit:contain"/>
+        </div>
+      </div>
+      <div id="imgUploadAl"></div>
+      <div class="bg">
+        <button class="btn bt" id="imgUploadBtn">⬆ Upload to Supabase</button>
+        <button class="btn bo bsm" id="imgClearBtn">Clear</button>
+      </div>
+    </div>
+
+    <!-- Saved Image URL -->
+    <div class="cd">
+      <div class="cdt">🔗 Supabase Image URL</div>
+      <div class="fg"><label>After uploading, your image URL appears here — copy it into your blog Hero Image URL field</label>
+        <input type="text" id="imgUrl" placeholder="URL will appear here after upload" readonly style="color:var(--teal);cursor:pointer" onclick="this.select()"/>
+      </div>
+      <div class="fg"><label>Or paste an existing Supabase image URL</label>
+        <input type="url" id="imgUrlManual" placeholder="https://axcavotqlkiujyicrvcp.supabase.co/storage/v1/object/public/..."/></div>
+      <div class="bg">
+        <button class="btn bo bsm" id="copyImgUrlBtn">📋 Copy URL</button>
+        <button class="btn bp bsm" id="previewUrlBtn">👁 Preview</button>
+      </div>
+      <div id="imgUrlPreview" style="display:none;margin-top:12px;text-align:center">
+        <img id="imgUrlPreviewImg" src="" style="max-height:200px;max-width:100%;border-radius:8px;border:1px solid var(--bdr)"/>
+      </div>
+    </div>
+  </div>
+
   </div>
 </div>
 </div>
@@ -528,7 +628,8 @@ var ST = {
   key: localStorage.getItem('sb_key') || '',
   ant: '', tbl: 'blog_posts', idt: 'blog_ideas', bkt: 'blog-images',
   shid: '', shTab: 'Blog_Queue', aut: 'JB', min: '1200', max: '1800',
-  sit: 'https://theglovesos.com', eml: 'theglovesdesigns@gmail.com'
+  sit: 'https://theglovesos.com', eml: 'theglovesdesigns@gmail.com',
+  voice: '', dna: ''
 };
 var TOGS = { ap: false, ag: false, nl: true, em: true };
 var QUEUE = [];
@@ -542,7 +643,8 @@ var PAGES = {
   ideas:      { t: 'Blog Ideas',    s: 'Save ideas and push them to the generator when ready' },
   newsletter: { t: 'Newsletter',    s: 'Auto-build monthly newsletter from top blogs + baseball events' },
   research:   { t: 'Research Hub',  s: 'Find trending glove repair topics to fuel your content' },
-  settings:   { t: 'Settings',      s: 'All settings save to Supabase — accessible from any device' }
+  settings:   { t: 'Settings',      s: 'All settings save to Supabase — accessible from any device' },
+  images:     { t: 'Image Studio',   s: 'Generate image prompts, upload photos, and save to Supabase' }
 };
 
 // ─────────────────────────────────────────────
@@ -640,6 +742,10 @@ document.querySelectorAll('.sit').forEach(function(item) {
     setTxt('tbS', PAGES[page].s);
     if (page === 'queue') renderQueue();
     if (page === 'ideas') renderIdeas();
+    if (page === 'generator') {
+      if (ST.voice && !val('gExp')) { var ge=el('gExp'); if(ge&&!ge.value) ge.value=ST.voice; }
+      if (ST.dna && !val('gDna')) { var gd=el('gDna'); if(gd&&!gd.value) gd.value=ST.dna; }
+    }
   });
 });
 
@@ -700,6 +806,8 @@ async function loadSettings() {
     if (m.max_word_count)    ST.max = m.max_word_count;
     if (m.site_url)          ST.sit = m.site_url;
     if (m.notification_email) ST.eml = m.notification_email;
+    if (m.jb_voice) { ST.voice = m.jb_voice; var ev=el('sVoice'); if(ev) ev.value=m.jb_voice; }
+    if (m.brand_dna) { ST.dna = m.brand_dna; var ed=el('sDna'); if(ed) ed.value=m.brand_dna; }
     if (m.logo_url) { loadLogoPreview(m.logo_url); }
     TOGS.ap = m.auto_publish    === 'true';
     TOGS.ag = m.auto_generate   === 'true';
@@ -776,7 +884,9 @@ el('saveStBtn').addEventListener('click', async function() {
     { key: 'auto_publish',       value: String(TOGS.ap) },
     { key: 'auto_generate',      value: String(TOGS.ag) },
     { key: 'auto_newsletter',    value: String(TOGS.nl) },
-    { key: 'email_notify',       value: String(TOGS.em) }
+    { key: 'email_notify',       value: String(TOGS.em) },
+    { key: 'jb_voice',           value: val('sVoice') },
+    { key: 'brand_dna',          value: val('sDna') }
   ];
   try {
     await sbUpsert('app_settings', rows);
@@ -832,7 +942,7 @@ async function callAI(prompt, maxTokens) {
   var r2 = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'x-api-key': ST.ant, 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
+    body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
   });
   var data2 = await r2.json();
   if (data2.error) throw new Error(data2.error.message);
@@ -998,7 +1108,7 @@ el('saveIdeaBtn').addEventListener('click', async function() {
   IDEAS.unshift(idea);
   renderIdeas(); updateCounts();
   ['iTitle','iNotes'].forEach(function(id){ var e=el(id); if(e) e.value=''; });
-  showAl('iAl','✅ Idea saved!','ok');
+  showAl('iAl','✅ Idea saved to Supabase!','ok');
   if (ST.url&&ST.key) {
     try { await sbPost(ST.idt||'blog_ideas', { title:idea.title, status:'New', priority:idea.priority, topic_keywords:idea.title, season_relevance:idea.season, target_audience:idea.audience, notes:idea.notes, date_found:idea.dateFound }); } catch(e){}
   }
@@ -1179,6 +1289,106 @@ el('removeLogoBtn').addEventListener('click', async function() {
   try { await sbUpsert('app_settings', [{ key: 'logo_url', value: '' }]); } catch(e) {}
 });
 
+
+// ─────────────────────────────────────────────
+// IMAGE STUDIO
+// ─────────────────────────────────────────────
+el('imgFile').addEventListener('change', function() {
+  var file = this.files[0]; if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    el('imgPreview').src = e.target.result;
+    show('imgPreviewWrap');
+  };
+  reader.readAsDataURL(file);
+});
+
+el('imgPromptBtn').addEventListener('click', async function() {
+  if (!ST.ant) { alert('Add your Anthropic API key in Settings first.'); return; }
+  var type = val('imgType'), context = val('imgContext'), details = val('imgDetails');
+  var typeMap = {
+    hero: 'wide landscape hero banner image (1200x628px)',
+    social: 'square social media image (1080x1080px)',
+    thumbnail: 'YouTube thumbnail (1280x720px) with bold composition and space for text overlay on left',
+    product: 'product photography closeup',
+    background: 'background/environment image',
+    composite: 'composite image showing a glove with a swappable background'
+  };
+  var prompt = 'Generate a detailed image generation prompt for TheGloveSOS.com.
+
+Image type: ' + (typeMap[type]||type) + '
+Context: ' + (context||'baseball/softball glove repair and care') + '
+Details: ' + (details||'professional photography style') + '
+
+Brand aesthetic: Dark moody atmosphere, teal (#00cccc) and deep purple accent colors, professional sports photography, leather texture emphasis, authentic and gritty feel.
+
+Return ONLY the image generation prompt itself — no explanation, no preamble. Make it detailed, specific, and ready to paste directly into Midjourney, DALL-E, Adobe Firefly, or similar tools. Include style, lighting, composition, mood, and technical camera details.';
+  setBtn('imgPromptBtn', true, '⏳ Generating...');
+  try {
+    var txt = await callAI(prompt, 500);
+    el('imgPromptTxt').textContent = txt.trim();
+    show('imgPromptOut');
+  } catch(e) { alert('Error: ' + e.message); }
+  finally { setBtn('imgPromptBtn', false, '✨ Generate Image Prompt'); }
+});
+
+el('copyImgPromptBtn').addEventListener('click', function() {
+  navigator.clipboard.writeText(el('imgPromptTxt').textContent).then(function(){ alert('✅ Prompt copied!'); });
+});
+
+el('imgUploadBtn').addEventListener('click', async function() {
+  var file = el('imgFile').files[0];
+  if (!file) { showAl('imgUploadAl', 'Select an image file first.', 'er'); return; }
+  if (file.size > 10 * 1024 * 1024) { showAl('imgUploadAl', '❌ File too large — max 10MB.', 'er'); return; }
+  if (!ST.url || !ST.key) { showAl('imgUploadAl', 'Add Supabase credentials in Settings first.', 'er'); return; }
+  var folder = val('imgFolder') || 'blog-images/misc';
+  var ext = file.name.split('.').pop().toLowerCase();
+  var baseName = val('imgName') || file.name.replace(/\.[^/.]+$/, '').replace(/\s+/g,'-').toLowerCase();
+  var fileName = baseName + '-' + Date.now() + '.' + ext;
+  var fullPath = folder + '/' + fileName;
+  // Extract bucket name (first part before first /)
+  var bucket = folder.split('/')[0];
+  var pathInBucket = folder.split('/').slice(1).join('/') + '/' + fileName;
+  setBtn('imgUploadBtn', true, '⏳ Uploading...');
+  try {
+    var r = await fetch(ST.url + '/storage/v1/object/' + bucket + '/' + pathInBucket, {
+      method: 'POST',
+      headers: { apikey: ST.key, Authorization: 'Bearer ' + ST.key, 'Content-Type': file.type, 'x-upsert': 'true' },
+      body: file
+    });
+    if (!r.ok) { var e = await r.json().catch(function(){return{};}); throw new Error(e.message || 'HTTP ' + r.status); }
+    var publicUrl = ST.url + '/storage/v1/object/public/' + bucket + '/' + pathInBucket;
+    el('imgUrl').value = publicUrl;
+    showAl('imgUploadAl', '✅ Uploaded! URL copied to field below.', 'ok');
+  } catch(e) {
+    showAl('imgUploadAl', '❌ Upload failed: ' + e.message, 'er');
+  } finally {
+    setBtn('imgUploadBtn', false, '⬆ Upload to Supabase');
+  }
+});
+
+el('imgClearBtn').addEventListener('click', function() {
+  el('imgFile').value = '';
+  el('imgName').value = '';
+  el('imgPreview').src = '';
+  hide('imgPreviewWrap');
+  el('imgUrl').value = '';
+  clearAl('imgUploadAl');
+});
+
+el('copyImgUrlBtn').addEventListener('click', function() {
+  var url = el('imgUrl').value || el('imgUrlManual').value;
+  if (!url) { alert('No URL to copy.'); return; }
+  navigator.clipboard.writeText(url).then(function(){ alert('✅ URL copied!'); });
+});
+
+el('previewUrlBtn').addEventListener('click', function() {
+  var url = el('imgUrl').value || val('imgUrlManual');
+  if (!url) { alert('Enter or upload an image URL first.'); return; }
+  el('imgUrlPreviewImg').src = url;
+  show('imgUrlPreview');
+});
+
 // ─────────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────────
@@ -1191,7 +1401,10 @@ document.addEventListener('DOMContentLoaded', function() {
   if (ST.url) el('sUrl').value = ST.url;
   if (ST.key) el('sKey').value = ST.key;
   // Auto-load settings if we have credentials
-  if (ST.url && ST.key) loadSettings();
+  if (ST.url && ST.key) loadSettings().then(function(){
+    var ge=el('gExp'); if(ge&&ST.voice&&!ge.value) ge.value=ST.voice;
+    var gd=el('gDna'); if(gd&&ST.dna&&!gd.value) gd.value=ST.dna;
+  });
   else showAl('sAl','👋 First time setup: enter your Supabase URL and Anon Key in Settings, then click Save.','in');
 
 });
