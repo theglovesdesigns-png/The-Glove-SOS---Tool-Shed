@@ -649,11 +649,11 @@ function updateCounts(){
   txt("ideas-count","("+IDEAS.length+" ideas)");
   var hs=G("home-status");
   if(hs)hs.innerHTML=
-    "📋 <b>"+q+"</b> blogs in queue &nbsp;|&nbsp; "+
-    "💡 <b>"+IDEAS.length+"</b> ideas &nbsp;|&nbsp; "+
-    "✅ <b>"+pub+"</b> published &nbsp;|&nbsp; "+
-    "⏳ <b>"+app+"</b> approved<br/>"+
-    (ST.ant?"🟢 API key configured — ready to generate":"⚠️ <span style='color:var(--orange)'>Go to Settings → add Anthropic API key to start generating</span>");
+    " <b>"+q+"</b> blogs in queue &nbsp;|&nbsp; "+
+    " <b>"+IDEAS.length+"</b> ideas &nbsp;|&nbsp; "+
+    "OK: <b>"+pub+"</b> published &nbsp;|&nbsp; "+
+    "... <b>"+app+"</b> approved<br/>"+
+    (ST.ant?"[OK] API key configured -- ready to generate":"WARNING: <span style='color:var(--orange)'>Go to Settings -> add Anthropic API key to start generating</span>");
 }
 
 // ═══════════════════════════════════════════════════════
@@ -667,7 +667,7 @@ var PAGE_META={
   newsletter:{t:"Newsletter",s:"Auto-build monthly newsletter from top blogs"},
   research:{t:"Research Hub",s:"Find trending topics to fuel your content"},
   images:{t:"Image Studio",s:"Generate prompts, upload photos, save to Supabase"},
-  settings:{t:"Settings",s:"All settings save to Supabase — any device"}
+  settings:{t:"Settings",s:"All settings save to Supabase -- any device"}
 };
 
 function navTo(page){
@@ -739,7 +739,7 @@ G("btn-logo-upload").addEventListener("click",async function(){
   var f=G("s-logo-file").files[0];
   if(!f){alert2("logo-alert","Select a file first.","er");return;}
   if(!ST.url||!ST.key){alert2("logo-alert","Save Supabase credentials first.","er");return;}
-  setBtn("btn-logo-upload",true,"⏳ Uploading...");
+  setBtn("btn-logo-upload",true,"... Uploading...");
   try{
     var ext=f.name.split(".").pop();
     var r=await fetch(ST.url+"/storage/v1/object/"+(ST.bkt||"blog-images")+"/brand/logo."+ext,{
@@ -748,9 +748,9 @@ G("btn-logo-upload").addEventListener("click",async function(){
     if(!r.ok){var e=await r.json().catch(function(){return{};});throw new Error(e.message||"HTTP "+r.status);}
     var logoUrl=ST.url+"/storage/v1/object/public/"+(ST.bkt||"blog-images")+"/brand/logo."+ext;
     await SBUpsert("app_settings",[{key:"logo_url",value:logoUrl}]);
-    setLogo(logoUrl);alert2("logo-alert","✅ Logo uploaded!","ok");
-  }catch(e){alert2("logo-alert","❌ "+e.message,"er");}
-  finally{setBtn("btn-logo-upload",false,"⬆ Upload Logo");}
+    setLogo(logoUrl);alert2("logo-alert","OK: Logo uploaded!","ok");
+  }catch(e){alert2("logo-alert","ERROR: "+e.message,"er");}
+  finally{setBtn("btn-logo-upload",false," Upload Logo");}
 });
 G("btn-logo-remove").addEventListener("click",async function(){
   var li=G("logo-img"),lp=G("logo-ph"),si=G("slogo-img"),st=G("slogo-txt"),sl=G("slogo");
@@ -760,11 +760,11 @@ G("btn-logo-remove").addEventListener("click",async function(){
 });
 
 // ═══════════════════════════════════════════════════════
-// SETTINGS — LOAD
+// SETTINGS -- LOAD
 // ═══════════════════════════════════════════════════════
 async function loadSettings(){
-  if(!ST.url||!ST.key){alert2("s-alert","👋 Enter Supabase URL and Anon Key, then click Save.","in");return;}
-  alert2("s-alert","⏳ Loading from Supabase...","in");
+  if(!ST.url||!ST.key){alert2("s-alert"," Enter Supabase URL and Anon Key, then click Save.","in");return;}
+  alert2("s-alert","... Loading from Supabase...","in");
   try{
     var rows=await SBGet("app_settings","select=key,value");
     var m={};rows.forEach(function(r){m[r.key]=r.value;});
@@ -797,7 +797,7 @@ async function loadSettings(){
     localStorage.setItem("sb_url",ST.url);localStorage.setItem("sb_key",ST.key);
     if(G("s-alert"))G("s-alert").innerHTML="";
     await loadQueueFromSB();await loadIdeasFromSB();updateCounts();
-  }catch(e){alert2("s-alert","❌ Could not load: "+e.message,"er");}
+  }catch(e){alert2("s-alert","ERROR: Could not load: "+e.message,"er");}
 }
 async function loadQueueFromSB(){
   try{
@@ -813,14 +813,14 @@ async function loadIdeasFromSB(){
 }
 
 // ═══════════════════════════════════════════════════════
-// SETTINGS — SAVE
+// SETTINGS -- SAVE
 // ═══════════════════════════════════════════════════════
 G("btn-save-settings").addEventListener("click",async function(){
   var url=val("s-url"),key=val("s-key");
-  if(!url||!key){alert2("s-alert","❌ Supabase URL and Anon Key are required.","er");return;}
+  if(!url||!key){alert2("s-alert","ERROR: Supabase URL and Anon Key are required.","er");return;}
   localStorage.setItem("sb_url",url);localStorage.setItem("sb_key",key);
   ST.url=url;ST.key=key;
-  setBtn("btn-save-settings",true,"⏳ Saving...");
+  setBtn("btn-save-settings",true,"... Saving...");
   var rows=[
     {key:"anthropic_api_key",value:val("s-ant")},
     {key:"supabase_url",value:url},{key:"supabase_anon_key",value:key},
@@ -839,21 +839,21 @@ G("btn-save-settings").addEventListener("click",async function(){
   try{
     await SBUpsert("app_settings",rows);
     ST.ant=val("s-ant");ST.voice=val("s-voice");ST.dna=val("s-dna");
-    updateCounts();alert2("s-alert","✅ All settings saved to Supabase!","ok");
-  }catch(e){alert2("s-alert","❌ Save failed: "+e.message,"er");}
-  finally{setBtn("btn-save-settings",false,"💾 Save All Settings to Supabase");}
+    updateCounts();alert2("s-alert","OK: All settings saved to Supabase!","ok");
+  }catch(e){alert2("s-alert","ERROR: Save failed: "+e.message,"er");}
+  finally{setBtn("btn-save-settings",false," Save All Settings to Supabase");}
 });
 G("btn-reload-settings").addEventListener("click",function(){loadSettings();});
 G("btn-test-sb").addEventListener("click",async function(){
   var url=val("s-url")||ST.url,key=val("s-key")||ST.key;
   if(!url||!key){alert2("s-test-alert","Enter URL and Key first.","er");return;}
-  ST.url=url;ST.key=key;setBtn("btn-test-sb",true,"⏳ Testing...");
+  ST.url=url;ST.key=key;setBtn("btn-test-sb",true,"... Testing...");
   try{
     var r=await fetch(url+"/rest/v1/blog_posts?select=id&limit=1",{headers:{apikey:key,Authorization:"Bearer "+key}});
-    if(r.ok)alert2("s-test-alert","✅ Connected to Supabase!","ok");
-    else alert2("s-test-alert","❌ Failed HTTP "+r.status+" — check URL and Anon Key","er");
-  }catch(e){alert2("s-test-alert","❌ "+e.message,"er");}
-  finally{setBtn("btn-test-sb",false,"🔌 Test Connection");}
+    if(r.ok)alert2("s-test-alert","OK: Connected to Supabase!","ok");
+    else alert2("s-test-alert","ERROR: Failed HTTP "+r.status+" -- check URL and Anon Key","er");
+  }catch(e){alert2("s-test-alert","ERROR: "+e.message,"er");}
+  finally{setBtn("btn-test-sb",false," Test Connection");}
 });
 
 // ═══════════════════════════════════════════════════════
@@ -863,74 +863,16 @@ G("btn-generate").addEventListener("click",async function(){
   var title=val("g-title"),cat=val("g-cat");
   if(!title){alert2("g-alert","Please enter a blog title.","er");return;}
   if(!cat){alert2("g-alert","Please select a category.","er");return;}
-  if(!ST.ant){alert2("g-alert","⚙️ Add your Anthropic API key in Settings first!","er");return;}
+  if(!ST.ant){alert2("g-alert","[settings] Add your Anthropic API key in Settings first!","er");return;}
   var wc=val("g-wc")||"1500";
-  setBtn("btn-generate",true,"⏳ Generating...");hide("g-output");
+  setBtn("btn-generate",true,"... Generating...");hide("g-output");
   if(G("g-alert"))G("g-alert").innerHTML="";
-  var prompt="You are writing a blog for TheGloveSOS.com — the national glove repair directory.
-
-JB VOICE:
-"+(val("g-exp")||ST.voice||"Knowledgeable glove expert with real passion for the game")+"
-
-BRAND DNA:
-"+(val("g-dna")||ST.dna||"TheGloveSOS connects players with trusted local repair shops. Quality matters. Your glove is personal.")+"
-
-BLOG:
-Title: "+title+"
-Category: "+cat+"
-Words: "+wc+"
-Details: "+(val("g-det")||"Write from expert perspective")+"
-
-Return EXACTLY these sections with === markers:
-
-===BLOG_CONTENT===
-[Full markdown ~"+wc+" words. ## and ### headers. Real conversational voice.]
-
-===SEO_TITLE===
-[55-65 chars]
-
-===SLUG===
-[lowercase-hyphenated, max 60 chars]
-
-===META_DESCRIPTION===
-[150-160 chars with primary keyword]
-
-===KEYWORDS===
-[12 keywords comma-separated]
-
-===TAGS===
-[10 tags, lowercase-hyphenated, comma-separated, ready for Supabase]
-
-===EXCERPT===
-[2-3 sentences ~120 words]
-
-===SOCIAL_CAPTION===
-[Caption + hashtags including #TheGloveSOS #GloveRepair]
-
-===HERO_IMAGE_PROMPT===
-[Detailed: baseball/softball glove, moody teal lighting, dark atmosphere, landscape 1200x628]
-
-===SOCIAL_IMAGE_PROMPT===
-[Square 1080x1080, bold, teal/purple palette]
-
-===THUMBNAIL_PROMPT===
-[YouTube 1280x720, high contrast, text overlay space]
-
-===INSERT_IMAGE_PROMPTS===
-Insert 1: [prompt]
-Insert 2: [prompt]
-Insert 3: [prompt]
-
-===INTERNAL_LINKS===
-[3-4 slug suggestions]
-
-===EXTERNAL_LINKS===
-[2-3 source types]";
+  var prompt="You are writing a blog for TheGloveSOS.com -- the national glove repair directory.\n\nJB VOICE:\n"+(val("g-exp")||ST.voice||"Knowledgeable glove expert with real passion for the game")+"\n\nBRAND DNA:\n"+(val("g-dna")||ST.dna||"TheGloveSOS connects players with trusted local repair shops. Quality matters. Your glove is personal.")+"\n\nBLOG:\nTitle: "+title+"\nCategory: "+cat+"\nWords: "+wc+"\nDetails: "+(val("g-det")||"Write from expert perspective")+"\n\nReturn EXACTLY these sections with === markers:\n\n===BLOG_CONTENT===\n[Full markdown ~"+wc+" words. ## and ### headers. Real conversational voice.]\n\n===SEO_TITLE===\n[55-65 chars]\n\n===SLUG===\n[lowercase-hyphenated, max 60 chars]\n\n===META_DESCRIPTION===\n[150-160 chars with primary keyword]\n\n===KEYWORDS===\n[12 keywords comma-separated]\n\n===TAGS===\n[10 tags, lowercase-hyphenated, comma-separated, ready for Supabase]\n\n===EXCERPT===\n[2-3 sentences ~120 words]\n\n===SOCIAL_CAPTION===\n[Caption + hashtags including #TheGloveSOS #GloveRepair]\n\n===HERO_IMAGE_PROMPT===\n[Detailed: baseball/softball glove, moody teal lighting, dark atmosphere, landscape 1200x628]\n\n===SOCIAL_IMAGE_PROMPT===\n[Square 1080x1080, bold, teal/purple palette]\n\n===THUMBNAIL_PROMPT===\n[YouTube 1280x720, high contrast, text overlay space]\n\n===INSERT_IMAGE_PROMPTS===\nInsert 1: [prompt]\nInsert 2: [prompt]\nInsert 3: [prompt]\n\n===INTERNAL_LINKS===\n[3-4 slug suggestions]\n\n===EXTERNAL_LINKS===\n[2-3 source types]";
   try{
     var t=await AI(prompt,4500);
     parseBlog(t,title,cat);
-  }catch(e){alert2("g-alert","❌ "+e.message,"er");}
-  finally{setBtn("btn-generate",false,"✨ Generate Master Blog");}
+  }catch(e){alert2("g-alert","ERROR: "+e.message,"er");}
+  finally{setBtn("btn-generate",false," Generate Master Blog");}
 });
 function parseBlog(t,title,cat){
   var con=extr(t,"BLOG_CONTENT"),st=extr(t,"SEO_TITLE"),sl=extr(t,"SLUG"),
@@ -963,23 +905,23 @@ G("btn-clear-gen").addEventListener("click",function(){
 });
 G("btn-copy-md").addEventListener("click",function(){
   var e=G("out-markdown");if(!e)return;
-  navigator.clipboard.writeText(e.textContent).then(function(){alert("✅ Markdown copied!");});
+  navigator.clipboard.writeText(e.textContent).then(function(){alert("OK: Markdown copied!");});
 });
 G("btn-push-queue").addEventListener("click",function(){
   if(!GEN){alert2("g-alert","Generate a blog first.","er");return;}
   var b=Object.assign({},GEN,{uploadStatus:val("push-status"),publishDate:val("push-date"),id:Date.now()});
-  QUEUE.unshift(b);updateCounts();alert2("g-alert","✅ Pushed to queue!","ok");
+  QUEUE.unshift(b);updateCounts();alert2("g-alert","OK: Pushed to queue!","ok");
   setTimeout(function(){navTo("queue");},1200);
 });
 G("btn-push-sb").addEventListener("click",async function(){
   if(!GEN){alert2("g-alert","Generate a blog first.","er");return;}
   if(!ST.url||!ST.key){alert2("g-alert","Add Supabase credentials in Settings.","er");return;}
-  setBtn("btn-push-sb",true,"⏳...");
+  setBtn("btn-push-sb",true,"......");
   try{
     await SBPost(ST.tbl||"blog_posts",{title:GEN.title,slug:GEN.slug,category:GEN.category,author:GEN.author,tags:GEN.tags,meta_description:GEN.metaDescription,seo_keywords:GEN.seoKeywords,excerpt:GEN.excerpt,content:GEN.markdownContent,word_count:GEN.wordCount,status:"pending",blog_url:GEN.blogUrl,created_at:new Date().toISOString()});
-    alert2("g-alert","✅ Pushed to Supabase!","ok");
-  }catch(e){alert2("g-alert","❌ "+e.message,"er");}
-  finally{setBtn("btn-push-sb",false,"⬆ Supabase");}
+    alert2("g-alert","OK: Pushed to Supabase!","ok");
+  }catch(e){alert2("g-alert","ERROR: "+e.message,"er");}
+  finally{setBtn("btn-push-sb",false," Supabase");}
 });
 
 // ═══════════════════════════════════════════════════════
@@ -989,14 +931,14 @@ function renderQueue(){
   var srch=(val("q-search")||"").toLowerCase(),fil=G("q-filter").value;
   var data=QUEUE.filter(function(b){return(!srch||b.title.toLowerCase().includes(srch)||(b.category||"").toLowerCase().includes(srch))&&(!fil||b.uploadStatus===fil);});
   var tb=G("queue-body");
-  if(!data.length){tb.innerHTML="<tr><td colspan='6' style='text-align:center;color:var(--t3);padding:28px'>No blogs yet — generate your first one!</td></tr>";updateCounts();return;}
+  if(!data.length){tb.innerHTML="<tr><td colspan='6' style='text-align:center;color:var(--t3);padding:28px'>No blogs yet -- generate your first one!</td></tr>";updateCounts();return;}
   var bm={"Pending":"b-pen","Review":"b-rev","Approved":"b-app","Scheduled":"b-sch","Published to Site":"b-pub"};
   tb.innerHTML=data.map(function(b){return"<tr>"+
     "<td><span class='badge "+(bm[b.uploadStatus]||"b-def")+"'>"+esc(b.uploadStatus||"Pending")+"</span></td>"+
     "<td style='max-width:200px'><div style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500'>"+esc(b.title)+"</div></td>"+
-    "<td style='color:var(--t3)'>"+esc(b.category||"—")+"</td>"+
-    "<td style='color:var(--t3)'>"+(b.wordCount||"—")+"</td>"+
-    "<td style='color:var(--t3)'>"+(b.publishDate||"—")+"</td>"+
+    "<td style='color:var(--t3)'>"+esc(b.category||"--")+"</td>"+
+    "<td style='color:var(--t3)'>"+(b.wordCount||"--")+"</td>"+
+    "<td style='color:var(--t3)'>"+(b.publishDate||"--")+"</td>"+
     "<td><div style='display:flex;gap:4px'>"+
       "<select class='q-stat-sel' data-id='"+b.id+"' style='background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:3px 5px;border-radius:5px;font-size:11px'>"+
       ["Pending","Review","Approved","Scheduled","Published to Site"].map(function(s){return"<option"+(b.uploadStatus===s?" selected":"")+">"+s+"</option>";}).join("")+
@@ -1026,12 +968,12 @@ G("btn-pub-all").addEventListener("click",function(){
   var r=QUEUE.filter(function(x){return x.uploadStatus==="Approved"||x.uploadStatus==="Scheduled";});
   if(!r.length){alert("No Approved or Scheduled blogs.");return;}
   r.forEach(function(b){b.uploadStatus="Published to Site";b.publishedAt=new Date().toISOString().split("T")[0];});
-  renderQueue();updateCounts();alert("✅ "+r.length+" blog(s) marked Published to Site!");
+  renderQueue();updateCounts();alert("OK: "+r.length+" blog(s) marked Published to Site!");
 });
 G("btn-sync").addEventListener("click",async function(){
   if(!ST.url||!ST.key){alert("Add Supabase credentials in Settings first.");return;}
-  setBtn("btn-sync",true,"⏳ Syncing...");
-  try{await loadQueueFromSB();renderQueue();updateCounts();alert("✅ Synced from Supabase!");}
+  setBtn("btn-sync",true,"... Syncing...");
+  try{await loadQueueFromSB();renderQueue();updateCounts();alert("OK: Synced from Supabase!");}
   catch(e){alert("Error: "+e.message);}
   finally{setBtn("btn-sync",false,"&#8595; Sync Supabase");}
 });
@@ -1047,7 +989,7 @@ G("btn-save-idea").addEventListener("click",async function(){
     status:"New",dateFound:new Date().toISOString()};
   IDEAS.unshift(idea);renderIdeas();updateCounts();
   ["idea-title","idea-notes"].forEach(function(id){var e=G(id);if(e)e.value="";});
-  alert2("idea-alert","✅ Saved to Supabase!","ok");
+  alert2("idea-alert","OK: Saved to Supabase!","ok");
   if(ST.url&&ST.key){
     try{await SBPost(ST.idt||"blog_ideas",{title:idea.title,status:"New",priority:idea.priority,topic_keywords:idea.title,season_relevance:idea.season,target_audience:idea.audience,notes:idea.notes,date_found:idea.dateFound});}
     catch(e){console.log("Idea SB:",e.message);}
@@ -1097,38 +1039,23 @@ G("btn-gen-nl").addEventListener("click",async function(){
   if(!ST.ant){alert2("nl-alert","Add Anthropic API key in Settings.","er");return;}
   var mo=val("nl-month"),yr=val("nl-year"),cnt=parseInt(val("nl-count")||"5"),ev=val("nl-events");
   var blogs=QUEUE.filter(function(x){return x.uploadStatus==="Published to Site";}).slice(0,cnt);
-  var bl=blogs.length?blogs.map(function(b,i){return(i+1)+". "+b.title+" ("+b.category+")";}).join("
-"):"(No published blogs yet)";
-  setBtn("btn-gen-nl",true,"⏳ Generating...");
-  var prompt="Monthly newsletter for TheGloveSOS.com.
-Month: "+mo+" "+yr+"
-TOP BLOGS:
-"+bl+"
-EVENTS: "+(ev||"2-3 relevant baseball/softball events for "+mo)+"
-
-Return EXACTLY:
-===SUBJECT===
-[45-55 chars]
-
-===PREHEADER===
-[85-100 chars]
-
-===BODY===
-[Newsletter HTML with greeting, blog summaries, baseball events, CTA to theglovesos.com]";
+  var bl=blogs.length?blogs.map(function(b,i){return(i+1)+". "+b.title+" ("+b.category+")";}).join("\n"):"(No published blogs yet)";
+  setBtn("btn-gen-nl",true,"... Generating...");
+  var prompt="Monthly newsletter for TheGloveSOS.com.\nMonth: "+mo+" "+yr+"\nTOP BLOGS:\n"+bl+"\nEVENTS: "+(ev||"2-3 relevant baseball/softball events for "+mo)+"\n\nReturn EXACTLY:\n===SUBJECT===\n[45-55 chars]\n\n===PREHEADER===\n[85-100 chars]\n\n===BODY===\n[Newsletter HTML with greeting, blog summaries, baseball events, CTA to theglovesos.com]";
   try{
     var t=await AI(prompt,2000);
     txt("nl-subject",extr(t,"SUBJECT"));txt("nl-preheader",extr(t,"PREHEADER"));
     G("nl-body").innerHTML=extr(t,"BODY")||t;show("nl-output");
-  }catch(e){alert2("nl-alert","❌ "+e.message,"er");}
-  finally{setBtn("btn-gen-nl",false,"📰 Generate Newsletter");}
+  }catch(e){alert2("nl-alert","ERROR: "+e.message,"er");}
+  finally{setBtn("btn-gen-nl",false," Generate Newsletter");}
 });
 G("btn-push-nl").addEventListener("click",async function(){
   if(!ST.url||!ST.key){alert("Add Supabase credentials in Settings.");return;}
-  try{await SBPost("newsletters",{month:val("nl-month"),subject:G("nl-subject").textContent,preheader:G("nl-preheader").textContent,body:G("nl-body").innerHTML,status:"Draft",generated_by:"AI",date_generated:new Date().toISOString()});alert("✅ Newsletter pushed to Supabase!");}
-  catch(e){alert("❌ "+e.message);}
+  try{await SBPost("newsletters",{month:val("nl-month"),subject:G("nl-subject").textContent,preheader:G("nl-preheader").textContent,body:G("nl-body").innerHTML,status:"Draft",generated_by:"AI",date_generated:new Date().toISOString()});alert("OK: Newsletter pushed to Supabase!");}
+  catch(e){alert("ERROR: "+e.message);}
 });
 G("btn-copy-nl").addEventListener("click",function(){
-  navigator.clipboard.writeText(G("nl-body").innerHTML).then(function(){alert("✅ Copied!");});
+  navigator.clipboard.writeText(G("nl-body").innerHTML).then(function(){alert("OK: Copied!");});
 });
 
 // ═══════════════════════════════════════════════════════
@@ -1137,44 +1064,24 @@ G("btn-copy-nl").addEventListener("click",function(){
 G("btn-research").addEventListener("click",async function(){
   if(!ST.ant){alert("Add API key in Settings.");return;}
   var topic=val("res-topic");if(!topic){alert("Enter a topic.");return;}
-  setBtn("btn-research",true,"🔍 Researching...");
-  var prompt="Research for TheGloveSOS.com.
-Topic: "+topic+"
-Focus: "+val("res-focus")+"
-
-Return:
-===SUMMARY===
-[Why this matters for glove repair audience]
-
-===BLOG_IDEAS===
-1. [Title] | Category: [cat] | Angle: [angle]
-2. [Title] | Category: [cat] | Angle: [angle]
-3. [Title] | Category: [cat] | Angle: [angle]
-4. [Title] | Category: [cat] | Angle: [angle]
-5. [Title] | Category: [cat] | Angle: [angle]
-
-===KEYWORDS===
-[12 SEO keywords]
-
-===SOURCES===
-[3-4 source types]";
+  setBtn("btn-research",true," Researching...");
+  var prompt="Research for TheGloveSOS.com.\nTopic: "+topic+"\nFocus: "+val("res-focus")+"\n\nReturn:\n===SUMMARY===\n[Why this matters for glove repair audience]\n\n===BLOG_IDEAS===\n1. [Title] | Category: [cat] | Angle: [angle]\n2. [Title] | Category: [cat] | Angle: [angle]\n3. [Title] | Category: [cat] | Angle: [angle]\n4. [Title] | Category: [cat] | Angle: [angle]\n5. [Title] | Category: [cat] | Angle: [angle]\n\n===KEYWORDS===\n[12 SEO keywords]\n\n===SOURCES===\n[3-4 source types]";
   try{
     var t=await AI(prompt,1400);
     txt("res-results",t);show("res-output");LASTRES=t;
-  }catch(e){alert("❌ "+e.message);}
-  finally{setBtn("btn-research",false,"🔍 Research Now");}
+  }catch(e){alert("ERROR: "+e.message);}
+  finally{setBtn("btn-research",false," Research Now");}
 });
 G("btn-save-res").addEventListener("click",function(){
   if(!LASTRES){alert("Run research first.");return;}
   var sec=extr(LASTRES,"BLOG_IDEAS");
-  var lines=sec.split("
-").filter(function(l){return l.trim()&&/^\d+\./.test(l.trim());});
+  var lines=sec.split("\n").filter(function(l){return l.trim()&&/^\d+\./.test(l.trim());});
   lines.forEach(function(line){
     var c=line.replace(/^\d+\.\s*/,"").split("|");
     var t=(c[0]||"").trim(),cm=(c[1]||"").match(/Category:\s*(.+)/i),am=(c[2]||"").match(/Angle:\s*(.+)/i);
     if(t)IDEAS.unshift({id:Date.now()+Math.random(),title:t,priority:"Medium",category:cm?cm[1].trim():"Glove Repair",season:"Any",audience:"All Players",notes:am?am[1].trim():"",status:"New",dateFound:new Date().toISOString()});
   });
-  updateCounts();alert("✅ "+lines.length+" ideas saved!");
+  updateCounts();alert("OK: "+lines.length+" ideas saved!");
 });
 
 // ═══════════════════════════════════════════════════════
@@ -1183,20 +1090,15 @@ G("btn-save-res").addEventListener("click",function(){
 G("btn-img-prompt").addEventListener("click",async function(){
   if(!ST.ant){alert("Add API key in Settings.");return;}
   var tmap={hero:"landscape hero banner 1200x628px",social:"square social 1080x1080px",thumb:"YouTube thumbnail 1280x720px with text overlay space",product:"glove product closeup",composite:"glove with custom background composite"};
-  var prompt="Generate a detailed image generation prompt for TheGloveSOS.com.
-Type: "+(tmap[val("img-type")]||val("img-type"))+"
-Context: "+(val("img-context")||"baseball/softball glove repair")+"
-Details: "+(val("img-details")||"professional photography")+"
-Brand: Dark moody atmosphere, teal #00cccc accents, deep purple highlights, authentic sports photography, leather texture focus.
-Return ONLY the image prompt — no explanation. Ready to paste into Midjourney, DALL-E, or Adobe Firefly.";
-  setBtn("btn-img-prompt",true,"⏳ Generating...");
+  var prompt="Generate a detailed image generation prompt for TheGloveSOS.com.\nType: "+(tmap[val("img-type")]||val("img-type"))+"\nContext: "+(val("img-context")||"baseball/softball glove repair")+"\nDetails: "+(val("img-details")||"professional photography")+"\nBrand: Dark moody atmosphere, teal #00cccc accents, deep purple highlights, authentic sports photography, leather texture focus.\nReturn ONLY the image prompt -- no explanation. Ready to paste into Midjourney, DALL-E, or Adobe Firefly.";
+  setBtn("btn-img-prompt",true,"... Generating...");
   try{var t=await AI(prompt,500);txt("img-prompt-text",t.trim());show("img-prompt-out");}
-  catch(e){alert("❌ "+e.message);}
-  finally{setBtn("btn-img-prompt",false,"✨ Generate Prompt");}
+  catch(e){alert("ERROR: "+e.message);}
+  finally{setBtn("btn-img-prompt",false," Generate Prompt");}
 });
 G("btn-copy-img-prompt").addEventListener("click",function(){
   var e=G("img-prompt-text");if(!e)return;
-  navigator.clipboard.writeText(e.textContent).then(function(){alert("✅ Prompt copied!");});
+  navigator.clipboard.writeText(e.textContent).then(function(){alert("OK: Prompt copied!");});
 });
 G("img-file").addEventListener("change",function(){
   var f=this.files[0];if(!f)return;
@@ -1212,16 +1114,16 @@ G("btn-img-upload").addEventListener("click",async function(){
   var name=(val("img-name")||f.name.replace(/\.[^/.]+$/,"").replace(/\s+/g,"-").toLowerCase())+"-"+Date.now()+"."+ext;
   var bucket=ST.bkt||"blog-images";
   var path=folder+"/"+name;
-  setBtn("btn-img-upload",true,"⏳ Uploading...");
+  setBtn("btn-img-upload",true,"... Uploading...");
   try{
     var r=await fetch(ST.url+"/storage/v1/object/"+bucket+"/"+path,{
       method:"POST",headers:{apikey:ST.key,Authorization:"Bearer "+ST.key,"Content-Type":f.type,"x-upsert":"true"},body:f
     });
     if(!r.ok){var e=await r.json().catch(function(){return{};});throw new Error(e.message||"HTTP "+r.status);}
     var url=ST.url+"/storage/v1/object/public/"+bucket+"/"+path;
-    G("img-url").value=url;alert2("img-upload-alert","✅ Uploaded! URL ready below.","ok");
-  }catch(e){alert2("img-upload-alert","❌ "+e.message,"er");}
-  finally{setBtn("btn-img-upload",false,"⬆ Upload to Supabase");}
+    G("img-url").value=url;alert2("img-upload-alert","OK: Uploaded! URL ready below.","ok");
+  }catch(e){alert2("img-upload-alert","ERROR: "+e.message,"er");}
+  finally{setBtn("btn-img-upload",false," Upload to Supabase");}
 });
 G("btn-img-clear").addEventListener("click",function(){
   G("img-file").value="";G("img-name").value="";G("img-url").value="";
@@ -1229,7 +1131,7 @@ G("btn-img-clear").addEventListener("click",function(){
 });
 G("btn-copy-img-url").addEventListener("click",function(){
   var u=val("img-url");if(!u){alert("No URL yet.");return;}
-  navigator.clipboard.writeText(u).then(function(){alert("✅ URL copied!");});
+  navigator.clipboard.writeText(u).then(function(){alert("OK: URL copied!");});
 });
 G("btn-preview-url").addEventListener("click",function(){
   var u=val("img-url");if(!u){alert("No URL yet.");return;}
@@ -1250,7 +1152,7 @@ document.addEventListener("DOMContentLoaded",function(){
     loadSettings();
   } else {
     updateCounts();
-    alert2("s-alert","👋 First time? Enter Supabase URL and Anon Key above, then click Save All Settings to Supabase.","in");
+    alert2("s-alert"," First time? Enter Supabase URL and Anon Key above, then click Save All Settings to Supabase.","in");
   }
 });
 </script>
