@@ -152,7 +152,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub">Tool Shed v2.0</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.1</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -184,6 +184,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
     <span class="topbar-badge">TheGloveSOS.com</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.1</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -295,8 +296,10 @@ tr:hover td{background:rgba(0,204,204,.03)}
             <option value="Approved">Mark Approved</option><option value="Scheduled">Schedule</option>
           </select>
           <input type="date" id="push-date" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:8px 10px;border-radius:7px;font-size:13px"/>
-          <button class="btn btn-teal" id="btn-push-queue">🚀 Push to Queue</button>
-          <button class="btn btn-pur btn-sm" id="btn-push-sb">⬆ Supabase</button>
+          <button class="btn btn-teal" id="btn-push-queue"> Push to Queue</button>
+          <button class="btn btn-pur btn-sm" id="btn-push-sb"> Supabase</button>
+          <button class="btn btn-gold btn-sm" id="btn-save-as-idea"> Save as Idea</button>
+          <button class="btn btn-out btn-sm" id="btn-to-image-studio"> Send to Image Studio</button>
         </div>
       </div>
     </div>
@@ -473,6 +476,12 @@ tr:hover td{background:rgba(0,204,204,.03)}
   <!-- SETTINGS -->
   <div class="page" id="page-settings">
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
+    <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.1</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-04-28</span></div>
+        <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
+      </div>
+    </div>
     <div class="card" style="border-color:rgba(240,165,0,.3)">
       <div class="card-title" style="color:var(--gold)">🔌 Supabase Connection</div>
       <div class="r2">
@@ -927,6 +936,38 @@ G("btn-push-sb").addEventListener("click",async function(){
 // ═══════════════════════════════════════════════════════
 // QUEUE
 // ═══════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════
+// EXTRA GENERATOR BUTTONS
+// ═══════════════════════════════════════════════════════
+G("btn-save-as-idea").addEventListener("click", async function(){
+  if(!GEN){ alert2("g-alert","Generate a blog first.","er"); return; }
+  var idea = {
+    id: Date.now(), title: GEN.title, priority: "High",
+    category: GEN.category, season: "Any", audience: "All Players",
+    notes: "Saved from generated blog. Slug: "+GEN.slug,
+    status: "New", dateFound: new Date().toISOString()
+  };
+  IDEAS.unshift(idea); updateCounts();
+  if(ST.url && ST.key){
+    try{ await SBPost(ST.idt||"blog_ideas",{title:idea.title,status:"New",priority:"High",topic_keywords:GEN.seoKeywords||idea.title,season_relevance:"Any",target_audience:"All Players",notes:idea.notes,date_found:idea.dateFound}); }
+    catch(e){ console.log("Idea:", e.message); }
+  }
+  alert2("g-alert","OK: Saved to Ideas!","ok");
+});
+
+G("btn-to-image-studio").addEventListener("click", function(){
+  if(!GEN){ alert2("g-alert","Generate a blog first.","er"); return; }
+  var heroPrompt = G("out-hero") ? G("out-hero").textContent.trim() : "";
+  if(heroPrompt){
+    var ic=G("img-context"); if(ic) ic.value=GEN.title;
+    var id2=G("img-details"); if(id2) id2.value=heroPrompt;
+    var it=G("img-type"); if(it) it.value="hero";
+    var pt=G("img-prompt-text"); if(pt){ pt.textContent=heroPrompt; show("img-prompt-out"); }
+  }
+  navTo("images");
+});
+
 function renderQueue(){
   var srch=(val("q-search")||"").toLowerCase(),fil=G("q-filter").value;
   var data=QUEUE.filter(function(b){return(!srch||b.title.toLowerCase().includes(srch)||(b.category||"").toLowerCase().includes(srch))&&(!fil||b.uploadStatus===fil);});
@@ -1142,6 +1183,7 @@ G("btn-preview-url").addEventListener("click",function(){
 // INIT
 // ═══════════════════════════════════════════════════════
 document.addEventListener("DOMContentLoaded",function(){
+  updateVersionDisplay();
   var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
   G("nl-month").value=months[new Date().getMonth()];
   G("push-date").value=new Date().toISOString().split("T")[0];
