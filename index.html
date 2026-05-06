@@ -448,7 +448,7 @@ tr:hover td{background:var(--tdim)}
       <div class="cdt">🤖 API Keys</div>
       <div class="fg"><label>Anthropic API Key (Claude)</label>
         <input type="password" id="sAnt" placeholder="sk-ant-api03-..."/>
-        <div class="hint">Get yours at console.anthropic.com — saved to Supabase, never stored in browser</div></div>
+        <div class="hint">Saved encrypted in Supabase — never in your browser or code. For maximum security, deploy the Edge Function (see docs) so the key never touches the browser at all.</div></div>
     </div>
     <div class="cd">
       <div class="cdt">🖼️ Brand Logo</div>
@@ -700,7 +700,7 @@ async function loadSettings() {
     if (m.max_word_count)    ST.max = m.max_word_count;
     if (m.site_url)          ST.sit = m.site_url;
     if (m.notification_email) ST.eml = m.notification_email;
-    if (m.logo_url) { loadLogoPreview(m.logo_url); localStorage.setItem('gsos_logo', m.logo_url); }
+    if (m.logo_url) { loadLogoPreview(m.logo_url); }
     TOGS.ap = m.auto_publish    === 'true';
     TOGS.ag = m.auto_generate   === 'true';
     TOGS.nl = m.auto_newsletter !== 'false';
@@ -804,6 +804,41 @@ el('testSbBtn').addEventListener('click', async function() {
   finally { setBtn('testSbBtn', false, '🔌 Test Connection'); }
 });
 
+
+// ─────────────────────────────────────────────
+// AI PROXY — calls Supabase Edge Function
+// Anthropic key stays server-side, never in browser
+// ─────────────────────────────────────────────
+async function callAI(prompt, maxTokens) {
+  maxTokens = maxTokens || 4500;
+  // Try Edge Function first (key stays server-side — most secure)
+  var edgeUrl = ST.url + '/functions/v1/ai-proxy';
+  try {
+    var r = await fetch(edgeUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ST.key },
+      body: JSON.stringify({ prompt: prompt, max_tokens: maxTokens })
+    });
+    if (r.ok) {
+      var data = await r.json();
+      if (data.content && data.content[0]) return data.content[0].text;
+      if (data.error) throw new Error(data.error.message || data.error);
+    }
+  } catch(e) {
+    console.log('Edge Function not available, falling back to direct call:', e.message);
+  }
+  // Fallback: direct call (works but key visible in network tab)
+  if (!ST.ant) throw new Error('No API key configured. Add your Anthropic key in Settings.');
+  var r2 = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'x-api-key': ST.ant, 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
+  });
+  var data2 = await r2.json();
+  if (data2.error) throw new Error(data2.error.message);
+  return data2.content[0].text;
+}
+
 // ─────────────────────────────────────────────
 // BLOG GENERATOR
 // ─────────────────────────────────────────────
@@ -816,14 +851,8 @@ el('gBtn').addEventListener('click', async function() {
   setBtn('gBtn', true, '⏳ Generating...'); hide('gOut'); clearAl('gAl');
   var prompt = 'You are writing a blog for TheGloveSOS.com — the national glove repair directory.\n\nBRAND VOICE: Expert, trustworthy, community-focused. Real knowledge, real passion. Conversational but authoritative. Reference finding a local repair shop naturally when it fits. Never mention competitor directories.\n\nBLOG DETAILS:\nTitle: ' + title + '\nCategory: ' + cat + '\nTarget: ' + wc + ' words\nDetails: ' + (det||'use your expertise') + '\nExpert Take: ' + (exp||'write from expert glove perspective') + '\nBrand DNA: ' + (dna||'TheGloveSOS connects players with trusted local repair shops nationwide. Quality repair matters. Your glove is your most personal piece of equipment.') + '\n\nReturn EXACTLY these sections with === markers:\n\n===BLOG_CONTENT===\n[Full markdown ~' + wc + ' words. ## and ### headers. Conversational, real voice.]\n\n===SEO_TITLE===\n[55-65 chars]\n\n===SLUG===\n[lowercase-url-slug]\n\n===META_DESCRIPTION===\n[150-160 chars with primary keyword]\n\n===KEYWORDS===\n[12 keywords comma-separated]\n\n===TAGS===\n[10 tags lowercase-hyphenated comma-separated]\n\n===EXCERPT===\n[2-3 sentences ~120 words]\n\n===SOCIAL_CAPTION===\n[Caption + 6-8 hashtags including #TheGloveSOS #GloveRepair]\n\n===HERO_IMAGE_PROMPT===\n[Baseball/softball glove, moody teal lighting, landscape format]\n\n===SOCIAL_IMAGE_PROMPT===\n[Square 1:1, bold, teal/purple palette]\n\n===THUMBNAIL_PROMPT===\n[YouTube thumbnail, high contrast, text overlay space]\n\n===INSERT_IMAGE_PROMPTS===\nInsert 1: [prompt]\nInsert 2: [prompt]\nInsert 3: [prompt]\n\n===INTERNAL_LINKS===\n[3-4 content suggestions for theglovesos.com/blog/...]\n\n===EXTERNAL_LINKS===\n[2-3 authoritative source types]';
   try {
-    var res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'x-api-key': ST.ant, 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4500, messages: [{ role: 'user', content: prompt }] })
-    });
-    var data = await res.json();
-    if (data.error) { showAl('gAl', 'API Error: ' + data.error.message, 'er'); return; }
-    parseBlog(data.content[0].text, title, cat);
+    var txt = await callAI(prompt, 4500);
+    parseBlog(txt, title, cat);
   } catch(e) { showAl('gAl', 'Error: ' + e.message, 'er'); }
   finally { setBtn('gBtn', false, '✨ Generate Master Blog'); }
 });
@@ -1030,10 +1059,8 @@ el('nlBtn').addEventListener('click', async function() {
   setBtn('nlBtn',true,'⏳ Generating...');
   var prompt = 'Monthly newsletter for TheGloveSOS.com — national glove repair directory.\nMonth: '+mo+' '+yr+'\nVoice: Expert, warm, community-focused.\n\nTOP BLOGS:\n'+bl+'\nEVENTS: '+(ev||'2-3 relevant baseball/softball events for '+mo)+'\n\n===SUBJECT===\n[Subject 45-55 chars]\n\n===PREHEADER===\n[Preview text 85-100 chars]\n\n===BODY===\n[Newsletter HTML. Warm greeting, month recap, featured blogs with Read More links, 2-3 baseball calendar highlights, CTA to find local repair at theglovesos.com. Use inline styles, #00cccc teal accents.]';
   try {
-    var res = await fetch('https://api.anthropic.com/v1/messages', {method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':ST.ant,'anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})});
-    var data = await res.json();
-    if (data.error){showAl('nlAl','API Error: '+data.error.message,'er');return;}
-    var txt = data.content[0].text;
+    var txt = await callAI(prompt, 2000);
+    if(!txt){showAl('nlAl','No response from AI.','er');return;}
     setTxt('nlSubj',extr(txt,'SUBJECT')); setTxt('nlPre',extr(txt,'PREHEADER'));
     el('nlBody').innerHTML = extr(txt,'BODY')||txt;
     show('nlOut');
@@ -1058,9 +1085,9 @@ el('resBtn').addEventListener('click', async function() {
   setBtn('resBtn',true,'🔍 Researching...');
   var prompt='Research assistant for TheGloveSOS.com.\nTopic: '+topic+'\nFocus: '+val('rFocus')+'\n\n===SUMMARY===\n[3-4 sentences why this matters for glove repair audience]\n\n===BLOG_IDEAS===\n1. [Title] | Category: [cat] | Angle: [1-sentence]\n2. [Title] | Category: [cat] | Angle: [angle]\n3. [Title] | Category: [cat] | Angle: [angle]\n4. [Title] | Category: [cat] | Angle: [angle]\n5. [Title] | Category: [cat] | Angle: [angle]\n\n===KEYWORDS===\n[12 SEO keywords comma-separated]\n\n===SOURCES===\n[3-4 authoritative source types]';
   try {
-    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':ST.ant,'anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1400,messages:[{role:'user',content:prompt}]})});
-    var data=await res.json(); if(data.error){alert('API Error: '+data.error.message);return;}
-    el('resResults').textContent=data.content[0].text; show('resOut'); LASTRES=data.content[0].text;
+    var rtxt = await callAI(prompt, 1400);
+    if(!rtxt){alert('No response from AI.');return;}
+    el('resResults').textContent=rtxt; show('resOut'); LASTRES=rtxt;
   }catch(e){alert('Error: '+e.message);}
   finally{setBtn('resBtn',false,'🔍 Research Now');}
 });
@@ -1148,7 +1175,7 @@ el('uploadLogoBtn').addEventListener('click', async function() {
 
 el('removeLogoBtn').addEventListener('click', async function() {
   clearLogoPreview();
-  localStorage.removeItem('gsos_logo');
+
   try { await sbUpsert('app_settings', [{ key: 'logo_url', value: '' }]); } catch(e) {}
 });
 
@@ -1166,8 +1193,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Auto-load settings if we have credentials
   if (ST.url && ST.key) loadSettings();
   else showAl('sAl','👋 First time setup: enter your Supabase URL and Anon Key in Settings, then click Save.','in');
-  // Load logo if saved
-  try { var lu = localStorage.getItem('gsos_logo'); if(lu) loadLogoPreview(lu); } catch(e){}
+
 });
 </script>
 </body>
