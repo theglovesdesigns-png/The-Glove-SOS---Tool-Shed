@@ -3,151 +3,146 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>TheGloveSOS — Blog System</title>
+<title>TheGloveSOS — Tool Shed</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#07070f;--bg2:#0f0f1a;--bg3:#14141f;--bg4:#1a1a28;
-  --teal:#00cccc;--teal2:#00aaaa;--tdim:rgba(0,204,204,.1);
-  --purple:#6d3d9c;--pur2:#8b52c4;
+  --teal:#00cccc;--teal2:#009999;--tdim:rgba(0,204,204,.1);
+  --pur:#6d3d9c;--pur2:#8b52c4;
   --gold:#f0a500;--gold2:#ffc233;
   --text:#f0f0f8;--t2:#a0a0c0;--t3:#505070;
-  --bdr:rgba(0,204,204,.15);--bdr2:rgba(0,204,204,.28);
+  --bdr:rgba(0,204,204,.15);--bdr2:rgba(0,204,204,.3);
   --green:#00cc88;--red:#cc3344;--orange:#ff8c42;
 }
-html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,sans-serif;font-size:14px}
 #app{display:flex;height:100vh}
-
 /* SIDEBAR */
-#sb{width:224px;min-width:224px;background:var(--bg2);border-right:1px solid var(--bdr);display:flex;flex-direction:column;transition:width .25s;overflow:hidden}
+#sb{width:220px;min-width:220px;background:var(--bg2);border-right:1px solid var(--bdr);display:flex;flex-direction:column;transition:width .2s;overflow:hidden}
 #sb.col{width:52px;min-width:52px}
-.sh{padding:13px 11px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:9px}
-.slogo{width:32px;height:32px;min-width:32px;background:linear-gradient(135deg,var(--purple),var(--teal));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:#fff;letter-spacing:1px}
-.sname{font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--teal);white-space:nowrap}
-.ssub{font-size:10px;color:var(--t3);white-space:nowrap;margin-top:1px}
-.stog{margin-left:auto;background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;padding:2px;min-width:20px;line-height:1}
-.stog:hover{color:var(--teal)}
-.ssec{padding:8px 0}
-.slbl{padding:3px 13px 5px;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1.3px;white-space:nowrap}
-.sit{display:flex;align-items:center;gap:10px;padding:8px 13px;cursor:pointer;border-left:3px solid transparent;transition:all .15s;white-space:nowrap;overflow:hidden}
-.sit:hover{background:var(--tdim)}
-.sit.on{background:var(--tdim);border-left-color:var(--teal);color:var(--teal)}
-.sico{font-size:16px;min-width:20px;text-align:center}
+.sh{padding:13px 11px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:9px;min-height:58px}
+.slogo{width:32px;height:32px;min-width:32px;background:linear-gradient(135deg,var(--pur),var(--teal));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:Oswald,sans-serif;font-weight:700;font-size:12px;color:#fff;overflow:hidden;flex-shrink:0}
+.slogo img{width:32px;height:32px;object-fit:contain;display:none}
+.sbrand{overflow:hidden;flex:1;min-width:0}
+.sname{font-family:Oswald,sans-serif;font-weight:700;font-size:13px;color:var(--teal);white-space:nowrap}
+.ssub{font-size:10px;color:var(--t3);white-space:nowrap}
+#tog-sb{background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;padding:2px;flex-shrink:0}
+#tog-sb:hover{color:var(--teal)}
+.sgrp{padding:5px 0}
+.slbl{padding:3px 13px 4px;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px;white-space:nowrap}
+.sitem{display:flex;align-items:center;gap:10px;padding:9px 13px;cursor:pointer;border-left:3px solid transparent;white-space:nowrap;user-select:none}
+.sitem:hover{background:var(--tdim)}
+.sitem.on{background:var(--tdim);border-left-color:var(--teal);color:var(--teal)}
+.sico{font-size:15px;min-width:20px;text-align:center;flex-shrink:0}
 .stxt{font-size:13px;font-weight:500}
-.sbdg{margin-left:auto;background:var(--purple);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px}
-.col .stxt,.col .slbl,.col .sname,.col .ssub,.col .sbdg{display:none}
-.sft{margin-top:auto;padding:11px 13px;border-top:1px solid var(--bdr)}
-.sft p{font-size:11px;color:var(--t3);line-height:1.9;white-space:nowrap}
-.sft b{color:var(--teal)}
-.col .sft p{display:none}
-
+.sbdg{margin-left:auto;background:var(--pur);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px}
+#sb.col .stxt,#sb.col .slbl,#sb.col .sname,#sb.col .ssub,#sb.col .sbdg{display:none}
+.sfoot{margin-top:auto;padding:11px 13px;border-top:1px solid var(--bdr);font-size:11px;color:var(--t3);line-height:1.9}
+.sfoot b{color:var(--teal)}
+#sb.col .sfoot span{display:none}
 /* MAIN */
 #mn{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
-.tb{background:var(--bg2);border-bottom:1px solid var(--bdr);padding:11px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0}
-.tb-t{font-family:'Oswald',sans-serif;font-size:19px;font-weight:600;letter-spacing:.4px}
-.tb-b{background:var(--tdim);border:1px solid var(--bdr2);color:var(--teal);font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600}
-.tb-s{font-size:12px;color:var(--t3);margin-left:auto}
-.ct{flex:1;overflow-y:auto;padding:20px}
-
+.topbar{background:var(--bg2);border-bottom:1px solid var(--bdr);padding:11px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0;min-height:50px}
+.topbar-title{font-family:Oswald,sans-serif;font-size:19px;font-weight:600}
+.topbar-badge{background:var(--tdim);border:1px solid var(--bdr2);color:var(--teal);font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600}
+.topbar-sub{font-size:12px;color:var(--t3);margin-left:auto}
+.content{flex:1;overflow-y:auto;padding:20px}
 /* PAGES */
-.pg{display:none}.pg.on{display:block}
-
+.page{display:none}.page.on{display:block}
 /* CARDS */
-.cd{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:18px;margin-bottom:14px}
-.cdt{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;color:var(--teal);margin-bottom:14px;display:flex;align-items:center;gap:8px;letter-spacing:.4px}
-
+.card{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:18px;margin-bottom:14px}
+.card-title{font-family:Oswald,sans-serif;font-size:14px;font-weight:600;color:var(--teal);margin-bottom:14px;display:flex;align-items:center;gap:8px}
 /* FORMS */
 label{font-size:12px;color:var(--t2);display:block;margin-bottom:4px;font-weight:500}
-input,select,textarea{width:100%;background:var(--bg3);border:1px solid rgba(0,204,204,.18);border-radius:7px;color:var(--text);padding:8px 11px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s}
-input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(0,204,204,.08)}
+input[type=text],input[type=url],input[type=number],input[type=password],input[type=date],input[type=file],select,textarea{
+  width:100%;background:var(--bg3);border:1px solid rgba(0,204,204,.2);border-radius:7px;
+  color:var(--text);padding:8px 11px;font-size:13px;font-family:Inter,sans-serif;outline:none}
+input[type=file]{padding:6px 11px;cursor:pointer}
+input:focus,select:focus,textarea:focus{border-color:var(--teal)}
 textarea{resize:vertical;line-height:1.6}
 select option{background:var(--bg3)}
-.fg{margin-bottom:13px}
-.r2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
-.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
-
+.fg{margin-bottom:12px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.hint{font-size:11px;color:var(--t3);margin-top:3px}
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:Inter,sans-serif;white-space:nowrap}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-.bt{background:var(--teal);color:#07070f}.bt:not(:disabled):hover{background:var(--teal2)}
-.bp{background:var(--purple);color:#fff}.bp:not(:disabled):hover{background:var(--pur2)}
-.bg2{background:var(--gold);color:#07070f}.bg2:not(:disabled):hover{background:var(--gold2)}
-.bo{background:transparent;border:1px solid var(--bdr2);color:var(--t2)}.bo:not(:disabled):hover{border-color:var(--teal);color:var(--teal)}
-.bsm{padding:6px 12px;font-size:12px}
-.bxs{padding:4px 8px;font-size:11px}
-.bg{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-
+.btn-teal{background:var(--teal);color:#07070f}.btn-teal:not(:disabled):hover{background:var(--teal2)}
+.btn-pur{background:var(--pur);color:#fff}.btn-pur:not(:disabled):hover{background:var(--pur2)}
+.btn-gold{background:var(--gold);color:#07070f}.btn-gold:not(:disabled):hover{background:var(--gold2)}
+.btn-out{background:transparent;border:1px solid var(--bdr2);color:var(--t2)}.btn-out:not(:disabled):hover{border-color:var(--teal);color:var(--teal)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-xs{padding:4px 8px;font-size:11px}
+.bgroup{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 /* BADGES */
-.bdg{display:inline-flex;align-items:center;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:600;white-space:nowrap}
-.bpen{background:rgba(255,140,66,.12);color:var(--orange)}
-.brev{background:rgba(240,165,0,.12);color:var(--gold)}
-.bapp{background:rgba(0,204,136,.12);color:var(--green)}
-.bsch{background:rgba(109,61,156,.2);color:var(--pur2)}
-.bpub{background:rgba(0,204,204,.12);color:var(--teal)}
-.bdef{background:rgba(80,80,112,.15);color:var(--t3)}
-
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600}
+.b-pen{background:rgba(255,140,66,.12);color:var(--orange)}
+.b-rev{background:rgba(240,165,0,.12);color:var(--gold)}
+.b-app{background:rgba(0,204,136,.12);color:var(--green)}
+.b-sch{background:rgba(109,61,156,.2);color:var(--pur2)}
+.b-pub{background:rgba(0,204,204,.12);color:var(--teal)}
+.b-def{background:rgba(80,80,112,.15);color:var(--t3)}
 /* OUTPUT */
-.ob{background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;padding:13px;font-size:13px;line-height:1.75;white-space:pre-wrap;overflow-y:auto;color:var(--t2);min-height:42px}
-
+.outbox{background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;padding:12px;font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-y:auto;color:var(--t2);min-height:40px}
 /* TABS */
 .tabs{display:flex;border-bottom:1px solid var(--bdr);background:var(--bg3);border-radius:12px 12px 0 0}
-.tab{padding:9px 16px;cursor:pointer;font-size:12px;font-weight:600;color:var(--t3);border-bottom:2px solid transparent;transition:all .15s}
-.tab:hover{color:var(--t2)}.tab.on{color:var(--teal);border-bottom-color:var(--teal)}
-.tpn{display:none;padding:15px;background:var(--bg3);border:1px solid var(--bdr);border-top:none;border-radius:0 0 12px 12px}
-.tpn.on{display:block}
-
+.tab-btn{padding:9px 16px;cursor:pointer;font-size:12px;font-weight:600;color:var(--t3);border-bottom:2px solid transparent;border:none;background:none}
+.tab-btn:hover{color:var(--t2)}.tab-btn.on{color:var(--teal);border-bottom:2px solid var(--teal)}
+.tab-pane{display:none;padding:14px;background:var(--bg3);border:1px solid var(--bdr);border-top:none;border-radius:0 0 12px 12px}
+.tab-pane.on{display:block}
 /* TABLE */
-.tw{overflow-x:auto;border-radius:10px;border:1px solid var(--bdr)}
+.tbl-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--bdr)}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{background:var(--bg3);color:var(--t3);font-weight:600;padding:9px 11px;text-align:left;border-bottom:1px solid var(--bdr);text-transform:uppercase;font-size:10px;letter-spacing:.7px;white-space:nowrap}
-td{padding:9px 11px;border-bottom:1px solid var(--bdr);color:var(--t2);vertical-align:middle}
-tr:hover td{background:var(--tdim)}
-
+th{background:var(--bg3);color:var(--t3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:1px solid var(--bdr);text-transform:uppercase;font-size:10px;letter-spacing:.6px;white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--bdr);color:var(--t2);vertical-align:middle}
+tr:hover td{background:rgba(0,204,204,.03)}
 /* STATS */
-.sg{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:18px}
-.sc{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:15px;text-align:center}
-.sc:hover{border-color:var(--teal)}
-.sn{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:var(--teal);line-height:1}
-.sl{font-size:10px;color:var(--t3);margin-top:5px;text-transform:uppercase;letter-spacing:.7px}
-
+.stats-row{display:grid;gap:10px;margin-bottom:16px}
+.stats-4{grid-template-columns:repeat(4,1fr)}
+.stats-5{grid-template-columns:repeat(5,1fr)}
+.stat-box{background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:14px;text-align:center}
+.stat-num{font-family:Oswald,sans-serif;font-size:26px;font-weight:700;color:var(--teal);line-height:1}
+.stat-lbl{font-size:10px;color:var(--t3);margin-top:4px;text-transform:uppercase}
 /* ALERTS */
-.al{padding:10px 14px;border-radius:7px;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.aok{background:rgba(0,204,136,.1);border:1px solid var(--green);color:var(--green)}
-.aer{background:rgba(204,51,68,.1);border:1px solid var(--red);color:var(--red)}
-.ain{background:var(--tdim);border:1px solid var(--bdr2);color:var(--teal)}
-
+.alert{padding:10px 13px;border-radius:7px;font-size:13px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.a-ok{background:rgba(0,204,136,.1);border:1px solid var(--green);color:var(--green)}
+.a-er{background:rgba(204,51,68,.1);border:1px solid var(--red);color:var(--red)}
+.a-in{background:var(--tdim);border:1px solid var(--bdr2);color:var(--teal)}
 /* PUSH BAR */
-.pb{background:var(--bg3);border:1px solid var(--bdr);border-radius:12px;padding:15px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:11px;margin-top:14px}
-.pbl{font-size:13px;color:var(--t2)}.pbl strong{color:var(--teal)}
-
+.push-bar{background:var(--bg3);border:1px solid var(--bdr);border-radius:10px;padding:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:12px}
 /* TOGGLE */
-.tr2{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--bdr)}
-.tr2:last-child{border:none}
-.ti{font-size:13px;color:var(--text)}.ti small{display:block;font-size:11px;color:var(--t3);margin-top:2px}
-.tg{width:40px;height:22px;background:var(--bg4);border-radius:11px;position:relative;cursor:pointer;border:1px solid var(--bdr2);transition:all .2s;flex-shrink:0}
-.tg.on{background:var(--teal);border-color:var(--teal)}.tg::after{content:'';width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:left .2s}
-.tg.on::after{left:20px}
-
-/* IDEAS */
-.ic{display:flex;align-items:flex-start;gap:12px;padding:13px;background:var(--bg3);border:1px solid var(--bdr);border-radius:10px;margin-bottom:9px;transition:border-color .15s}
-.ic:hover{border-color:var(--teal)}
-.ib{flex:1;min-width:0}
-.it{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
-.im{font-size:11px;color:var(--t3)}
-
-/* PAGE HDR */
-.ph{margin-bottom:20px}.ph h2{font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;letter-spacing:.4px}
-.ph p{font-size:13px;color:var(--t3);margin-top:4px}
-.hint{font-size:11px;color:var(--t3);margin-top:3px}
-.abar{height:3px;background:linear-gradient(90deg,var(--purple),var(--teal),var(--gold));border-radius:2px;margin-bottom:18px;opacity:.5}
-.spin{width:16px;height:16px;border:2px solid rgba(0,204,204,.2);border-top-color:var(--teal);border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0}
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.tog-row:last-child{border:none}
+.tog-info{font-size:13px}.tog-info small{display:block;font-size:11px;color:var(--t3);margin-top:1px}
+.tog-btn{width:40px;height:22px;background:var(--bg4);border-radius:11px;position:relative;cursor:pointer;border:1px solid var(--bdr2);flex-shrink:0}
+.tog-btn.on{background:var(--teal);border-color:var(--teal)}
+.tog-btn::after{content:"";width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:left .15s}
+.tog-btn.on::after{left:20px}
+/* IDEA CARDS */
+.idea-card{display:flex;align-items:flex-start;gap:11px;padding:12px;background:var(--bg3);border:1px solid var(--bdr);border-radius:9px;margin-bottom:8px}
+.idea-card:hover{border-color:var(--teal)}
+.idea-body{flex:1;min-width:0}
+.idea-title{font-size:13px;font-weight:600;margin-bottom:3px}
+.idea-meta{font-size:11px;color:var(--t3)}
+/* HOME */
+.home-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.home-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:20px;cursor:pointer;text-align:center}
+.home-card:hover{border-color:var(--teal);background:var(--tdim)}
+.home-card .hico{font-size:34px;margin-bottom:10px}
+.home-card h3{font-family:Oswald,sans-serif;font-size:15px;color:var(--teal);margin-bottom:6px}
+.home-card p{font-size:12px;color:var(--t3);line-height:1.5}
+/* MISC */
+.page-hdr{margin-bottom:18px}
+.page-hdr h2{font-family:Oswald,sans-serif;font-size:22px;font-weight:700}
+.page-hdr p{font-size:13px;color:var(--t3);margin-top:3px}
+.accent-bar{height:3px;background:linear-gradient(90deg,var(--pur),var(--teal),var(--gold));border-radius:2px;margin-bottom:16px;opacity:.5}
+.spin{width:15px;height:15px;border:2px solid rgba(0,204,204,.2);border-top-color:var(--teal);border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0}
 @keyframes sp{to{transform:rotate(360deg)}}
-
-::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:var(--bg2)}
-::-webkit-scrollbar-thumb{background:rgba(0,204,204,.2);border-radius:3px}
+::-webkit-scrollbar-thumb{background:rgba(0,204,204,.2);border-radius:2px}
 </style>
 </head>
 <body>
@@ -156,1257 +151,1107 @@ tr:hover td{background:var(--tdim)}
 <!-- SIDEBAR -->
 <div id="sb">
   <div class="sh">
-    <div class="slogo" id="sbLogo">
-      <img id="sbLogoImg" src="" alt="SOS" style="width:32px;height:32px;object-fit:contain;border-radius:7px;display:none;"/>
-      <span id="sbLogoText">SOS</span>
-    </div>
-    <div><div class="sname">TheGloveSOS</div><div class="ssub">Blog System v2.0</div></div>
-    <button class="stog" id="sb-tog">&#9664;</button>
+    <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub">Tool Shed v2.0</div></div>
+    <button id="tog-sb">&#9664;</button>
   </div>
-  <div class="ssec">
+  <div class="sgrp">
+    <div class="slbl">Menu</div>
+    <div class="sitem on" data-page="home"><span class="sico">🏠</span><span class="stxt">Home</span></div>
+  </div>
+  <div class="sgrp">
     <div class="slbl">Content</div>
-    <div class="sit on" data-page="generator"><span class="sico">✍️</span><span class="stxt">Blog Generator</span></div>
-    <div class="sit" data-page="queue"><span class="sico">📋</span><span class="stxt">Blog Queue</span><span class="sbdg" id="bdgQ">0</span></div>
-    <div class="sit" data-page="ideas"><span class="sico">💡</span><span class="stxt">Blog Ideas</span><span class="sbdg" id="bdgI">0</span></div>
+    <div class="sitem" data-page="generator"><span class="sico">✍️</span><span class="stxt">Blog Generator</span></div>
+    <div class="sitem" data-page="queue"><span class="sico">📋</span><span class="stxt">Blog Queue</span><span class="sbdg" id="bdg-q">0</span></div>
+    <div class="sitem" data-page="ideas"><span class="sico">💡</span><span class="stxt">Blog Ideas</span><span class="sbdg" id="bdg-i">0</span></div>
   </div>
-  <div class="ssec">
+  <div class="sgrp">
     <div class="slbl">Tools</div>
-    <div class="sit" data-page="newsletter"><span class="sico">📰</span><span class="stxt">Newsletter</span></div>
-    <div class="sit" data-page="research"><span class="sico">🔍</span><span class="stxt">Research Hub</span></div>
-    <div class="sit" data-page="images"><span class="sico">🎨</span><span class="stxt">Image Studio</span></div>
+    <div class="sitem" data-page="newsletter"><span class="sico">📰</span><span class="stxt">Newsletter</span></div>
+    <div class="sitem" data-page="research"><span class="sico">🔍</span><span class="stxt">Research Hub</span></div>
+    <div class="sitem" data-page="images"><span class="sico">🎨</span><span class="stxt">Image Studio</span></div>
   </div>
-  <div class="ssec">
+  <div class="sgrp">
     <div class="slbl">System</div>
-    <div class="sit" data-page="settings"><span class="sico">⚙️</span><span class="stxt">Settings</span></div>
+    <div class="sitem" data-page="settings"><span class="sico">⚙️</span><span class="stxt">Settings</span></div>
   </div>
-  <div class="sft">
-    <p>Queue: <b id="sfQ">0</b> blogs</p>
-    <p>Ideas: <b id="sfI">0</b> pending</p>
-    <p style="margin-top:5px;color:rgba(0,204,204,.3);font-size:10px">theglovesos.com</p>
-  </div>
+  <div class="sfoot"><span>Queue: <b id="sf-q">0</b><br/>Ideas: <b id="sf-i">0</b></span></div>
 </div>
 
 <!-- MAIN -->
 <div id="mn">
-  <div class="tb">
-    <span style="font-size:21px">🧤</span>
-    <div class="tb-t" id="tbT">Blog Generator</div>
-    <span class="tb-b">TheGloveSOS.com</span>
-    <div class="tb-s" id="tbS">Generate complete, SEO-optimized blog content</div>
+  <div class="topbar">
+    <span style="font-size:20px">🧤</span>
+    <div class="topbar-title" id="page-title">Home</div>
+    <span class="topbar-badge">TheGloveSOS.com</span>
+    <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
-  <div class="ct">
+  <div class="content">
 
-  <!-- ===== GENERATOR ===== -->
-  <div class="pg on" id="pg-generator">
-    <div class="abar"></div>
-    <div class="cd">
-      <div class="cdt">✍️ Blog Generator</div>
+  <!-- HOME -->
+  <div class="page on" id="page-home">
+    <div class="accent-bar"></div>
+    <div class="stats-row stats-4">
+      <div class="stat-box"><div class="stat-num" id="h-queue">0</div><div class="stat-lbl">In Queue</div></div>
+      <div class="stat-box"><div class="stat-num" id="h-ideas">0</div><div class="stat-lbl">Ideas Saved</div></div>
+      <div class="stat-box"><div class="stat-num" id="h-pub">0</div><div class="stat-lbl">Published</div></div>
+      <div class="stat-box"><div class="stat-num" id="h-app">0</div><div class="stat-lbl">Approved</div></div>
+    </div>
+    <div class="home-grid">
+      <div class="home-card" data-page="generator"><div class="hico">✍️</div><h3>Blog Generator</h3><p>Generate complete SEO-optimized blogs with content, images, tags and metadata ready for Lovable</p></div>
+      <div class="home-card" data-page="queue"><div class="hico">📋</div><h3>Blog Queue</h3><p>Track every blog from Pending to Published with full status management</p></div>
+      <div class="home-card" data-page="ideas"><div class="hico">💡</div><h3>Blog Ideas</h3><p>Save ideas as they come — push to generator when ready to write</p></div>
+      <div class="home-card" data-page="newsletter"><div class="hico">📰</div><h3>Newsletter</h3><p>Auto-build monthly newsletter from top published blogs plus baseball events</p></div>
+      <div class="home-card" data-page="research"><div class="hico">🔍</div><h3>Research Hub</h3><p>Find trending glove repair topics and get 5 ready-to-use blog ideas</p></div>
+      <div class="home-card" data-page="images"><div class="hico">🎨</div><h3>Image Studio</h3><p>Generate image prompts, upload photos, save to Supabase storage</p></div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚡ System Status</div>
+      <div id="home-status" style="font-size:13px;color:var(--t2);line-height:2">Loading...</div>
+    </div>
+  </div>
+
+  <!-- GENERATOR -->
+  <div class="page" id="page-generator">
+    <div class="accent-bar"></div>
+    <div class="card">
+      <div class="card-title">✍️ Blog Generator</div>
       <div class="fg"><label>Blog Title / Topic *</label>
-        <input type="text" id="gTitle" placeholder="e.g. How to Properly Re-lace a Baseball Glove at Home"/></div>
+        <input type="text" id="g-title" placeholder="e.g. How to Re-lace a Baseball Glove at Home"/></div>
       <div class="r2">
         <div class="fg"><label>Category *</label>
-          <select id="gCat">
+          <select id="g-cat">
             <option value="">— Select Category —</option>
             <option>Glove Care</option><option>Glove Repair</option><option>Glove Provider Spotlight</option>
             <option>Behind the Scenes</option><option>Customer Stories</option><option>General Tips</option>
           </select></div>
-        <div class="fg"><label>Target Word Count</label>
-          <select id="gWc">
-            <option value="1200">1,200 words</option><option value="1500" selected>1,500 words</option>
-            <option value="1800">1,800 words</option><option value="2000">2,000+ words</option>
-          </select></div>
+        <div class="fg"><label>Word Count</label>
+          <select id="g-wc"><option value="1200">1,200</option><option value="1500" selected>1,500</option><option value="1800">1,800</option><option value="2000">2,000+</option></select></div>
       </div>
       <div class="fg"><label>Details &amp; Context</label>
-        <textarea id="gDet" rows="3" placeholder="Angle, key points, seasonal tie-ins, what makes this topic important..."></textarea></div>
+        <textarea id="g-det" rows="3" placeholder="Angle, key points, audience, seasonal tie-ins..."></textarea></div>
       <div class="r2">
-        <div class="fg"><label>🏆 JB's Expert Take</label>
-          <textarea id="gExp" rows="3" placeholder="Your personal opinion, experience, unique take..."></textarea></div>
-        <div class="fg"><label>🧬 Brand DNA</label>
-          <textarea id="gDna" rows="3" placeholder="TheGloveSOS mission, key phrases, values..."></textarea></div>
+        <div class="fg"><label>🏆 JB Expert Take <span style="font-size:10px;color:var(--t3)">(pre-filled from Settings)</span></label>
+          <textarea id="g-exp" rows="3" placeholder="Your voice, experience, unique take..."></textarea></div>
+        <div class="fg"><label>🧬 Brand DNA <span style="font-size:10px;color:var(--t3)">(pre-filled from Settings)</span></label>
+          <textarea id="g-dna" rows="3" placeholder="Mission, values, key phrases..."></textarea></div>
       </div>
-      <div id="gAl"></div>
-      <div class="bg">
-        <button class="btn bt" id="gBtn">✨ Generate Master Blog</button>
-        <button class="btn bo bsm" id="gClr">Clear Form</button>
+      <div id="g-alert"></div>
+      <div class="bgroup">
+        <button class="btn btn-teal" id="btn-generate">✨ Generate Master Blog</button>
+        <button class="btn btn-out btn-sm" id="btn-clear-gen">Clear</button>
       </div>
     </div>
-
-    <div id="gOut" style="display:none">
-      <div class="cd" style="padding:0;overflow:hidden">
+    <div id="g-output" style="display:none">
+      <div class="card" style="padding:0;overflow:hidden">
         <div class="tabs">
-          <div class="tab on" data-tab="0">📝 Content</div>
-          <div class="tab" data-tab="1">🎨 Visual Strategy</div>
-          <div class="tab" data-tab="2">🔍 SEO &amp; Meta</div>
-          <div class="tab" data-tab="3">📦 Markdown</div>
+          <button class="tab-btn on" data-tab="0">📝 Content</button>
+          <button class="tab-btn" data-tab="1">🎨 Visual</button>
+          <button class="tab-btn" data-tab="2">🔍 SEO &amp; Meta</button>
+          <button class="tab-btn" data-tab="3">📦 Markdown</button>
         </div>
-        <div class="tpn on" id="tp0"><div id="oContent" class="ob" style="max-height:480px"></div></div>
-        <div class="tpn" id="tp1">
-          <div class="fg"><label>🖼️ Hero Image Prompt</label><div id="oHero" class="ob" style="max-height:100px"></div></div>
-          <div class="fg"><label>📱 Social Image Prompt</label><div id="oSoc" class="ob" style="max-height:100px"></div></div>
-          <div class="fg"><label>▶️ Thumbnail Prompt</label><div id="oThumb" class="ob" style="max-height:100px"></div></div>
-          <div class="fg"><label>📸 In-Blog Insert Prompts</label><div id="oIns" class="ob" style="max-height:120px"></div></div>
+        <div class="tab-pane on" id="tab-0"><div id="out-content" class="outbox" style="max-height:460px"></div></div>
+        <div class="tab-pane" id="tab-1">
+          <div class="fg"><label>Hero Image Prompt</label><div id="out-hero" class="outbox" style="max-height:90px"></div></div>
+          <div class="fg"><label>Social Image Prompt</label><div id="out-social" class="outbox" style="max-height:90px"></div></div>
+          <div class="fg"><label>Thumbnail Prompt</label><div id="out-thumb" class="outbox" style="max-height:90px"></div></div>
+          <div class="fg"><label>In-Blog Insert Prompts</label><div id="out-inserts" class="outbox" style="max-height:110px"></div></div>
         </div>
-        <div class="tpn" id="tp2">
+        <div class="tab-pane" id="tab-2">
           <div class="r2">
-            <div class="fg"><label>SEO Title</label><div id="oSeoT" class="ob" style="max-height:60px"></div></div>
-            <div class="fg"><label>URL Slug</label><div id="oSlug" class="ob" style="max-height:60px"></div></div>
+            <div class="fg"><label>SEO Title</label><div id="out-seo-title" class="outbox" style="max-height:55px"></div></div>
+            <div class="fg"><label>URL Slug</label><div id="out-slug" class="outbox" style="max-height:55px"></div></div>
           </div>
-          <div class="fg"><label>Meta Description</label><div id="oMeta" class="ob" style="max-height:80px"></div></div>
+          <div class="fg"><label>Meta Description</label><div id="out-meta" class="outbox" style="max-height:70px"></div></div>
           <div class="r2">
-            <div class="fg"><label>Keywords</label><div id="oKeys" class="ob" style="max-height:80px"></div></div>
-            <div class="fg"><label>Tags</label><div id="oTags" class="ob" style="max-height:80px"></div></div>
+            <div class="fg"><label>Keywords</label><div id="out-keywords" class="outbox" style="max-height:70px"></div></div>
+            <div class="fg"><label>Tags (Supabase/Lovable ready)</label><div id="out-tags" class="outbox" style="max-height:70px"></div></div>
           </div>
-          <div class="fg"><label>Excerpt</label><div id="oExcerpt" class="ob" style="max-height:90px"></div></div>
+          <div class="fg"><label>Excerpt</label><div id="out-excerpt" class="outbox" style="max-height:80px"></div></div>
           <div class="r3">
-            <div class="fg"><label>Word Count</label><div id="oWc" class="ob" style="max-height:44px"></div></div>
-            <div class="fg"><label>Read Time</label><div id="oRt" class="ob" style="max-height:44px"></div></div>
-            <div class="fg"><label>Author</label><div id="oAuth" class="ob" style="max-height:44px">JB</div></div>
+            <div class="fg"><label>Word Count</label><div id="out-wc" class="outbox" style="max-height:40px"></div></div>
+            <div class="fg"><label>Read Time</label><div id="out-rt" class="outbox" style="max-height:40px"></div></div>
+            <div class="fg"><label>Author</label><div id="out-author" class="outbox" style="max-height:40px">JB</div></div>
           </div>
-          <div class="fg"><label>Social Caption</label><div id="oCap" class="ob" style="max-height:90px"></div></div>
+          <div class="fg"><label>Social Caption</label><div id="out-caption" class="outbox" style="max-height:80px"></div></div>
           <div class="r2">
-            <div class="fg"><label>Internal Links</label><div id="oInt" class="ob" style="max-height:80px"></div></div>
-            <div class="fg"><label>External Links</label><div id="oExt" class="ob" style="max-height:80px"></div></div>
+            <div class="fg"><label>Internal Links</label><div id="out-internal" class="outbox" style="max-height:70px"></div></div>
+            <div class="fg"><label>External Links</label><div id="out-external" class="outbox" style="max-height:70px"></div></div>
           </div>
         </div>
-        <div class="tpn" id="tp3">
-          <div class="fg"><label>Full Markdown — ready for Supabase / Lovable</label>
-            <div id="oMd" class="ob" style="max-height:480px"></div></div>
-          <div class="bg" style="margin-top:9px">
-            <button class="btn bo bsm" id="copyMdBtn">📋 Copy Markdown</button>
+        <div class="tab-pane" id="tab-3">
+          <div class="fg"><label>Full Markdown — ready for Supabase &amp; Lovable</label>
+            <div id="out-markdown" class="outbox" style="max-height:460px"></div></div>
+          <div class="bgroup" style="margin-top:8px">
+            <button class="btn btn-out btn-sm" id="btn-copy-md">📋 Copy Markdown</button>
           </div>
         </div>
       </div>
-      <div class="pb">
-        <div class="pbl">Push: <strong>Blog Queue → Google Sheets → Supabase → Lovable</strong></div>
-        <div class="bg">
-          <select id="psStatus" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:8px 11px;border-radius:7px;font-size:13px">
-            <option value="Pending">Save as Pending</option>
-            <option value="Review">Send to Review</option>
-            <option value="Approved">Mark Approved</option>
-            <option value="Scheduled">Schedule</option>
+      <div class="push-bar">
+        <div style="font-size:13px;color:var(--t2)">Push: <strong style="color:var(--teal)">Queue &#8594; Supabase &#8594; Lovable</strong></div>
+        <div class="bgroup">
+          <select id="push-status" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:8px 10px;border-radius:7px;font-size:13px">
+            <option value="Pending">Save as Pending</option><option value="Review">Send to Review</option>
+            <option value="Approved">Mark Approved</option><option value="Scheduled">Schedule</option>
           </select>
-          <input type="date" id="psDate" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:8px 11px;border-radius:7px;font-size:13px"/>
-          <button class="btn bt" id="pushQBtn">🚀 Push to Blog Queue</button>
-          <button class="btn bp bsm" id="pushSbBtn">⬆ Supabase</button>
+          <input type="date" id="push-date" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:8px 10px;border-radius:7px;font-size:13px"/>
+          <button class="btn btn-teal" id="btn-push-queue">🚀 Push to Queue</button>
+          <button class="btn btn-pur btn-sm" id="btn-push-sb">⬆ Supabase</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ===== QUEUE ===== -->
-  <div class="pg" id="pg-queue">
-    <div class="ph"><h2>Blog Queue</h2><p>Track every blog — Pending → Review → Approved → Scheduled → Published to Site</p></div>
-    <div class="sg">
-      <div class="sc"><div class="sn" id="qsTot">0</div><div class="sl">Total</div></div>
-      <div class="sc"><div class="sn" id="qsPen">0</div><div class="sl">Pending</div></div>
-      <div class="sc"><div class="sn" id="qsApp">0</div><div class="sl">Approved</div></div>
-      <div class="sc"><div class="sn" id="qsSch">0</div><div class="sl">Scheduled</div></div>
-      <div class="sc"><div class="sn" id="qsPub">0</div><div class="sl">Published</div></div>
+  <!-- QUEUE -->
+  <div class="page" id="page-queue">
+    <div class="page-hdr"><h2>Blog Queue</h2><p>Track every blog from Pending to Published to Site</p></div>
+    <div class="stats-row stats-5">
+      <div class="stat-box"><div class="stat-num" id="q-total">0</div><div class="stat-lbl">Total</div></div>
+      <div class="stat-box"><div class="stat-num" id="q-pending">0</div><div class="stat-lbl">Pending</div></div>
+      <div class="stat-box"><div class="stat-num" id="q-approved">0</div><div class="stat-lbl">Approved</div></div>
+      <div class="stat-box"><div class="stat-num" id="q-scheduled">0</div><div class="stat-lbl">Scheduled</div></div>
+      <div class="stat-box"><div class="stat-num" id="q-published">0</div><div class="stat-lbl">Published</div></div>
     </div>
-    <div class="cd" style="padding:13px">
-      <div class="bg" style="margin-bottom:13px;flex-wrap:wrap">
-        <input type="text" id="qSearch" placeholder="Search by title or category..." style="flex:1;min-width:160px"/>
-        <select id="qFilter" style="width:160px">
+    <div class="card" style="padding:12px">
+      <div class="bgroup" style="margin-bottom:12px">
+        <input type="text" id="q-search" placeholder="Search..." style="flex:1;min-width:140px"/>
+        <select id="q-filter" style="width:155px">
           <option value="">All Status</option>
           <option>Pending</option><option>Review</option><option>Approved</option><option>Scheduled</option><option>Published to Site</option>
         </select>
-        <button class="btn bo bsm" id="syncSbBtn">↓ Sync Supabase</button>
-        <button class="btn bt bsm" id="pubAllBtn">🚀 Publish Approved</button>
+        <button class="btn btn-out btn-sm" id="btn-sync">&#8595; Sync Supabase</button>
+        <button class="btn btn-teal btn-sm" id="btn-pub-all">🚀 Publish Approved</button>
       </div>
-      <div class="tw">
-        <table>
-          <thead><tr>
-            <th>Status</th><th>Title</th><th>Category</th><th>Author</th>
-            <th>Words</th><th>Publish Date</th><th>Blog URL</th><th>Actions</th>
-          </tr></thead>
-          <tbody id="qBody"></tbody>
-        </table>
+      <div class="tbl-wrap">
+        <table><thead><tr>
+          <th>Status</th><th>Title</th><th>Category</th><th>Words</th><th>Publish Date</th><th>Actions</th>
+        </tr></thead><tbody id="queue-body"></tbody></table>
       </div>
     </div>
   </div>
 
-  <!-- ===== IDEAS ===== -->
-  <div class="pg" id="pg-ideas">
-    <div class="ph"><h2>Blog Ideas</h2><p>Capture ideas — push to generator when ready</p></div>
-    <div class="cd">
-      <div class="cdt">💡 Add New Idea</div>
+  <!-- IDEAS -->
+  <div class="page" id="page-ideas">
+    <div class="page-hdr"><h2>Blog Ideas</h2><p>Ideas auto-save to Supabase — accessible from any device</p></div>
+    <div class="card">
+      <div class="card-title">💡 Add New Idea</div>
       <div class="r2">
-        <div class="fg"><label>Idea Title *</label><input type="text" id="iTitle" placeholder="e.g. Why Professional Relacing Beats DIY"/></div>
+        <div class="fg"><label>Idea Title *</label><input type="text" id="idea-title" placeholder="e.g. Why Professional Relacing Beats DIY"/></div>
         <div class="r2" style="margin:0">
-          <div class="fg"><label>Priority</label><select id="iPri"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
-          <div class="fg"><label>Category</label>
-            <select id="iCat">
-              <option>Glove Care</option><option>Glove Repair</option><option>Glove Provider Spotlight</option>
-              <option>Behind the Scenes</option><option>Customer Stories</option><option>General Tips</option>
-            </select></div>
+          <div class="fg"><label>Priority</label><select id="idea-pri"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
+          <div class="fg"><label>Category</label><select id="idea-cat"><option>Glove Care</option><option>Glove Repair</option><option>Glove Provider Spotlight</option><option>Behind the Scenes</option><option>Customer Stories</option><option>General Tips</option></select></div>
         </div>
       </div>
       <div class="r2">
-        <div class="fg"><label>Season</label>
-          <select id="iSea"><option>Any</option><option>Offseason</option><option>Spring Training</option><option>In-Season</option><option>Fall Ball</option></select></div>
-        <div class="fg"><label>Target Audience</label>
-          <select id="iAud"><option>All Players</option><option>Youth Players</option><option>High School</option><option>College</option><option>Adult/Rec</option><option>Coaches</option><option>Parents</option><option>Repair Shops</option></select></div>
+        <div class="fg"><label>Season</label><select id="idea-season"><option>Any</option><option>Offseason</option><option>Spring Training</option><option>In-Season</option><option>Fall Ball</option></select></div>
+        <div class="fg"><label>Audience</label><select id="idea-aud"><option>All Players</option><option>Youth</option><option>High School</option><option>College</option><option>Adult/Rec</option><option>Coaches</option><option>Parents</option></select></div>
       </div>
-      <div class="fg"><label>Notes</label><textarea id="iNotes" rows="2" placeholder="Angle, key points, seasonal hook?"></textarea></div>
-      <div id="iAl"></div>
-      <div class="bg">
-        <button class="btn bt" id="saveIdeaBtn">💾 Save Idea</button>
-        <button class="btn bo bsm" id="clrIdeaBtn">Clear</button>
+      <div class="fg"><label>Notes</label><textarea id="idea-notes" rows="2" placeholder="Angle, key points, seasonal hook..."></textarea></div>
+      <div id="idea-alert"></div>
+      <div class="bgroup">
+        <button class="btn btn-teal" id="btn-save-idea">💾 Save Idea to Supabase</button>
+        <button class="btn btn-out btn-sm" id="btn-clear-idea">Clear</button>
       </div>
     </div>
-    <div class="cd">
-      <div class="cdt" style="justify-content:space-between">
-        <span>💡 Saved Ideas</span><span id="iCount" style="font-size:12px;color:var(--t3);font-family:'Inter';font-weight:400">(0)</span>
+    <div class="card">
+      <div class="card-title" style="justify-content:space-between">
+        <span>💡 Saved Ideas</span><span id="ideas-count" style="font-size:12px;color:var(--t3);font-family:Inter;font-weight:400"></span>
       </div>
-      <div id="iList"><div style="color:var(--t3);text-align:center;padding:26px;font-size:13px">No ideas yet — add one above!</div></div>
+      <div id="ideas-list"><div style="color:var(--t3);text-align:center;padding:24px;font-size:13px">No ideas yet — add one above!</div></div>
     </div>
   </div>
 
-  <!-- ===== NEWSLETTER ===== -->
-  <div class="pg" id="pg-newsletter">
-    <div class="ph"><h2>Newsletter Generator</h2><p>Auto-build monthly newsletter from top blogs + baseball events</p></div>
-    <div class="cd">
-      <div class="cdt">📰 Generate Monthly Newsletter</div>
+  <!-- NEWSLETTER -->
+  <div class="page" id="page-newsletter">
+    <div class="page-hdr"><h2>Newsletter Generator</h2><p>Auto-build from top blogs + baseball calendar events</p></div>
+    <div class="card">
+      <div class="card-title">📰 Generate Monthly Newsletter</div>
       <div class="r3">
-        <div class="fg"><label>Month</label>
-          <select id="nlMo">
-            <option>January</option><option>February</option><option>March</option><option>April</option>
-            <option>May</option><option>June</option><option>July</option><option>August</option>
-            <option>September</option><option>October</option><option>November</option><option>December</option>
-          </select></div>
-        <div class="fg"><label>Year</label><input type="number" id="nlYr" value="2026" min="2025" max="2030"/></div>
-        <div class="fg"><label>Top Blogs</label>
-          <select id="nlCnt"><option value="3">Top 3</option><option value="5" selected>Top 5</option><option value="7">Top 7</option></select></div>
+        <div class="fg"><label>Month</label><select id="nl-month"><option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option><option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option></select></div>
+        <div class="fg"><label>Year</label><input type="number" id="nl-year" value="2026"/></div>
+        <div class="fg"><label>Top Blogs</label><select id="nl-count"><option value="3">Top 3</option><option value="5" selected>Top 5</option><option value="7">Top 7</option></select></div>
       </div>
       <div class="fg"><label>Events / Highlights (optional)</label>
-        <textarea id="nlEv" rows="2" placeholder="College World Series | MLB Draft | Fall ball..."></textarea></div>
-      <div id="nlAl"></div>
-      <div class="bg"><button class="btn bt" id="nlBtn">📰 Generate Newsletter</button></div>
+        <textarea id="nl-events" rows="2" placeholder="College World Series | MLB Draft | Fall ball..."></textarea></div>
+      <div id="nl-alert"></div>
+      <div class="bgroup"><button class="btn btn-teal" id="btn-gen-nl">📰 Generate Newsletter</button></div>
     </div>
-    <div id="nlOut" style="display:none">
-      <div class="cd">
-        <div class="cdt">Preview</div>
+    <div id="nl-output" style="display:none">
+      <div class="card">
+        <div class="card-title">Preview</div>
         <div class="r2">
-          <div class="fg"><label>Subject Line</label><div id="nlSubj" class="ob" style="max-height:60px"></div></div>
-          <div class="fg"><label>Preheader</label><div id="nlPre" class="ob" style="max-height:60px"></div></div>
+          <div class="fg"><label>Subject Line</label><div id="nl-subject" class="outbox" style="max-height:55px"></div></div>
+          <div class="fg"><label>Preheader</label><div id="nl-preheader" class="outbox" style="max-height:55px"></div></div>
         </div>
         <div class="fg"><label>Body</label>
-          <div id="nlBody" style="background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;padding:18px;max-height:400px;overflow-y:auto;font-size:13px;line-height:1.85;color:var(--t2)"></div></div>
-        <div class="bg" style="margin-top:11px">
-          <button class="btn bp" id="nlPushBtn">⬆ Push to Supabase</button>
-          <button class="btn bo bsm" id="nlCopyBtn">📋 Copy HTML</button>
+          <div id="nl-body" style="background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;padding:16px;max-height:380px;overflow-y:auto;font-size:13px;line-height:1.8;color:var(--t2)"></div></div>
+        <div class="bgroup" style="margin-top:10px">
+          <button class="btn btn-pur btn-sm" id="btn-push-nl">⬆ Push to Supabase</button>
+          <button class="btn btn-out btn-sm" id="btn-copy-nl">📋 Copy HTML</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ===== RESEARCH ===== -->
-  <div class="pg" id="pg-research">
-    <div class="ph"><h2>Research Hub</h2><p>Find trending glove repair topics to fuel your content</p></div>
-    <div class="cd">
-      <div class="cdt">🔍 Research Topics</div>
+  <!-- RESEARCH -->
+  <div class="page" id="page-research">
+    <div class="page-hdr"><h2>Research Hub</h2><p>Find trending topics to fuel your content pipeline</p></div>
+    <div class="card">
+      <div class="card-title">🔍 Research Topics</div>
       <div class="r2">
-        <div class="fg"><label>Search Topic</label><input type="text" id="rTopic" placeholder="e.g. glove relacing tips, softball glove break-in"/></div>
+        <div class="fg"><label>Search Topic</label><input type="text" id="res-topic" placeholder="e.g. glove relacing tips, softball break-in"/></div>
         <div class="fg"><label>Focus Area</label>
-          <select id="rFocus">
-            <option>Glove Repair Techniques</option><option>Glove Care &amp; Maintenance</option>
-            <option>Provider Spotlights</option><option>Baseball / Softball News</option>
-            <option>Youth &amp; Coaching</option><option>General Industry</option>
-          </select></div>
+          <select id="res-focus"><option>Glove Repair Techniques</option><option>Glove Care &amp; Maintenance</option><option>Provider Spotlights</option><option>Baseball / Softball News</option><option>Youth &amp; Coaching</option></select></div>
       </div>
-      <div class="bg"><button class="btn bt" id="resBtn">🔍 Research Now</button></div>
+      <div class="bgroup"><button class="btn btn-teal" id="btn-research">🔍 Research Now</button></div>
     </div>
-    <div id="resOut" style="display:none">
-      <div class="cd">
-        <div class="cdt">Results</div>
-        <div id="resResults" class="ob" style="max-height:440px"></div>
-        <div class="bg" style="margin-top:11px">
-          <button class="btn bg2 bsm" id="saveResBtn">💡 Save All as Ideas</button>
+    <div id="res-output" style="display:none">
+      <div class="card">
+        <div class="card-title">Results &amp; Blog Ideas Found</div>
+        <div id="res-results" class="outbox" style="max-height:400px"></div>
+        <div class="bgroup" style="margin-top:10px">
+          <button class="btn btn-gold btn-sm" id="btn-save-res">💡 Save All as Ideas</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ===== SETTINGS ===== -->
-  <div class="pg" id="pg-settings">
-    <div class="ph"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
-    <div class="cd" style="border-color:rgba(240,165,0,.3)">
-      <div class="cdt" style="color:var(--gold)">🔑 First Time Setup — Enter Supabase Connection</div>
+  <!-- IMAGES -->
+  <div class="page" id="page-images">
+    <div class="page-hdr"><h2>Image Studio</h2><p>Generate prompts, upload photos, save to Supabase storage</p></div>
+    <div class="card">
+      <div class="card-title">✨ Image Prompt Generator</div>
       <div class="r2">
-        <div class="fg"><label>Supabase Project URL *</label>
-          <input type="url" id="sUrl" placeholder="https://xxxx.supabase.co"/>
-          <div class="hint">Required on first load only — saved after that</div></div>
-        <div class="fg"><label>Supabase Anon Key *</label>
-          <input type="password" id="sKey" placeholder="eyJ..."/>
-          <div class="hint">Stored locally to bootstrap settings on every device</div></div>
-      </div>
-      <div class="bg" style="margin-bottom:8px">
-        <button class="btn bt" id="testSbBtn">🔌 Test Connection</button>
-      </div>
-      <div id="sTestAl"></div>
-    </div>
-    <div class="cd">
-      <div class="cdt">🤖 API Keys</div>
-      <div class="fg"><label>Anthropic API Key (Claude)</label>
-        <input type="password" id="sAnt" placeholder="sk-ant-api03-..."/>
-        <div class="hint">Saved encrypted in Supabase — never in your browser or code. For maximum security, deploy the Edge Function (see docs) so the key never touches the browser at all.</div></div>
-    </div>
-    <div class="cd">
-      <div class="cdt">🎙️ JB's Voice Profile — Pre-filled on Every Blog</div>
-      <div class="fg">
-        <label>JB's Expert Background & Voice</label>
-        <textarea id="sVoice" rows="4" placeholder="e.g. I've been repairing gloves for 15+ years. I believe every player deserves a glove that performs at its best. I always say — take care of your glove and your glove will take care of you. I speak from experience, keep it real, never corporate..."></textarea>
-        <div class="hint">This pre-fills the Expert Take field on every blog so you never have to retype it</div>
-      </div>
-      <div class="fg">
-        <label>Brand DNA — Core Philosophies (pre-filled on every blog)</label>
-        <textarea id="sDna" rows="4" placeholder="e.g. TheGloveSOS connects players with trusted local glove repair shops nationwide. Quality repair matters. Your glove is your most personal piece of equipment. Never bash competitors. Community first. Education over sales..."></textarea>
-        <div class="hint">These values are injected into every blog automatically — your brand voice stays consistent</div>
-      </div>
-    </div>
-    <div class="cd">
-      <div class="cdt">🖼️ Brand Logo</div>
-      <div class="r2">
-        <div class="fg">
-          <label>Upload Logo</label>
-          <input type="file" id="sLogoFile" accept="image/*" style="padding:6px 11px;cursor:pointer"/>
-          <div class="hint">Recommended: PNG with transparent background — <strong>400 × 120px</strong> (horizontal) or <strong>200 × 200px</strong> (square). Max 2MB.</div>
-        </div>
-        <div class="fg">
-          <label>Current Logo</label>
-          <div id="logoPreview" style="background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;padding:12px;min-height:60px;display:flex;align-items:center;justify-content:center;">
-            <img id="logoImg" src="" style="max-height:60px;max-width:100%;display:none;border-radius:4px;"/>
-            <span id="logoPlaceholder" style="font-size:12px;color:var(--t3)">No logo uploaded yet</span>
-          </div>
-        </div>
-      </div>
-      <div class="bg">
-        <button class="btn bt bsm" id="uploadLogoBtn">⬆ Upload to Supabase</button>
-        <button class="btn bo bsm" id="removeLogoBtn">✕ Remove</button>
-      </div>
-      <div id="logoAl" style="margin-top:8px"></div>
-    </div>
-    <div class="cd">
-      <div class="cdt">🗄️ Supabase Tables</div>
-      <div class="r3">
-        <div class="fg"><label>Blog Table</label><input type="text" id="sTbl" value="blog_posts"/></div>
-        <div class="fg"><label>Ideas Table</label><input type="text" id="sIdt" value="blog_ideas"/></div>
-        <div class="fg"><label>Storage Bucket</label><input type="text" id="sBkt" value="blog-images"/></div>
-      </div>
-    </div>
-    <div class="cd">
-      <div class="cdt">📊 Google Sheets</div>
-      <div class="r2">
-        <div class="fg"><label>Sheet ID</label>
-          <input type="text" id="sShid" placeholder="Paste Sheet ID from URL"/>
-          <div class="hint">docs.google.com/spreadsheets/d/<b>[ID]</b>/edit</div></div>
-        <div class="fg"><label>Blog Queue Tab</label><input type="text" id="sShTab" value="Blog_Queue"/></div>
-      </div>
-    </div>
-    <div class="cd">
-      <div class="cdt">📝 Blog Defaults</div>
-      <div class="r3">
-        <div class="fg"><label>Default Author</label><input type="text" id="sAut" value="JB"/></div>
-        <div class="fg"><label>Min Words</label><input type="number" id="sMin" value="1200"/></div>
-        <div class="fg"><label>Max Words</label><input type="number" id="sMax" value="1800"/></div>
-      </div>
-      <div class="r2">
-        <div class="fg"><label>Site URL</label><input type="url" id="sSit" value="https://theglovesos.com"/></div>
-        <div class="fg"><label>Notification Email</label><input type="text" id="sEml" value="theglovesdesigns@gmail.com"/></div>
-      </div>
-    </div>
-    <div class="cd">
-      <div class="cdt">⚡ Automation</div>
-      <div class="tr2"><div class="ti">Auto-Publish (7 AM Daily)<small>Publishes Approved/Scheduled blogs to Supabase</small></div><button class="tg" id="togAp"></button></div>
-      <div class="tr2"><div class="ti">Auto Blog Generation<small>Auto-generates new blogs on schedule</small></div><button class="tg" id="togAg"></button></div>
-      <div class="tr2"><div class="ti">Monthly Newsletter (2nd of month)<small>Auto-generates from top published blogs</small></div><button class="tg on" id="togNl"></button></div>
-      <div class="tr2"><div class="ti">Email Notifications<small>Notify theglovesdesigns@gmail.com on publish/errors</small></div><button class="tg on" id="togEm"></button></div>
-    </div>
-    <div class="bg">
-      <button class="btn bt" id="saveStBtn">💾 Save All Settings to Supabase</button>
-      <button class="btn bo bsm" id="reloadStBtn">↺ Reload from Supabase</button>
-    </div>
-    <div id="sAl" style="margin-top:10px"></div>
-  </div>
-
-
-  <!-- ===== IMAGE STUDIO ===== -->
-  <div class="pg" id="pg-images">
-    <div class="ph"><h2>Image Studio</h2><p>Generate image prompts, edit photos, and save to Supabase storage</p></div>
-
-    <!-- Prompt Generator -->
-    <div class="cd">
-      <div class="cdt">✨ Image Prompt Generator</div>
-      <div class="r2">
-        <div class="fg"><label>What is this image for?</label>
-          <select id="imgType">
-            <option value="hero">Hero / Banner Image</option>
-            <option value="social">Social Media (Square)</option>
-            <option value="thumbnail">YouTube Thumbnail</option>
-            <option value="product">Product / Glove Closeup</option>
-            <option value="background">Custom Background</option>
-            <option value="composite">Composite (Glove + Background)</option>
-          </select></div>
-        <div class="fg"><label>Blog or Context (optional)</label>
-          <input type="text" id="imgContext" placeholder="e.g. blog about re-lacing a Wilson A2000"/></div>
+        <div class="fg"><label>Image Type</label>
+          <select id="img-type"><option value="hero">Hero / Banner (1200x628)</option><option value="social">Social Square (1080x1080)</option><option value="thumb">YouTube Thumbnail (1280x720)</option><option value="product">Glove Closeup / Product</option><option value="composite">Glove + Background Composite</option></select></div>
+        <div class="fg"><label>Context</label><input type="text" id="img-context" placeholder="e.g. blog about re-lacing a Wilson A2000"/></div>
       </div>
       <div class="fg"><label>Additional Details</label>
-        <textarea id="imgDetails" rows="2" placeholder="e.g. focus on the lacing detail, dark moody lighting, close-up of palm pocket, show wear and character..."></textarea></div>
-      <div class="bg"><button class="btn bt" id="imgPromptBtn">✨ Generate Image Prompt</button></div>
-      <div id="imgPromptOut" style="display:none;margin-top:14px">
-        <div class="fg"><label>Generated Prompt — copy into your image generator (Midjourney, DALL-E, Firefly, etc.)</label>
-          <div id="imgPromptTxt" class="ob" style="max-height:140px;border-color:rgba(0,204,204,.3)"></div></div>
-        <div class="bg" style="margin-top:8px">
-          <button class="btn bo bsm" id="copyImgPromptBtn">📋 Copy Prompt</button>
+        <textarea id="img-details" rows="2" placeholder="Moody lighting, leather texture, dark background..."></textarea></div>
+      <div class="bgroup"><button class="btn btn-teal" id="btn-img-prompt">✨ Generate Prompt</button></div>
+      <div id="img-prompt-out" style="display:none;margin-top:12px">
+        <div class="fg"><label>Generated Prompt — paste into Midjourney, DALL-E, Adobe Firefly, etc.</label>
+          <div id="img-prompt-text" class="outbox" style="max-height:130px;border-color:var(--bdr2)"></div></div>
+        <div class="bgroup" style="margin-top:8px">
+          <button class="btn btn-out btn-sm" id="btn-copy-img-prompt">📋 Copy Prompt</button>
         </div>
       </div>
     </div>
-
-    <!-- Photo Upload & Edit -->
-    <div class="cd">
-      <div class="cdt">📸 Upload & Save Image to Supabase</div>
+    <div class="card">
+      <div class="card-title">📸 Upload Image to Supabase</div>
       <div class="r2">
+        <div class="fg"><label>Select Image (JPG/PNG/WEBP, max 10MB)</label>
+          <input type="file" id="img-file" accept="image/jpeg,image/png,image/webp"/>
+          <div class="hint">Hero: 1200×628 | Social: 1080×1080 | Thumb: 1280×720</div></div>
         <div class="fg">
-          <label>Upload Image (JPG, PNG, WEBP — max 10MB)</label>
-          <input type="file" id="imgFile" accept="image/jpeg,image/png,image/webp" style="padding:6px 11px;cursor:pointer"/>
-          <div class="hint">Recommended sizes: Hero 1200×628px | Social 1080×1080px | Thumbnail 1280×720px</div>
-        </div>
-        <div class="fg">
-          <label>Save to Folder</label>
-          <select id="imgFolder">
-            <option value="blog-images/hero">Hero Images</option>
-            <option value="blog-images/social">Social Images</option>
-            <option value="blog-images/thumbnails">Thumbnails</option>
-            <option value="blog-images/products">Product Photos</option>
-            <option value="blog-images/misc">Misc / Other</option>
-          </select>
-          <div class="fg" style="margin-top:10px"><label>Custom File Name (optional)</label>
-            <input type="text" id="imgName" placeholder="e.g. wilson-a2000-relacing-hero"/></div>
+          <div class="fg"><label>Save to Folder</label>
+            <select id="img-folder"><option value="hero">Hero Images</option><option value="social">Social</option><option value="thumbnails">Thumbnails</option><option value="products">Product Photos</option><option value="misc">Misc</option></select></div>
+          <div class="fg"><label>File Name (optional)</label><input type="text" id="img-name" placeholder="e.g. wilson-relacing-hero"/></div>
         </div>
       </div>
-      <div id="imgPreviewWrap" style="display:none;margin-bottom:14px">
-        <label>Preview</label>
-        <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;padding:12px;text-align:center">
-          <img id="imgPreview" src="" style="max-height:200px;max-width:100%;border-radius:6px;object-fit:contain"/>
-        </div>
-      </div>
-      <div id="imgUploadAl"></div>
-      <div class="bg">
-        <button class="btn bt" id="imgUploadBtn">⬆ Upload to Supabase</button>
-        <button class="btn bo bsm" id="imgClearBtn">Clear</button>
+      <div id="img-preview-wrap" style="display:none;margin-bottom:12px;text-align:center">
+        <img id="img-preview" src="" style="max-height:180px;max-width:100%;border-radius:7px;border:1px solid var(--bdr)"/></div>
+      <div id="img-upload-alert"></div>
+      <div class="bgroup">
+        <button class="btn btn-teal" id="btn-img-upload">⬆ Upload to Supabase</button>
+        <button class="btn btn-out btn-sm" id="btn-img-clear">Clear</button>
       </div>
     </div>
+    <div class="card">
+      <div class="card-title">🔗 Image URL</div>
+      <div class="fg"><label>URL — auto-filled after upload, or paste manually</label>
+        <input type="text" id="img-url" placeholder="URL appears here after upload — click to copy" style="color:var(--teal);cursor:pointer" onclick="this.select()"/></div>
+      <div class="bgroup">
+        <button class="btn btn-out btn-sm" id="btn-copy-img-url">📋 Copy URL</button>
+        <button class="btn btn-out btn-sm" id="btn-preview-url">👁 Preview</button>
+      </div>
+      <div id="img-url-preview" style="display:none;margin-top:10px;text-align:center">
+        <img id="img-url-img" src="" style="max-height:180px;max-width:100%;border-radius:7px;border:1px solid var(--bdr)"/></div>
+    </div>
+  </div>
 
-    <!-- Saved Image URL -->
-    <div class="cd">
-      <div class="cdt">🔗 Supabase Image URL</div>
-      <div class="fg"><label>After uploading, your image URL appears here — copy it into your blog Hero Image URL field</label>
-        <input type="text" id="imgUrl" placeholder="URL will appear here after upload" readonly style="color:var(--teal);cursor:pointer" onclick="this.select()"/>
+  <!-- SETTINGS -->
+  <div class="page" id="page-settings">
+    <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
+    <div class="card" style="border-color:rgba(240,165,0,.3)">
+      <div class="card-title" style="color:var(--gold)">🔌 Supabase Connection</div>
+      <div class="r2">
+        <div class="fg"><label>Supabase URL *</label><input type="url" id="s-url" placeholder="https://xxxx.supabase.co"/></div>
+        <div class="fg"><label>Anon Key *</label><input type="password" id="s-key" placeholder="eyJ..."/>
+          <div class="hint">Stored locally as bootstrap — all other settings in Supabase</div></div>
       </div>
-      <div class="fg"><label>Or paste an existing Supabase image URL</label>
-        <input type="url" id="imgUrlManual" placeholder="https://axcavotqlkiujyicrvcp.supabase.co/storage/v1/object/public/..."/></div>
-      <div class="bg">
-        <button class="btn bo bsm" id="copyImgUrlBtn">📋 Copy URL</button>
-        <button class="btn bp bsm" id="previewUrlBtn">👁 Preview</button>
+      <div class="bgroup"><button class="btn btn-teal btn-sm" id="btn-test-sb">🔌 Test Connection</button></div>
+      <div id="s-test-alert" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🤖 Anthropic API Key (Claude)</div>
+      <div class="fg"><label>API Key</label><input type="password" id="s-ant" placeholder="sk-ant-api03-..."/>
+        <div class="hint">Get yours at console.anthropic.com — saved to Supabase, never in browser code</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎙️ JB Voice Profile — Pre-fills Every Blog</div>
+      <div class="fg"><label>Expert Background &amp; Voice</label>
+        <textarea id="s-voice" rows="4" placeholder="e.g. I've been repairing gloves for 15+ years. I always say — take care of your glove and your glove will take care of you..."></textarea>
+        <div class="hint">Pre-fills the Expert Take field on every new blog automatically</div></div>
+      <div class="fg"><label>Brand DNA — Core Philosophies</label>
+        <textarea id="s-dna" rows="4" placeholder="e.g. TheGloveSOS connects players with trusted local glove repair shops. Quality repair matters..."></textarea>
+        <div class="hint">Injected into every blog — keeps brand voice consistent every time</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🖼️ Brand Logo</div>
+      <div class="r2">
+        <div class="fg"><label>Upload Logo</label>
+          <input type="file" id="s-logo-file" accept="image/*"/>
+          <div class="hint">PNG transparent background — 400×120px horizontal or 200×200px square</div></div>
+        <div class="fg"><label>Current Logo</label>
+          <div id="logo-preview" style="background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;padding:10px;min-height:55px;display:flex;align-items:center;justify-content:center">
+            <img id="logo-img" src="" style="max-height:50px;max-width:100%;display:none"/>
+            <span id="logo-ph" style="font-size:12px;color:var(--t3)">No logo uploaded yet</span>
+          </div></div>
       </div>
-      <div id="imgUrlPreview" style="display:none;margin-top:12px;text-align:center">
-        <img id="imgUrlPreviewImg" src="" style="max-height:200px;max-width:100%;border-radius:8px;border:1px solid var(--bdr)"/>
+      <div class="bgroup">
+        <button class="btn btn-teal btn-sm" id="btn-logo-upload">⬆ Upload Logo</button>
+        <button class="btn btn-out btn-sm" id="btn-logo-remove">Remove</button>
+      </div>
+      <div id="logo-alert" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🗄️ Tables &amp; Storage</div>
+      <div class="r3">
+        <div class="fg"><label>Blog Table</label><input type="text" id="s-tbl" value="blog_posts"/></div>
+        <div class="fg"><label>Ideas Table</label><input type="text" id="s-idt" value="blog_ideas"/></div>
+        <div class="fg"><label>Storage Bucket</label><input type="text" id="s-bkt" value="blog-images"/></div>
       </div>
     </div>
+    <div class="card">
+      <div class="card-title">📊 Google Sheets</div>
+      <div class="r2">
+        <div class="fg"><label>Sheet ID</label><input type="text" id="s-shid" placeholder="From the Sheet URL"/></div>
+        <div class="fg"><label>Queue Tab</label><input type="text" id="s-shtab" value="Blog_Queue"/></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📝 Defaults</div>
+      <div class="r3">
+        <div class="fg"><label>Author</label><input type="text" id="s-author" value="JB"/></div>
+        <div class="fg"><label>Min Words</label><input type="number" id="s-minw" value="1200"/></div>
+        <div class="fg"><label>Max Words</label><input type="number" id="s-maxw" value="1800"/></div>
+      </div>
+      <div class="r2">
+        <div class="fg"><label>Site URL</label><input type="url" id="s-site" value="https://theglovesos.com"/></div>
+        <div class="fg"><label>Notification Email</label><input type="text" id="s-email" value="theglovesdesigns@gmail.com"/></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚡ Automation</div>
+      <div class="tog-row"><div class="tog-info">Auto-Publish (7 AM Daily)<small>Publishes Approved/Scheduled blogs to Supabase</small></div><button class="tog-btn" id="tog-ap"></button></div>
+      <div class="tog-row"><div class="tog-info">Auto Blog Generation<small>Generates blogs automatically on schedule</small></div><button class="tog-btn" id="tog-ag"></button></div>
+      <div class="tog-row"><div class="tog-info">Monthly Newsletter (2nd of month)<small>Auto-generates from top published blogs</small></div><button class="tog-btn on" id="tog-nl"></button></div>
+      <div class="tog-row"><div class="tog-info">Email Notifications<small>Notify on publish or errors</small></div><button class="tog-btn on" id="tog-em"></button></div>
+    </div>
+    <div class="bgroup">
+      <button class="btn btn-teal" id="btn-save-settings">💾 Save All Settings to Supabase</button>
+      <button class="btn btn-out btn-sm" id="btn-reload-settings">&#8635; Reload from Supabase</button>
+    </div>
+    <div id="s-alert" style="margin-top:10px"></div>
   </div>
 
   </div>
 </div>
 </div>
-
 <script>
-// ─────────────────────────────────────────────
+"use strict";
+// ═══════════════════════════════════════════════════════
 // STATE
-// ─────────────────────────────────────────────
-var ST = {
-  url: localStorage.getItem('sb_url') || '',
-  key: localStorage.getItem('sb_key') || '',
-  ant: '', tbl: 'blog_posts', idt: 'blog_ideas', bkt: 'blog-images',
-  shid: '', shTab: 'Blog_Queue', aut: 'JB', min: '1200', max: '1800',
-  sit: 'https://theglovesos.com', eml: 'theglovesdesigns@gmail.com',
-  voice: '', dna: ''
+// ═══════════════════════════════════════════════════════
+var ST={
+  url:localStorage.getItem("sb_url")||"",
+  key:localStorage.getItem("sb_key")||"",
+  ant:"",tbl:"blog_posts",idt:"blog_ideas",bkt:"blog-images",
+  shid:"",shtab:"Blog_Queue",author:"JB",minw:"1200",maxw:"1800",
+  site:"https://theglovesos.com",email:"theglovesdesigns@gmail.com",
+  voice:"",dna:""
 };
-var TOGS = { ap: false, ag: false, nl: true, em: true };
-var QUEUE = [];
-var IDEAS = [];
-var GEN = null;
-var LASTRES = '';
+var TOGS={ap:false,ag:false,nl:true,em:true};
+var QUEUE=[],IDEAS=[],GEN=null,LASTRES="";
 
-var PAGES = {
-  generator: { t: 'Blog Generator', s: 'Generate complete, SEO-optimized blog content' },
-  queue:      { t: 'Blog Queue',    s: 'Track all blogs — Pending → Review → Approved → Scheduled → Published to Site' },
-  ideas:      { t: 'Blog Ideas',    s: 'Save ideas and push them to the generator when ready' },
-  newsletter: { t: 'Newsletter',    s: 'Auto-build monthly newsletter from top blogs + baseball events' },
-  research:   { t: 'Research Hub',  s: 'Find trending glove repair topics to fuel your content' },
-  settings:   { t: 'Settings',      s: 'All settings save to Supabase — accessible from any device' },
-  images:     { t: 'Image Studio',   s: 'Generate image prompts, upload photos, and save to Supabase' }
-};
+// ═══════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════
+function G(id){return document.getElementById(id);}
+function val(id){var e=G(id);return e?e.value.trim():"";}
+function txt(id,v){var e=G(id);if(e)e.textContent=v;}
+function show(id){var e=G(id);if(e)e.style.display="block";}
+function hide(id){var e=G(id);if(e)e.style.display="none";}
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function extr(t,tag){var p=t.split("===");for(var i=0;i<p.length;i++){if(p[i].trim()===tag&&p[i+1]!==undefined)return p[i+1].trim();}return"";}
+function alert2(id,msg,type){
+  var e=G(id);if(!e)return;
+  e.innerHTML="<div class='alert a-"+type+"'>"+msg+"</div>";
+  if(type==="ok")setTimeout(function(){if(G(id))G(id).innerHTML="";},4000);
+}
+function setBtn(id,loading,label){
+  var b=G(id);if(!b)return;
+  b.disabled=loading;
+  b.innerHTML=loading?"<div class='spin'></div> "+label:label;
+}
 
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
 // SUPABASE HELPERS
-// ─────────────────────────────────────────────
-function sbH() {
-  return { apikey: ST.key, Authorization: 'Bearer ' + ST.key, 'Content-Type': 'application/json' };
-}
-async function sbGet(table, qs) {
-  var r = await fetch(ST.url + '/rest/v1/' + table + '?' + (qs || ''), { headers: sbH() });
-  if (!r.ok) { var e = await r.json().catch(function(){ return {}; }); throw new Error(e.message || 'HTTP ' + r.status); }
+// ═══════════════════════════════════════════════════════
+function SBH(){return{apikey:ST.key,Authorization:"Bearer "+ST.key,"Content-Type":"application/json"};}
+async function SBGet(tbl,qs){
+  var r=await fetch(ST.url+"/rest/v1/"+tbl+"?"+(qs||""),{headers:SBH()});
+  if(!r.ok){var e=await r.json().catch(function(){return{};});throw new Error(e.message||"HTTP "+r.status);}
   return r.json();
 }
-async function sbPost(table, body) {
-  var r = await fetch(ST.url + '/rest/v1/' + table, {
-    method: 'POST', headers: Object.assign({}, sbH(), { Prefer: 'return=representation' }), body: JSON.stringify(body)
-  });
-  if (!r.ok) { var e = await r.json().catch(function(){ return {}; }); throw new Error(e.message || 'HTTP ' + r.status); }
+async function SBPost(tbl,body){
+  var r=await fetch(ST.url+"/rest/v1/"+tbl,{method:"POST",headers:Object.assign({},SBH(),{Prefer:"return=representation"}),body:JSON.stringify(body)});
+  if(!r.ok){var e=await r.json().catch(function(){return{};});throw new Error(e.message||"HTTP "+r.status);}
   return r.json();
 }
-async function sbUpsert(table, body) {
-  var r = await fetch(ST.url + '/rest/v1/' + table + '?on_conflict=key', {
-    method: 'POST',
-    headers: Object.assign({}, sbH(), { Prefer: 'resolution=merge-duplicates,return=representation' }),
-    body: JSON.stringify(body)
-  });
-  if (!r.ok) { var e = await r.json().catch(function(){ return {}; }); throw new Error(e.message || 'HTTP ' + r.status); }
+async function SBUpsert(tbl,rows){
+  var r=await fetch(ST.url+"/rest/v1/"+tbl+"?on_conflict=key",{method:"POST",headers:Object.assign({},SBH(),{Prefer:"resolution=merge-duplicates,return=representation"}),body:JSON.stringify(rows)});
+  if(!r.ok){var e=await r.json().catch(function(){return{};});throw new Error(e.message||"HTTP "+r.status);}
   return r.json();
 }
 
-// ─────────────────────────────────────────────
-// UTILITIES
-// ─────────────────────────────────────────────
-function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function el(id) { return document.getElementById(id); }
-function val(id) { var e = el(id); return e ? e.value.trim() : ''; }
-function setTxt(id, v) { var e = el(id); if (e) e.textContent = v; }
-function show(id) { var e = el(id); if (e) e.style.display = 'block'; }
-function hide(id) { var e = el(id); if (e) e.style.display = 'none'; }
-function showAl(id, msg, type) {
-  var e = el(id); if (!e) return;
-  e.innerHTML = '<div class="al a' + type + '">' + msg + '</div>';
-  if (type === 'ok') setTimeout(function(){ if(el(id)) el(id).innerHTML = ''; }, 4500);
-}
-function clearAl(id) { var e = el(id); if (e) e.innerHTML = ''; }
-function setBtn(id, loading, txt) {
-  var b = el(id); if (!b) return;
-  b.disabled = loading;
-  b.innerHTML = loading ? '<div class="spin"></div> ' + txt : txt;
-}
-function extr(txt, tag) {
-  var parts = txt.split('===');
-  for (var i = 0; i < parts.length; i++) {
-    if (parts[i].trim() === tag && parts[i+1] !== undefined) return parts[i+1].trim();
-  }
-  return '';
+// ═══════════════════════════════════════════════════════
+// AI CALL
+// ═══════════════════════════════════════════════════════
+async function AI(prompt,max){
+  if(!ST.ant)throw new Error("Add your Anthropic API key in Settings first.");
+  var r=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","x-api-key":ST.ant,"anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:"claude-sonnet-4-5",max_tokens:max||4500,messages:[{role:"user",content:prompt}]})
+  });
+  var d=await r.json();
+  if(d.error)throw new Error(d.error.message);
+  return d.content[0].text;
 }
 
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
 // COUNTS
-// ─────────────────────────────────────────────
-function updateCounts() {
-  var q = QUEUE.length;
-  var i = IDEAS.filter(function(x){ return x.status === 'New' || x.status === 'Pending'; }).length;
-  setTxt('bdgQ', q); setTxt('sfQ', q);
-  setTxt('bdgI', i); setTxt('sfI', i);
-  setTxt('iCount', '(' + IDEAS.length + ' ideas)');
-  setTxt('qsTot', q);
-  setTxt('qsPen', QUEUE.filter(function(x){ return x.uploadStatus==='Pending'||x.uploadStatus==='Review'; }).length);
-  setTxt('qsApp', QUEUE.filter(function(x){ return x.uploadStatus==='Approved'; }).length);
-  setTxt('qsSch', QUEUE.filter(function(x){ return x.uploadStatus==='Scheduled'; }).length);
-  setTxt('qsPub', QUEUE.filter(function(x){ return x.uploadStatus==='Published to Site'; }).length);
+// ═══════════════════════════════════════════════════════
+function updateCounts(){
+  var q=QUEUE.length;
+  var i=IDEAS.filter(function(x){return x.status==="New"||x.status==="Pending";}).length;
+  var pub=QUEUE.filter(function(x){return x.uploadStatus==="Published to Site";}).length;
+  var app=QUEUE.filter(function(x){return x.uploadStatus==="Approved";}).length;
+  ["bdg-q","sf-q","h-queue","q-total"].forEach(function(id){txt(id,q);});
+  ["bdg-i","sf-i","h-ideas"].forEach(function(id){txt(id,i);});
+  txt("h-pub",pub); txt("h-app",app);
+  txt("q-pending",QUEUE.filter(function(x){return x.uploadStatus==="Pending"||x.uploadStatus==="Review";}).length);
+  txt("q-approved",app);
+  txt("q-scheduled",QUEUE.filter(function(x){return x.uploadStatus==="Scheduled";}).length);
+  txt("q-published",pub);
+  txt("ideas-count","("+IDEAS.length+" ideas)");
+  var hs=G("home-status");
+  if(hs)hs.innerHTML=
+    "📋 <b>"+q+"</b> blogs in queue &nbsp;|&nbsp; "+
+    "💡 <b>"+IDEAS.length+"</b> ideas &nbsp;|&nbsp; "+
+    "✅ <b>"+pub+"</b> published &nbsp;|&nbsp; "+
+    "⏳ <b>"+app+"</b> approved<br/>"+
+    (ST.ant?"🟢 API key configured — ready to generate":"⚠️ <span style='color:var(--orange)'>Go to Settings → add Anthropic API key to start generating</span>");
 }
 
-// ─────────────────────────────────────────────
-// SIDEBAR TOGGLE
-// ─────────────────────────────────────────────
-el('sb-tog').addEventListener('click', function() {
-  var sb = el('sb');
-  sb.classList.toggle('col');
-  el('sb-tog').innerHTML = sb.classList.contains('col') ? '&#9654;' : '&#9664;';
-});
-
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
 // NAVIGATION
-// ─────────────────────────────────────────────
-document.querySelectorAll('.sit').forEach(function(item) {
-  item.addEventListener('click', function() {
-    var page = this.getAttribute('data-page');
-    document.querySelectorAll('.pg').forEach(function(p){ p.classList.remove('on'); });
-    document.querySelectorAll('.sit').forEach(function(s){ s.classList.remove('on'); });
-    el('pg-' + page).classList.add('on');
-    this.classList.add('on');
-    setTxt('tbT', PAGES[page].t);
-    setTxt('tbS', PAGES[page].s);
-    if (page === 'queue') renderQueue();
-    if (page === 'ideas') renderIdeas();
-    if (page === 'generator') {
-      if (ST.voice && !val('gExp')) { var ge=el('gExp'); if(ge&&!ge.value) ge.value=ST.voice; }
-      if (ST.dna && !val('gDna')) { var gd=el('gDna'); if(gd&&!gd.value) gd.value=ST.dna; }
-    }
+// ═══════════════════════════════════════════════════════
+var PAGE_META={
+  home:{t:"Home",s:"Welcome to the Tool Shed"},
+  generator:{t:"Blog Generator",s:"Generate complete SEO-optimized blog content"},
+  queue:{t:"Blog Queue",s:"Track all blogs from Pending to Published to Site"},
+  ideas:{t:"Blog Ideas",s:"Ideas auto-save to Supabase"},
+  newsletter:{t:"Newsletter",s:"Auto-build monthly newsletter from top blogs"},
+  research:{t:"Research Hub",s:"Find trending topics to fuel your content"},
+  images:{t:"Image Studio",s:"Generate prompts, upload photos, save to Supabase"},
+  settings:{t:"Settings",s:"All settings save to Supabase — any device"}
+};
+
+function navTo(page){
+  document.querySelectorAll(".page").forEach(function(p){p.classList.remove("on");});
+  document.querySelectorAll(".sitem").forEach(function(s){s.classList.remove("on");});
+  var pg=G("page-"+page);if(pg)pg.classList.add("on");
+  document.querySelectorAll(".sitem").forEach(function(s){if(s.getAttribute("data-page")===page)s.classList.add("on");});
+  var m=PAGE_META[page]||{t:page,s:""};
+  txt("page-title",m.t);txt("page-sub",m.s);
+  if(page==="queue")renderQueue();
+  if(page==="ideas")renderIdeas();
+  if(page==="generator"){
+    var ge=G("g-exp");if(ge&&ST.voice&&!ge.value)ge.value=ST.voice;
+    var gd=G("g-dna");if(gd&&ST.dna&&!gd.value)gd.value=ST.dna;
+  }
+}
+
+// Sidebar items
+document.querySelectorAll(".sitem").forEach(function(item){
+  item.addEventListener("click",function(){navTo(this.getAttribute("data-page"));});
+});
+// Home cards
+document.querySelectorAll(".home-card").forEach(function(card){
+  card.addEventListener("click",function(){navTo(this.getAttribute("data-page"));});
+});
+// Sidebar toggle
+G("tog-sb").addEventListener("click",function(){
+  var sb=G("sb");sb.classList.toggle("col");
+  this.innerHTML=sb.classList.contains("col")?"&#9654;":"&#9664;";
+});
+// Output tabs
+document.querySelectorAll(".tab-btn").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    var n=this.getAttribute("data-tab");
+    document.querySelectorAll(".tab-btn").forEach(function(b){b.classList.remove("on");});
+    document.querySelectorAll(".tab-pane").forEach(function(p){p.classList.remove("on");});
+    this.classList.add("on");
+    var tp=G("tab-"+n);if(tp)tp.classList.add("on");
   });
 });
-
-// ─────────────────────────────────────────────
-// OUTPUT TABS
-// ─────────────────────────────────────────────
-document.querySelectorAll('.tab').forEach(function(tab) {
-  tab.addEventListener('click', function() {
-    var n = this.getAttribute('data-tab');
-    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
-    document.querySelectorAll('.tpn').forEach(function(p){ p.classList.remove('on'); });
-    this.classList.add('on');
-    el('tp' + n).classList.add('on');
+// Toggles
+["ap","ag","nl","em"].forEach(function(k){
+  var b=G("tog-"+k);
+  if(b)b.addEventListener("click",function(){
+    TOGS[k]=!TOGS[k];this.classList.toggle("on",TOGS[k]);
   });
 });
-
-// ─────────────────────────────────────────────
-// TOGGLES
-// ─────────────────────────────────────────────
-function renderToggles() {
-  ['ap','ag','nl','em'].forEach(function(k) {
-    var t = el('tog' + k.charAt(0).toUpperCase() + k.slice(1));
-    if (t) { if (TOGS[k]) t.classList.add('on'); else t.classList.remove('on'); }
+function renderToggles(){
+  ["ap","ag","nl","em"].forEach(function(k){
+    var b=G("tog-"+k);if(b){if(TOGS[k])b.classList.add("on");else b.classList.remove("on");}
   });
 }
-['Ap','Ag','Nl','Em'].forEach(function(k) {
-  var btn = el('tog' + k);
-  if (btn) btn.addEventListener('click', function() {
-    var key = k.toLowerCase();
-    TOGS[key] = !TOGS[key];
-    this.classList.toggle('on', TOGS[key]);
-  });
+
+// ═══════════════════════════════════════════════════════
+// LOGO
+// ═══════════════════════════════════════════════════════
+function setLogo(url){
+  if(!url)return;
+  var li=G("logo-img"),lp=G("logo-ph"),si=G("slogo-img"),st=G("slogo-txt"),sl=G("slogo");
+  if(li){li.src=url;li.style.display="block";}
+  if(lp)lp.style.display="none";
+  if(si&&st&&sl){si.src=url;si.style.display="block";st.style.display="none";sl.style.background="transparent";}
+}
+G("s-logo-file").addEventListener("change",function(){
+  var f=this.files[0];if(!f)return;
+  var r=new FileReader();r.onload=function(e){setLogo(e.target.result);};r.readAsDataURL(f);
+});
+G("btn-logo-upload").addEventListener("click",async function(){
+  var f=G("s-logo-file").files[0];
+  if(!f){alert2("logo-alert","Select a file first.","er");return;}
+  if(!ST.url||!ST.key){alert2("logo-alert","Save Supabase credentials first.","er");return;}
+  setBtn("btn-logo-upload",true,"⏳ Uploading...");
+  try{
+    var ext=f.name.split(".").pop();
+    var r=await fetch(ST.url+"/storage/v1/object/"+(ST.bkt||"blog-images")+"/brand/logo."+ext,{
+      method:"POST",headers:{apikey:ST.key,Authorization:"Bearer "+ST.key,"Content-Type":f.type,"x-upsert":"true"},body:f
+    });
+    if(!r.ok){var e=await r.json().catch(function(){return{};});throw new Error(e.message||"HTTP "+r.status);}
+    var logoUrl=ST.url+"/storage/v1/object/public/"+(ST.bkt||"blog-images")+"/brand/logo."+ext;
+    await SBUpsert("app_settings",[{key:"logo_url",value:logoUrl}]);
+    setLogo(logoUrl);alert2("logo-alert","✅ Logo uploaded!","ok");
+  }catch(e){alert2("logo-alert","❌ "+e.message,"er");}
+  finally{setBtn("btn-logo-upload",false,"⬆ Upload Logo");}
+});
+G("btn-logo-remove").addEventListener("click",async function(){
+  var li=G("logo-img"),lp=G("logo-ph"),si=G("slogo-img"),st=G("slogo-txt"),sl=G("slogo");
+  if(li){li.src="";li.style.display="none";}if(lp)lp.style.display="block";
+  if(si&&st&&sl){si.style.display="none";st.style.display="block";sl.style.background="";}
+  try{await SBUpsert("app_settings",[{key:"logo_url",value:""}]);}catch(e){}
 });
 
-// ─────────────────────────────────────────────
-// SETTINGS — LOAD FROM SUPABASE
-// ─────────────────────────────────────────────
-async function loadSettings() {
-  if (!ST.url || !ST.key) {
-    showAl('sAl', '👋 Enter your Supabase URL and Anon Key above, then click Save.', 'in');
-    return;
-  }
-  showAl('sAl', '⏳ Loading settings from Supabase...', 'in');
-  try {
-    var rows = await sbGet('app_settings', 'select=key,value');
-    var m = {};
-    rows.forEach(function(r){ m[r.key] = r.value; });
-    if (m.anthropic_api_key) ST.ant = m.anthropic_api_key;
-    if (m.supabase_url)      ST.url = m.supabase_url;
-    if (m.supabase_anon_key) ST.key = m.supabase_anon_key;
-    if (m.blog_table)        ST.tbl = m.blog_table;
-    if (m.ideas_table)       ST.idt = m.ideas_table;
-    if (m.storage_bucket)    ST.bkt = m.storage_bucket;
-    if (m.sheet_id)          ST.shid = m.sheet_id;
-    if (m.sheet_tab)         ST.shTab = m.sheet_tab;
-    if (m.default_author)    ST.aut = m.default_author;
-    if (m.min_word_count)    ST.min = m.min_word_count;
-    if (m.max_word_count)    ST.max = m.max_word_count;
-    if (m.site_url)          ST.sit = m.site_url;
-    if (m.notification_email) ST.eml = m.notification_email;
-    if (m.jb_voice) { ST.voice = m.jb_voice; var ev=el('sVoice'); if(ev) ev.value=m.jb_voice; }
-    if (m.brand_dna) { ST.dna = m.brand_dna; var ed=el('sDna'); if(ed) ed.value=m.brand_dna; }
-    if (m.logo_url) { loadLogoPreview(m.logo_url); }
-    TOGS.ap = m.auto_publish    === 'true';
-    TOGS.ag = m.auto_generate   === 'true';
-    TOGS.nl = m.auto_newsletter !== 'false';
-    TOGS.em = m.email_notify    !== 'false';
-    populateSettingsForm();
+// ═══════════════════════════════════════════════════════
+// SETTINGS — LOAD
+// ═══════════════════════════════════════════════════════
+async function loadSettings(){
+  if(!ST.url||!ST.key){alert2("s-alert","👋 Enter Supabase URL and Anon Key, then click Save.","in");return;}
+  alert2("s-alert","⏳ Loading from Supabase...","in");
+  try{
+    var rows=await SBGet("app_settings","select=key,value");
+    var m={};rows.forEach(function(r){m[r.key]=r.value;});
+    if(m.anthropic_api_key)ST.ant=m.anthropic_api_key;
+    if(m.supabase_url)ST.url=m.supabase_url;
+    if(m.supabase_anon_key)ST.key=m.supabase_anon_key;
+    if(m.blog_table)ST.tbl=m.blog_table;
+    if(m.ideas_table)ST.idt=m.ideas_table;
+    if(m.storage_bucket)ST.bkt=m.storage_bucket;
+    if(m.sheet_id)ST.shid=m.sheet_id;
+    if(m.sheet_tab)ST.shtab=m.sheet_tab;
+    if(m.default_author)ST.author=m.default_author;
+    if(m.min_word_count)ST.minw=m.min_word_count;
+    if(m.max_word_count)ST.maxw=m.max_word_count;
+    if(m.site_url)ST.site=m.site_url;
+    if(m.notification_email)ST.email=m.notification_email;
+    if(m.jb_voice)ST.voice=m.jb_voice;
+    if(m.brand_dna)ST.dna=m.brand_dna;
+    if(m.logo_url)setLogo(m.logo_url);
+    TOGS.ap=m.auto_publish==="true";TOGS.ag=m.auto_generate==="true";
+    TOGS.nl=m.auto_newsletter!=="false";TOGS.em=m.email_notify!=="false";
+    // Fill form fields
+    var fm={
+      "s-url":"url","s-key":"key","s-ant":"ant","s-tbl":"tbl","s-idt":"idt","s-bkt":"bkt",
+      "s-shid":"shid","s-shtab":"shtab","s-author":"author","s-minw":"minw","s-maxw":"maxw",
+      "s-site":"site","s-email":"email","s-voice":"voice","s-dna":"dna"
+    };
+    Object.keys(fm).forEach(function(id){var e=G(id);if(e&&ST[fm[id]])e.value=ST[fm[id]];});
     renderToggles();
-    localStorage.setItem('sb_url', ST.url);
-    localStorage.setItem('sb_key', ST.key);
-    clearAl('sAl');
-    // Load queue and ideas
-    await loadQueueFromSB();
-    await loadIdeasFromSB();
-    updateCounts();
-  } catch(e) {
-    showAl('sAl', '❌ Could not load settings: ' + e.message, 'er');
-  }
+    localStorage.setItem("sb_url",ST.url);localStorage.setItem("sb_key",ST.key);
+    if(G("s-alert"))G("s-alert").innerHTML="";
+    await loadQueueFromSB();await loadIdeasFromSB();updateCounts();
+  }catch(e){alert2("s-alert","❌ Could not load: "+e.message,"er");}
 }
-function populateSettingsForm() {
-  var map = { sUrl:'url', sKey:'key', sAnt:'ant', sTbl:'tbl', sIdt:'idt', sBkt:'bkt', sShid:'shid', sShTab:'shTab', sAut:'aut', sMin:'min', sMax:'max', sSit:'sit', sEml:'eml' };
-  Object.keys(map).forEach(function(id) { var e = el(id); if (e && ST[map[id]]) e.value = ST[map[id]]; });
+async function loadQueueFromSB(){
+  try{
+    var d=await SBGet(ST.tbl||"blog_posts","select=*&order=created_at.desc&limit=100");
+    if(Array.isArray(d))QUEUE=d.map(function(b){return{id:b.id,title:b.title,slug:b.slug,category:b.category,author:b.author||"JB",uploadStatus:b.upload_status||"Pending",wordCount:b.word_count,publishDate:b.publish_date,blogUrl:b.blog_url,createdAt:b.created_at};});
+  }catch(e){console.log("Queue:",e.message);}
 }
-async function loadQueueFromSB() {
-  try {
-    var data = await sbGet(ST.tbl || 'blog_posts', 'select=*&order=created_at.desc&limit=100');
-    if (Array.isArray(data)) {
-      QUEUE = data.map(function(b) {
-        return { id: b.id, title: b.title, slug: b.slug, category: b.category, author: b.author || 'JB',
-          uploadStatus: b.upload_status || (b.status === 'published' ? 'Published to Site' : 'Pending'),
-          wordCount: b.word_count, readTime: b.read_time, publishDate: b.publish_date,
-          publishedAt: b.published_at, blogUrl: b.blog_url, supabaseId: b.id,
-          metaDescription: b.meta_description, tags: b.tags, createdAt: b.created_at };
-      });
-    }
-  } catch(e) { console.log('Queue load error:', e.message); }
-}
-async function loadIdeasFromSB() {
-  try {
-    var data = await sbGet(ST.idt || 'blog_ideas', 'select=*&order=created_at.desc&limit=200');
-    if (Array.isArray(data)) {
-      IDEAS = data.map(function(i) {
-        return { id: i.id, title: i.title, priority: i.priority || 'Medium', category: i.category || 'Glove Repair',
-          season: i.season_relevance || 'Any', audience: i.target_audience || 'All Players',
-          notes: i.notes || '', status: i.status || 'New', dateFound: i.date_found };
-      });
-    }
-  } catch(e) { console.log('Ideas load error:', e.message); }
+async function loadIdeasFromSB(){
+  try{
+    var d=await SBGet(ST.idt||"blog_ideas","select=*&order=created_at.desc&limit=200");
+    if(Array.isArray(d))IDEAS=d.map(function(i){return{id:i.id,title:i.title,priority:i.priority||"Medium",category:i.category||"Glove Repair",season:i.season_relevance||"Any",audience:i.target_audience||"All Players",notes:i.notes||"",status:i.status||"New"};});
+  }catch(e){console.log("Ideas:",e.message);}
 }
 
-// ─────────────────────────────────────────────
-// SETTINGS — SAVE TO SUPABASE
-// ─────────────────────────────────────────────
-el('saveStBtn').addEventListener('click', async function() {
-  var url = val('sUrl'), key = val('sKey');
-  if (!url || !key) { showAl('sAl', '❌ Supabase URL and Anon Key are required.', 'er'); return; }
-  localStorage.setItem('sb_url', url);
-  localStorage.setItem('sb_key', key);
-  ST.url = url; ST.key = key;
-  setBtn('saveStBtn', true, '⏳ Saving...');
-  var rows = [
-    { key: 'anthropic_api_key',  value: val('sAnt') },
-    { key: 'supabase_url',       value: url },
-    { key: 'supabase_anon_key',  value: key },
-    { key: 'blog_table',         value: val('sTbl') || 'blog_posts' },
-    { key: 'ideas_table',        value: val('sIdt') || 'blog_ideas' },
-    { key: 'storage_bucket',     value: val('sBkt') || 'blog-images' },
-    { key: 'sheet_id',           value: val('sShid') },
-    { key: 'sheet_tab',          value: val('sShTab') || 'Blog_Queue' },
-    { key: 'default_author',     value: val('sAut') || 'JB' },
-    { key: 'min_word_count',     value: val('sMin') || '1200' },
-    { key: 'max_word_count',     value: val('sMax') || '1800' },
-    { key: 'site_url',           value: val('sSit') || 'https://theglovesos.com' },
-    { key: 'notification_email', value: val('sEml') || 'theglovesdesigns@gmail.com' },
-    { key: 'auto_publish',       value: String(TOGS.ap) },
-    { key: 'auto_generate',      value: String(TOGS.ag) },
-    { key: 'auto_newsletter',    value: String(TOGS.nl) },
-    { key: 'email_notify',       value: String(TOGS.em) },
-    { key: 'jb_voice',           value: val('sVoice') },
-    { key: 'brand_dna',          value: val('sDna') }
+// ═══════════════════════════════════════════════════════
+// SETTINGS — SAVE
+// ═══════════════════════════════════════════════════════
+G("btn-save-settings").addEventListener("click",async function(){
+  var url=val("s-url"),key=val("s-key");
+  if(!url||!key){alert2("s-alert","❌ Supabase URL and Anon Key are required.","er");return;}
+  localStorage.setItem("sb_url",url);localStorage.setItem("sb_key",key);
+  ST.url=url;ST.key=key;
+  setBtn("btn-save-settings",true,"⏳ Saving...");
+  var rows=[
+    {key:"anthropic_api_key",value:val("s-ant")},
+    {key:"supabase_url",value:url},{key:"supabase_anon_key",value:key},
+    {key:"blog_table",value:val("s-tbl")||"blog_posts"},
+    {key:"ideas_table",value:val("s-idt")||"blog_ideas"},
+    {key:"storage_bucket",value:val("s-bkt")||"blog-images"},
+    {key:"sheet_id",value:val("s-shid")},{key:"sheet_tab",value:val("s-shtab")||"Blog_Queue"},
+    {key:"default_author",value:val("s-author")||"JB"},
+    {key:"min_word_count",value:val("s-minw")||"1200"},{key:"max_word_count",value:val("s-maxw")||"1800"},
+    {key:"site_url",value:val("s-site")||"https://theglovesos.com"},
+    {key:"notification_email",value:val("s-email")||"theglovesdesigns@gmail.com"},
+    {key:"auto_publish",value:String(TOGS.ap)},{key:"auto_generate",value:String(TOGS.ag)},
+    {key:"auto_newsletter",value:String(TOGS.nl)},{key:"email_notify",value:String(TOGS.em)},
+    {key:"jb_voice",value:val("s-voice")},{key:"brand_dna",value:val("s-dna")}
   ];
-  try {
-    await sbUpsert('app_settings', rows);
-    await loadSettings();
-    showAl('sAl', '✅ Settings saved to Supabase — works on every device!', 'ok');
-  } catch(e) {
-    showAl('sAl', '❌ Save failed: ' + e.message, 'er');
-  } finally {
-    setBtn('saveStBtn', false, '💾 Save All Settings to Supabase');
-  }
+  try{
+    await SBUpsert("app_settings",rows);
+    ST.ant=val("s-ant");ST.voice=val("s-voice");ST.dna=val("s-dna");
+    updateCounts();alert2("s-alert","✅ All settings saved to Supabase!","ok");
+  }catch(e){alert2("s-alert","❌ Save failed: "+e.message,"er");}
+  finally{setBtn("btn-save-settings",false,"💾 Save All Settings to Supabase");}
+});
+G("btn-reload-settings").addEventListener("click",function(){loadSettings();});
+G("btn-test-sb").addEventListener("click",async function(){
+  var url=val("s-url")||ST.url,key=val("s-key")||ST.key;
+  if(!url||!key){alert2("s-test-alert","Enter URL and Key first.","er");return;}
+  ST.url=url;ST.key=key;setBtn("btn-test-sb",true,"⏳ Testing...");
+  try{
+    var r=await fetch(url+"/rest/v1/blog_posts?select=id&limit=1",{headers:{apikey:key,Authorization:"Bearer "+key}});
+    if(r.ok)alert2("s-test-alert","✅ Connected to Supabase!","ok");
+    else alert2("s-test-alert","❌ Failed HTTP "+r.status+" — check URL and Anon Key","er");
+  }catch(e){alert2("s-test-alert","❌ "+e.message,"er");}
+  finally{setBtn("btn-test-sb",false,"🔌 Test Connection");}
 });
 
-el('reloadStBtn').addEventListener('click', function() { loadSettings(); });
-
-el('testSbBtn').addEventListener('click', async function() {
-  var url = val('sUrl') || ST.url, key = val('sKey') || ST.key;
-  if (!url || !key) { showAl('sTestAl', 'Enter URL and Anon Key first.', 'er'); return; }
-  ST.url = url; ST.key = key;
-  setBtn('testSbBtn', true, '⏳ Testing...');
-  try {
-    var r = await fetch(url + '/rest/v1/' + (val('sTbl') || 'blog_posts') + '?select=id&limit=1', { headers: { apikey: key, Authorization: 'Bearer ' + key } });
-    if (r.ok) showAl('sTestAl', '✅ Connected to Supabase successfully!', 'ok');
-    else showAl('sTestAl', '❌ Failed: HTTP ' + r.status + ' — check your URL and Anon Key', 'er');
-  } catch(e) { showAl('sTestAl', '❌ Error: ' + e.message, 'er'); }
-  finally { setBtn('testSbBtn', false, '🔌 Test Connection'); }
-});
-
-
-// ─────────────────────────────────────────────
-// AI PROXY — calls Supabase Edge Function
-// Anthropic key stays server-side, never in browser
-// ─────────────────────────────────────────────
-async function callAI(prompt, maxTokens) {
-  maxTokens = maxTokens || 4500;
-  // Try Edge Function first (key stays server-side — most secure)
-  var edgeUrl = ST.url + '/functions/v1/ai-proxy';
-  try {
-    var r = await fetch(edgeUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ST.key },
-      body: JSON.stringify({ prompt: prompt, max_tokens: maxTokens })
-    });
-    if (r.ok) {
-      var data = await r.json();
-      if (data.content && data.content[0]) return data.content[0].text;
-      if (data.error) throw new Error(data.error.message || data.error);
-    }
-  } catch(e) {
-    console.log('Edge Function not available, falling back to direct call:', e.message);
-  }
-  // Fallback: direct call (works but key visible in network tab)
-  if (!ST.ant) throw new Error('No API key configured. Add your Anthropic key in Settings.');
-  var r2 = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'x-api-key': ST.ant, 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
-  });
-  var data2 = await r2.json();
-  if (data2.error) throw new Error(data2.error.message);
-  return data2.content[0].text;
-}
-
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
 // BLOG GENERATOR
-// ─────────────────────────────────────────────
-el('gBtn').addEventListener('click', async function() {
-  var title = val('gTitle'), cat = val('gCat');
-  if (!title) { showAl('gAl', 'Please enter a blog title.', 'er'); return; }
-  if (!cat)   { showAl('gAl', 'Please select a category.', 'er'); return; }
-  if (!ST.ant){ showAl('gAl', '⚙️ Add your Anthropic API key in Settings first!', 'er'); return; }
-  var wc = val('gWc') || '1500', det = val('gDet'), exp = val('gExp'), dna = val('gDna');
-  setBtn('gBtn', true, '⏳ Generating...'); hide('gOut'); clearAl('gAl');
-  var prompt = 'You are writing a blog for TheGloveSOS.com — the national glove repair directory.\n\nBRAND VOICE: Expert, trustworthy, community-focused. Real knowledge, real passion. Conversational but authoritative. Reference finding a local repair shop naturally when it fits. Never mention competitor directories.\n\nBLOG DETAILS:\nTitle: ' + title + '\nCategory: ' + cat + '\nTarget: ' + wc + ' words\nDetails: ' + (det||'use your expertise') + '\nExpert Take: ' + (exp||'write from expert glove perspective') + '\nBrand DNA: ' + (dna||'TheGloveSOS connects players with trusted local repair shops nationwide. Quality repair matters. Your glove is your most personal piece of equipment.') + '\n\nReturn EXACTLY these sections with === markers:\n\n===BLOG_CONTENT===\n[Full markdown ~' + wc + ' words. ## and ### headers. Conversational, real voice.]\n\n===SEO_TITLE===\n[55-65 chars]\n\n===SLUG===\n[lowercase-url-slug]\n\n===META_DESCRIPTION===\n[150-160 chars with primary keyword]\n\n===KEYWORDS===\n[12 keywords comma-separated]\n\n===TAGS===\n[10 tags lowercase-hyphenated comma-separated]\n\n===EXCERPT===\n[2-3 sentences ~120 words]\n\n===SOCIAL_CAPTION===\n[Caption + 6-8 hashtags including #TheGloveSOS #GloveRepair]\n\n===HERO_IMAGE_PROMPT===\n[Baseball/softball glove, moody teal lighting, landscape format]\n\n===SOCIAL_IMAGE_PROMPT===\n[Square 1:1, bold, teal/purple palette]\n\n===THUMBNAIL_PROMPT===\n[YouTube thumbnail, high contrast, text overlay space]\n\n===INSERT_IMAGE_PROMPTS===\nInsert 1: [prompt]\nInsert 2: [prompt]\nInsert 3: [prompt]\n\n===INTERNAL_LINKS===\n[3-4 content suggestions for theglovesos.com/blog/...]\n\n===EXTERNAL_LINKS===\n[2-3 authoritative source types]';
-  try {
-    var txt = await callAI(prompt, 4500);
-    parseBlog(txt, title, cat);
-  } catch(e) { showAl('gAl', 'Error: ' + e.message, 'er'); }
-  finally { setBtn('gBtn', false, '✨ Generate Master Blog'); }
-});
+// ═══════════════════════════════════════════════════════
+G("btn-generate").addEventListener("click",async function(){
+  var title=val("g-title"),cat=val("g-cat");
+  if(!title){alert2("g-alert","Please enter a blog title.","er");return;}
+  if(!cat){alert2("g-alert","Please select a category.","er");return;}
+  if(!ST.ant){alert2("g-alert","⚙️ Add your Anthropic API key in Settings first!","er");return;}
+  var wc=val("g-wc")||"1500";
+  setBtn("btn-generate",true,"⏳ Generating...");hide("g-output");
+  if(G("g-alert"))G("g-alert").innerHTML="";
+  var prompt="You are writing a blog for TheGloveSOS.com — the national glove repair directory.
 
-function parseBlog(txt, title, cat) {
-  var con = extr(txt,'BLOG_CONTENT'), st = extr(txt,'SEO_TITLE'), sl = extr(txt,'SLUG'),
-      md  = extr(txt,'META_DESCRIPTION'), kw = extr(txt,'KEYWORDS'), tg = extr(txt,'TAGS'),
-      ex  = extr(txt,'EXCERPT'), cap = extr(txt,'SOCIAL_CAPTION'),
-      hero= extr(txt,'HERO_IMAGE_PROMPT'), soc = extr(txt,'SOCIAL_IMAGE_PROMPT'),
-      thu = extr(txt,'THUMBNAIL_PROMPT'), ins = extr(txt,'INSERT_IMAGE_PROMPTS'),
-      intl= extr(txt,'INTERNAL_LINKS'), extl= extr(txt,'EXTERNAL_LINKS');
-  var wc = (con||txt).split(/\s+/).filter(Boolean).length;
-  var rt = Math.ceil(wc/225);
-  var slug = sl || title.toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,'-').slice(0,75);
-  var burl = (ST.sit||'https://theglovesos.com') + '/blog/' + slug;
-  setTxt('oContent',con||txt); setTxt('oSeoT',st||title); setTxt('oSlug',slug);
-  setTxt('oMeta',md); setTxt('oKeys',kw); setTxt('oTags',tg); setTxt('oExcerpt',ex);
-  setTxt('oCap',cap); setTxt('oWc',wc+' words'); setTxt('oRt',rt+' min read');
-  setTxt('oAuth',ST.aut||'JB'); setTxt('oHero',hero); setTxt('oSoc',soc);
-  setTxt('oThumb',thu); setTxt('oIns',ins); setTxt('oInt',intl); setTxt('oExt',extl);
-  setTxt('oMd',con||txt);
-  GEN = { title:st||title, slug, category:cat, author:ST.aut||'JB', tags:tg,
-    metaDescription:md, seoKeywords:kw, excerpt:ex, markdownContent:con||txt,
-    wordCount:wc, readTime:rt, uploadStatus:'Pending', blogUrl:burl,
-    heroImageURL:'', publishDate:'', publishedAt:'', supabaseId:'',
-    source:'AI', createdAt:new Date().toISOString() };
-  el('psDate').value = new Date().toISOString().split('T')[0];
-  show('gOut');
-  // reset to first tab
-  document.querySelectorAll('.tab').forEach(function(t,i){ t.classList.toggle('on',i===0); });
-  document.querySelectorAll('.tpn').forEach(function(p,i){ p.classList.toggle('on',i===0); });
+JB VOICE:
+"+(val("g-exp")||ST.voice||"Knowledgeable glove expert with real passion for the game")+"
+
+BRAND DNA:
+"+(val("g-dna")||ST.dna||"TheGloveSOS connects players with trusted local repair shops. Quality matters. Your glove is personal.")+"
+
+BLOG:
+Title: "+title+"
+Category: "+cat+"
+Words: "+wc+"
+Details: "+(val("g-det")||"Write from expert perspective")+"
+
+Return EXACTLY these sections with === markers:
+
+===BLOG_CONTENT===
+[Full markdown ~"+wc+" words. ## and ### headers. Real conversational voice.]
+
+===SEO_TITLE===
+[55-65 chars]
+
+===SLUG===
+[lowercase-hyphenated, max 60 chars]
+
+===META_DESCRIPTION===
+[150-160 chars with primary keyword]
+
+===KEYWORDS===
+[12 keywords comma-separated]
+
+===TAGS===
+[10 tags, lowercase-hyphenated, comma-separated, ready for Supabase]
+
+===EXCERPT===
+[2-3 sentences ~120 words]
+
+===SOCIAL_CAPTION===
+[Caption + hashtags including #TheGloveSOS #GloveRepair]
+
+===HERO_IMAGE_PROMPT===
+[Detailed: baseball/softball glove, moody teal lighting, dark atmosphere, landscape 1200x628]
+
+===SOCIAL_IMAGE_PROMPT===
+[Square 1080x1080, bold, teal/purple palette]
+
+===THUMBNAIL_PROMPT===
+[YouTube 1280x720, high contrast, text overlay space]
+
+===INSERT_IMAGE_PROMPTS===
+Insert 1: [prompt]
+Insert 2: [prompt]
+Insert 3: [prompt]
+
+===INTERNAL_LINKS===
+[3-4 slug suggestions]
+
+===EXTERNAL_LINKS===
+[2-3 source types]";
+  try{
+    var t=await AI(prompt,4500);
+    parseBlog(t,title,cat);
+  }catch(e){alert2("g-alert","❌ "+e.message,"er");}
+  finally{setBtn("btn-generate",false,"✨ Generate Master Blog");}
+});
+function parseBlog(t,title,cat){
+  var con=extr(t,"BLOG_CONTENT"),st=extr(t,"SEO_TITLE"),sl=extr(t,"SLUG"),
+      md=extr(t,"META_DESCRIPTION"),kw=extr(t,"KEYWORDS"),tg=extr(t,"TAGS"),
+      ex=extr(t,"EXCERPT"),cap=extr(t,"SOCIAL_CAPTION"),
+      hero=extr(t,"HERO_IMAGE_PROMPT"),soc=extr(t,"SOCIAL_IMAGE_PROMPT"),
+      thu=extr(t,"THUMBNAIL_PROMPT"),ins=extr(t,"INSERT_IMAGE_PROMPTS"),
+      intl=extr(t,"INTERNAL_LINKS"),extl=extr(t,"EXTERNAL_LINKS");
+  var wc=(con||t).split(/\s+/).filter(Boolean).length,rt=Math.ceil(wc/225);
+  var slug=sl||title.toLowerCase().replace(/[^a-z0-9\s]/g,"").replace(/\s+/g,"-").slice(0,60);
+  txt("out-content",con||t);txt("out-seo-title",st||title);txt("out-slug",slug);
+  txt("out-meta",md);txt("out-keywords",kw);txt("out-tags",tg);txt("out-excerpt",ex);
+  txt("out-caption",cap);txt("out-wc",wc+" words");txt("out-rt",rt+" min read");
+  txt("out-author",ST.author||"JB");txt("out-hero",hero);txt("out-social",soc);
+  txt("out-thumb",thu);txt("out-inserts",ins);txt("out-internal",intl);txt("out-external",extl);
+  txt("out-markdown",con||t);
+  GEN={title:st||title,slug:slug,category:cat,author:ST.author||"JB",tags:tg,
+    metaDescription:md,seoKeywords:kw,excerpt:ex,markdownContent:con||t,
+    wordCount:wc,readTime:rt,uploadStatus:"Pending",
+    blogUrl:(ST.site||"https://theglovesos.com")+"/blog/"+slug,
+    heroImageURL:"",publishDate:"",source:"AI",createdAt:new Date().toISOString()};
+  G("push-date").value=new Date().toISOString().split("T")[0];
+  show("g-output");
+  document.querySelectorAll(".tab-btn").forEach(function(b,i){b.classList.toggle("on",i===0);});
+  document.querySelectorAll(".tab-pane").forEach(function(p,i){p.classList.toggle("on",i===0);});
 }
-
-el('gClr').addEventListener('click', function() {
-  ['gTitle','gDet','gExp','gDna'].forEach(function(id){ var e=el(id); if(e) e.value=''; });
-  el('gCat').selectedIndex = 0; hide('gOut'); clearAl('gAl'); GEN = null;
+G("btn-clear-gen").addEventListener("click",function(){
+  ["g-title","g-det","g-exp","g-dna"].forEach(function(id){var e=G(id);if(e)e.value="";});
+  G("g-cat").selectedIndex=0;hide("g-output");if(G("g-alert"))G("g-alert").innerHTML="";GEN=null;
+});
+G("btn-copy-md").addEventListener("click",function(){
+  var e=G("out-markdown");if(!e)return;
+  navigator.clipboard.writeText(e.textContent).then(function(){alert("✅ Markdown copied!");});
+});
+G("btn-push-queue").addEventListener("click",function(){
+  if(!GEN){alert2("g-alert","Generate a blog first.","er");return;}
+  var b=Object.assign({},GEN,{uploadStatus:val("push-status"),publishDate:val("push-date"),id:Date.now()});
+  QUEUE.unshift(b);updateCounts();alert2("g-alert","✅ Pushed to queue!","ok");
+  setTimeout(function(){navTo("queue");},1200);
+});
+G("btn-push-sb").addEventListener("click",async function(){
+  if(!GEN){alert2("g-alert","Generate a blog first.","er");return;}
+  if(!ST.url||!ST.key){alert2("g-alert","Add Supabase credentials in Settings.","er");return;}
+  setBtn("btn-push-sb",true,"⏳...");
+  try{
+    await SBPost(ST.tbl||"blog_posts",{title:GEN.title,slug:GEN.slug,category:GEN.category,author:GEN.author,tags:GEN.tags,meta_description:GEN.metaDescription,seo_keywords:GEN.seoKeywords,excerpt:GEN.excerpt,content:GEN.markdownContent,word_count:GEN.wordCount,status:"pending",blog_url:GEN.blogUrl,created_at:new Date().toISOString()});
+    alert2("g-alert","✅ Pushed to Supabase!","ok");
+  }catch(e){alert2("g-alert","❌ "+e.message,"er");}
+  finally{setBtn("btn-push-sb",false,"⬆ Supabase");}
 });
 
-el('copyMdBtn').addEventListener('click', function() {
-  var txt = el('oMd') ? el('oMd').textContent : '';
-  navigator.clipboard.writeText(txt).then(function(){ alert('✅ Markdown copied!'); }).catch(function(){ alert('Copy failed — select and copy manually.'); });
-});
-
-el('pushQBtn').addEventListener('click', function() {
-  if (!GEN) { showAl('gAl','Generate a blog first.','er'); return; }
-  var status = el('psStatus').value, date = el('psDate').value;
-  var blog = Object.assign({}, GEN, { uploadStatus: status, publishDate: date, id: Date.now() });
-  QUEUE.unshift(blog);
-  updateCounts();
-  showAl('gAl','✅ Pushed to queue as "' + status + '"!','ok');
-  setTimeout(function() {
-    document.querySelectorAll('.sit').forEach(function(s){ s.classList.remove('on'); });
-    document.querySelectorAll('.pg').forEach(function(p){ p.classList.remove('on'); });
-    el('pg-queue').classList.add('on');
-    document.querySelector('[data-page="queue"]').classList.add('on');
-    setTxt('tbT', PAGES.queue.t); setTxt('tbS', PAGES.queue.s);
-    renderQueue();
-  }, 1200);
-});
-
-el('pushSbBtn').addEventListener('click', async function() {
-  if (!GEN) { showAl('gAl','Generate a blog first.','er'); return; }
-  if (!ST.url||!ST.key) { showAl('gAl','Add Supabase credentials in Settings.','er'); return; }
-  setBtn('pushSbBtn',true,'⏳...');
-  try {
-    await sbPost(ST.tbl||'blog_posts', { title:GEN.title, slug:GEN.slug, category:GEN.category, author:GEN.author, tags:GEN.tags, meta_description:GEN.metaDescription, seo_keywords:GEN.seoKeywords, excerpt:GEN.excerpt, content:GEN.markdownContent, word_count:GEN.wordCount, status:'pending', blog_url:GEN.blogUrl, created_at:new Date().toISOString() });
-    showAl('gAl','✅ Pushed to Supabase!','ok');
-  } catch(e) { showAl('gAl','❌ Error: '+e.message,'er'); }
-  finally { setBtn('pushSbBtn',false,'⬆ Supabase'); }
-});
-
-// ─────────────────────────────────────────────
-// BLOG QUEUE
-// ─────────────────────────────────────────────
-function renderQueue() {
-  var srch = (el('qSearch').value||'').toLowerCase(), fil = el('qFilter').value;
-  var data = QUEUE.filter(function(b) {
-    return (!srch||b.title.toLowerCase().includes(srch)||(b.category||'').toLowerCase().includes(srch)) && (!fil||b.uploadStatus===fil);
-  });
-  var tb = el('qBody');
-  if (!data.length) { tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--t3);padding:30px">No blogs yet — generate your first one!</td></tr>'; updateCounts(); return; }
-  var bmap = { 'Pending':'bpen','Review':'brev','Approved':'bapp','Scheduled':'bsch','Published to Site':'bpub' };
-  tb.innerHTML = data.map(function(b) {
-    return '<tr>' +
-      '<td><span class="bdg ' + (bmap[b.uploadStatus]||'bdef') + '">' + esc(b.uploadStatus||'Pending') + '</span></td>' +
-      '<td style="max-width:180px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500" title="' + esc(b.title) + '">' + esc(b.title) + '</div></td>' +
-      '<td style="color:var(--t3)">' + esc(b.category||'—') + '</td>' +
-      '<td style="color:var(--t3)">' + esc(b.author||'JB') + '</td>' +
-      '<td style="color:var(--t3)">' + (b.wordCount||'—') + '</td>' +
-      '<td style="color:var(--t3)">' + (b.publishDate||'—') + '</td>' +
-      '<td><a href="' + esc(b.blogUrl||'#') + '" style="color:var(--teal);font-size:11px" target="_blank">' + (b.blogUrl?'View ↗':'—') + '</a></td>' +
-      '<td><div style="display:flex;gap:4px;align-items:center">' +
-        '<select data-id="' + b.id + '" class="qStat" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:4px 6px;border-radius:5px;font-size:11px">' +
-        ['Pending','Review','Approved','Scheduled','Published to Site'].map(function(s){ return '<option' + (b.uploadStatus===s?' selected':'') + '>' + s + '</option>'; }).join('') +
-        '</select>' +
-        '<button data-id="' + b.id + '" class="qDel btn bxs" style="background:transparent;border:1px solid var(--red);color:var(--red)">✕</button>' +
-      '</div></td>' +
-    '</tr>';
-  }).join('');
-  // Attach events
-  document.querySelectorAll('.qStat').forEach(function(sel) {
-    sel.addEventListener('change', function() {
-      var id = this.getAttribute('data-id'), status = this.value;
-      var b = QUEUE.find(function(x){ return String(x.id)===String(id); });
-      if (b) { b.uploadStatus = status; if (status==='Published to Site') b.publishedAt = new Date().toISOString().split('T')[0]; updateCounts(); }
+// ═══════════════════════════════════════════════════════
+// QUEUE
+// ═══════════════════════════════════════════════════════
+function renderQueue(){
+  var srch=(val("q-search")||"").toLowerCase(),fil=G("q-filter").value;
+  var data=QUEUE.filter(function(b){return(!srch||b.title.toLowerCase().includes(srch)||(b.category||"").toLowerCase().includes(srch))&&(!fil||b.uploadStatus===fil);});
+  var tb=G("queue-body");
+  if(!data.length){tb.innerHTML="<tr><td colspan='6' style='text-align:center;color:var(--t3);padding:28px'>No blogs yet — generate your first one!</td></tr>";updateCounts();return;}
+  var bm={"Pending":"b-pen","Review":"b-rev","Approved":"b-app","Scheduled":"b-sch","Published to Site":"b-pub"};
+  tb.innerHTML=data.map(function(b){return"<tr>"+
+    "<td><span class='badge "+(bm[b.uploadStatus]||"b-def")+"'>"+esc(b.uploadStatus||"Pending")+"</span></td>"+
+    "<td style='max-width:200px'><div style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500'>"+esc(b.title)+"</div></td>"+
+    "<td style='color:var(--t3)'>"+esc(b.category||"—")+"</td>"+
+    "<td style='color:var(--t3)'>"+(b.wordCount||"—")+"</td>"+
+    "<td style='color:var(--t3)'>"+(b.publishDate||"—")+"</td>"+
+    "<td><div style='display:flex;gap:4px'>"+
+      "<select class='q-stat-sel' data-id='"+b.id+"' style='background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:3px 5px;border-radius:5px;font-size:11px'>"+
+      ["Pending","Review","Approved","Scheduled","Published to Site"].map(function(s){return"<option"+(b.uploadStatus===s?" selected":"")+">"+s+"</option>";}).join("")+
+      "</select>"+
+      "<button class='q-del-btn btn btn-xs btn-out' data-id='"+b.id+"' style='color:var(--red);border-color:var(--red)'>✕</button>"+
+    "</div></td></tr>";}).join("");
+  document.querySelectorAll(".q-stat-sel").forEach(function(sel){
+    sel.addEventListener("change",function(){
+      var id=this.getAttribute("data-id"),status=this.value;
+      var b=QUEUE.find(function(x){return String(x.id)===id;});
+      if(b){b.uploadStatus=status;updateCounts();}
     });
   });
-  document.querySelectorAll('.qDel').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var id = this.getAttribute('data-id');
-      if (!confirm('Delete this blog?')) return;
-      QUEUE = QUEUE.filter(function(x){ return String(x.id)!==String(id); });
-      renderQueue(); updateCounts();
+  document.querySelectorAll(".q-del-btn").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      if(!confirm("Delete this blog?"))return;
+      var id=this.getAttribute("data-id");
+      QUEUE=QUEUE.filter(function(x){return String(x.id)!==id;});
+      renderQueue();updateCounts();
     });
   });
   updateCounts();
 }
-el('qSearch').addEventListener('input', function(){ renderQueue(); });
-el('qFilter').addEventListener('change', function(){ renderQueue(); });
-el('pubAllBtn').addEventListener('click', function() {
-  var r = QUEUE.filter(function(x){ return x.uploadStatus==='Approved'||x.uploadStatus==='Scheduled'; });
-  if (!r.length) { alert('No Approved or Scheduled blogs.'); return; }
-  r.forEach(function(b){ b.uploadStatus='Published to Site'; b.publishedAt=new Date().toISOString().split('T')[0]; });
-  renderQueue(); updateCounts(); alert('✅ '+r.length+' blog(s) marked Published to Site!');
+G("q-search").addEventListener("input",function(){renderQueue();});
+G("q-filter").addEventListener("change",function(){renderQueue();});
+G("btn-pub-all").addEventListener("click",function(){
+  var r=QUEUE.filter(function(x){return x.uploadStatus==="Approved"||x.uploadStatus==="Scheduled";});
+  if(!r.length){alert("No Approved or Scheduled blogs.");return;}
+  r.forEach(function(b){b.uploadStatus="Published to Site";b.publishedAt=new Date().toISOString().split("T")[0];});
+  renderQueue();updateCounts();alert("✅ "+r.length+" blog(s) marked Published to Site!");
 });
-el('syncSbBtn').addEventListener('click', async function() {
-  if (!ST.url||!ST.key) { alert('Add Supabase credentials in Settings first.'); return; }
-  setBtn('syncSbBtn',true,'⏳ Syncing...');
-  try {
-    await loadQueueFromSB(); renderQueue(); updateCounts(); alert('✅ Synced from Supabase!');
-  } catch(e) { alert('Error: '+e.message); }
-  finally { setBtn('syncSbBtn',false,'↓ Sync Supabase'); }
+G("btn-sync").addEventListener("click",async function(){
+  if(!ST.url||!ST.key){alert("Add Supabase credentials in Settings first.");return;}
+  setBtn("btn-sync",true,"⏳ Syncing...");
+  try{await loadQueueFromSB();renderQueue();updateCounts();alert("✅ Synced from Supabase!");}
+  catch(e){alert("Error: "+e.message);}
+  finally{setBtn("btn-sync",false,"&#8595; Sync Supabase");}
 });
 
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
 // IDEAS
-// ─────────────────────────────────────────────
-el('saveIdeaBtn').addEventListener('click', async function() {
-  var title = val('iTitle');
-  if (!title) { showAl('iAl','Please enter an idea title.','er'); return; }
-  var idea = { id: Date.now(), title, priority:val('iPri'), category:val('iCat'),
-    season:val('iSea'), audience:val('iAud'), notes:val('iNotes'), status:'New', dateFound:new Date().toISOString() };
-  IDEAS.unshift(idea);
-  renderIdeas(); updateCounts();
-  ['iTitle','iNotes'].forEach(function(id){ var e=el(id); if(e) e.value=''; });
-  showAl('iAl','✅ Idea saved to Supabase!','ok');
-  if (ST.url&&ST.key) {
-    try { await sbPost(ST.idt||'blog_ideas', { title:idea.title, status:'New', priority:idea.priority, topic_keywords:idea.title, season_relevance:idea.season, target_audience:idea.audience, notes:idea.notes, date_found:idea.dateFound }); } catch(e){}
+// ═══════════════════════════════════════════════════════
+G("btn-save-idea").addEventListener("click",async function(){
+  var title=val("idea-title");
+  if(!title){alert2("idea-alert","Please enter an idea title.","er");return;}
+  var idea={id:Date.now(),title:title,priority:val("idea-pri"),category:val("idea-cat"),
+    season:val("idea-season"),audience:val("idea-aud"),notes:val("idea-notes"),
+    status:"New",dateFound:new Date().toISOString()};
+  IDEAS.unshift(idea);renderIdeas();updateCounts();
+  ["idea-title","idea-notes"].forEach(function(id){var e=G(id);if(e)e.value="";});
+  alert2("idea-alert","✅ Saved to Supabase!","ok");
+  if(ST.url&&ST.key){
+    try{await SBPost(ST.idt||"blog_ideas",{title:idea.title,status:"New",priority:idea.priority,topic_keywords:idea.title,season_relevance:idea.season,target_audience:idea.audience,notes:idea.notes,date_found:idea.dateFound});}
+    catch(e){console.log("Idea SB:",e.message);}
   }
 });
-el('clrIdeaBtn').addEventListener('click', function() {
-  ['iTitle','iNotes'].forEach(function(id){ var e=el(id); if(e) e.value=''; });
+G("btn-clear-idea").addEventListener("click",function(){
+  ["idea-title","idea-notes"].forEach(function(id){var e=G(id);if(e)e.value="";});
 });
-function renderIdeas() {
-  var list = el('iList');
-  if (!IDEAS.length) { list.innerHTML='<div style="color:var(--t3);text-align:center;padding:26px;font-size:13px">No ideas yet — add one above!</div>'; return; }
-  var pc = { High:'var(--red)',Medium:'var(--gold)',Low:'var(--t3)' };
-  list.innerHTML = IDEAS.map(function(idea) {
-    return '<div class="ic">' +
-      '<div class="ib">' +
-        '<div class="it">' + esc(idea.title) + '</div>' +
-        '<div class="im">' + esc(idea.category) + ' &bull; <span style="color:' + (pc[idea.priority]||'var(--t3)') + '">' + esc(idea.priority) + '</span> &bull; ' + esc(idea.season) + '</div>' +
-        (idea.notes ? '<div style="font-size:12px;color:var(--t2);margin-top:4px">' + esc(idea.notes) + '</div>' : '') +
-      '</div>' +
-      '<div class="bg">' +
-        '<button class="btn bt bsm ideaGen" data-id="' + idea.id + '">→ Generate</button>' +
-        '<button class="btn bxs ideaDel" data-id="' + idea.id + '" style="background:transparent;border:1px solid var(--red);color:var(--red)">✕</button>' +
-      '</div></div>';
-  }).join('');
-  document.querySelectorAll('.ideaGen').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var id = this.getAttribute('data-id');
-      var idea = IDEAS.find(function(x){ return String(x.id)===String(id); });
-      if (!idea) return;
-      el('gTitle').value = idea.title;
-      el('gDet').value = idea.notes || '';
-      var sel = el('gCat');
-      for (var i=0;i<sel.options.length;i++) { if (sel.options[i].value===idea.category){sel.selectedIndex=i;break;} }
-      document.querySelectorAll('.pg').forEach(function(p){ p.classList.remove('on'); });
-      document.querySelectorAll('.sit').forEach(function(s){ s.classList.remove('on'); });
-      el('pg-generator').classList.add('on');
-      document.querySelector('[data-page="generator"]').classList.add('on');
-      setTxt('tbT',PAGES.generator.t); setTxt('tbS',PAGES.generator.s);
+function renderIdeas(){
+  var list=G("ideas-list");
+  if(!IDEAS.length){list.innerHTML="<div style='color:var(--t3);text-align:center;padding:24px;font-size:13px'>No ideas yet!</div>";return;}
+  var pc={High:"var(--red)",Medium:"var(--gold)",Low:"var(--t3)"};
+  list.innerHTML=IDEAS.map(function(idea){return"<div class='idea-card'>"+
+    "<div class='idea-body'>"+
+      "<div class='idea-title'>"+esc(idea.title)+"</div>"+
+      "<div class='idea-meta'>"+esc(idea.category)+" &bull; <span style='color:"+(pc[idea.priority]||"var(--t3)")+"'>"+esc(idea.priority)+"</span> &bull; "+esc(idea.season)+"</div>"+
+      (idea.notes?"<div style='font-size:12px;color:var(--t2);margin-top:3px'>"+esc(idea.notes)+"</div>":"")+
+    "</div>"+
+    "<div class='bgroup'>"+
+      "<button class='btn btn-teal btn-sm idea-gen-btn' data-id='"+idea.id+"'>&#8594; Generate</button>"+
+      "<button class='btn btn-xs btn-out idea-del-btn' data-id='"+idea.id+"' style='color:var(--red);border-color:var(--red)'>&#10005;</button>"+
+    "</div></div>";}).join("");
+  document.querySelectorAll(".idea-gen-btn").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var id=this.getAttribute("data-id");
+      var idea=IDEAS.find(function(x){return String(x.id)===id;});
+      if(!idea)return;
+      G("g-title").value=idea.title;G("g-det").value=idea.notes||"";
+      var sel=G("g-cat");for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===idea.category){sel.selectedIndex=i;break;}}
+      navTo("generator");
     });
   });
-  document.querySelectorAll('.ideaDel').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var id = this.getAttribute('data-id');
-      if (!confirm('Delete this idea?')) return;
-      IDEAS = IDEAS.filter(function(x){ return String(x.id)!==String(id); });
-      renderIdeas(); updateCounts();
+  document.querySelectorAll(".idea-del-btn").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      if(!confirm("Delete?"))return;
+      var id=this.getAttribute("data-id");
+      IDEAS=IDEAS.filter(function(x){return String(x.id)!==id;});
+      renderIdeas();updateCounts();
     });
   });
 }
 
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
 // NEWSLETTER
-// ─────────────────────────────────────────────
-el('nlBtn').addEventListener('click', async function() {
-  if (!ST.ant) { showAl('nlAl','Add your Anthropic API key in Settings.','er'); return; }
-  var mo=val('nlMo'), yr=val('nlYr'), cnt=parseInt(val('nlCnt')||'5'), ev=val('nlEv');
-  var blogs = QUEUE.filter(function(x){ return x.uploadStatus==='Published to Site'; }).slice(0,cnt);
-  var bl = blogs.length ? blogs.map(function(b,i){ return (i+1)+'. "'+b.title+'" ('+b.category+') — '+(b.blogUrl||'theglovesos.com/blog/'+b.slug); }).join('\n') : '(No published blogs yet)';
-  setBtn('nlBtn',true,'⏳ Generating...');
-  var prompt = 'Monthly newsletter for TheGloveSOS.com — national glove repair directory.\nMonth: '+mo+' '+yr+'\nVoice: Expert, warm, community-focused.\n\nTOP BLOGS:\n'+bl+'\nEVENTS: '+(ev||'2-3 relevant baseball/softball events for '+mo)+'\n\n===SUBJECT===\n[Subject 45-55 chars]\n\n===PREHEADER===\n[Preview text 85-100 chars]\n\n===BODY===\n[Newsletter HTML. Warm greeting, month recap, featured blogs with Read More links, 2-3 baseball calendar highlights, CTA to find local repair at theglovesos.com. Use inline styles, #00cccc teal accents.]';
-  try {
-    var txt = await callAI(prompt, 2000);
-    if(!txt){showAl('nlAl','No response from AI.','er');return;}
-    setTxt('nlSubj',extr(txt,'SUBJECT')); setTxt('nlPre',extr(txt,'PREHEADER'));
-    el('nlBody').innerHTML = extr(txt,'BODY')||txt;
-    show('nlOut');
-  } catch(e){showAl('nlAl','Error: '+e.message,'er');}
-  finally{setBtn('nlBtn',false,'📰 Generate Newsletter');}
+// ═══════════════════════════════════════════════════════
+G("btn-gen-nl").addEventListener("click",async function(){
+  if(!ST.ant){alert2("nl-alert","Add Anthropic API key in Settings.","er");return;}
+  var mo=val("nl-month"),yr=val("nl-year"),cnt=parseInt(val("nl-count")||"5"),ev=val("nl-events");
+  var blogs=QUEUE.filter(function(x){return x.uploadStatus==="Published to Site";}).slice(0,cnt);
+  var bl=blogs.length?blogs.map(function(b,i){return(i+1)+". "+b.title+" ("+b.category+")";}).join("
+"):"(No published blogs yet)";
+  setBtn("btn-gen-nl",true,"⏳ Generating...");
+  var prompt="Monthly newsletter for TheGloveSOS.com.
+Month: "+mo+" "+yr+"
+TOP BLOGS:
+"+bl+"
+EVENTS: "+(ev||"2-3 relevant baseball/softball events for "+mo)+"
+
+Return EXACTLY:
+===SUBJECT===
+[45-55 chars]
+
+===PREHEADER===
+[85-100 chars]
+
+===BODY===
+[Newsletter HTML with greeting, blog summaries, baseball events, CTA to theglovesos.com]";
+  try{
+    var t=await AI(prompt,2000);
+    txt("nl-subject",extr(t,"SUBJECT"));txt("nl-preheader",extr(t,"PREHEADER"));
+    G("nl-body").innerHTML=extr(t,"BODY")||t;show("nl-output");
+  }catch(e){alert2("nl-alert","❌ "+e.message,"er");}
+  finally{setBtn("btn-gen-nl",false,"📰 Generate Newsletter");}
 });
-el('nlPushBtn').addEventListener('click', async function() {
-  if (!ST.url||!ST.key){alert('Add Supabase credentials in Settings.');return;}
-  try { await sbPost('newsletters',{month:val('nlMo'),subject:el('nlSubj').textContent,preheader:el('nlPre').textContent,body:el('nlBody').innerHTML,status:'Draft',generated_by:'AI',date_generated:new Date().toISOString()}); alert('✅ Newsletter pushed to Supabase!'); }
-  catch(e){alert('Error: '+e.message);}
+G("btn-push-nl").addEventListener("click",async function(){
+  if(!ST.url||!ST.key){alert("Add Supabase credentials in Settings.");return;}
+  try{await SBPost("newsletters",{month:val("nl-month"),subject:G("nl-subject").textContent,preheader:G("nl-preheader").textContent,body:G("nl-body").innerHTML,status:"Draft",generated_by:"AI",date_generated:new Date().toISOString()});alert("✅ Newsletter pushed to Supabase!");}
+  catch(e){alert("❌ "+e.message);}
 });
-el('nlCopyBtn').addEventListener('click', function() {
-  navigator.clipboard.writeText(el('nlBody').innerHTML).then(function(){alert('✅ Copied!');}).catch(function(){alert('Copy failed.');});
+G("btn-copy-nl").addEventListener("click",function(){
+  navigator.clipboard.writeText(G("nl-body").innerHTML).then(function(){alert("✅ Copied!");});
 });
 
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
 // RESEARCH
-// ─────────────────────────────────────────────
-el('resBtn').addEventListener('click', async function() {
-  if (!ST.ant){alert('Add your Anthropic API key in Settings.');return;}
-  var topic=val('rTopic'); if(!topic){alert('Enter a search topic.');return;}
-  setBtn('resBtn',true,'🔍 Researching...');
-  var prompt='Research assistant for TheGloveSOS.com.\nTopic: '+topic+'\nFocus: '+val('rFocus')+'\n\n===SUMMARY===\n[3-4 sentences why this matters for glove repair audience]\n\n===BLOG_IDEAS===\n1. [Title] | Category: [cat] | Angle: [1-sentence]\n2. [Title] | Category: [cat] | Angle: [angle]\n3. [Title] | Category: [cat] | Angle: [angle]\n4. [Title] | Category: [cat] | Angle: [angle]\n5. [Title] | Category: [cat] | Angle: [angle]\n\n===KEYWORDS===\n[12 SEO keywords comma-separated]\n\n===SOURCES===\n[3-4 authoritative source types]';
-  try {
-    var rtxt = await callAI(prompt, 1400);
-    if(!rtxt){alert('No response from AI.');return;}
-    el('resResults').textContent=rtxt; show('resOut'); LASTRES=rtxt;
-  }catch(e){alert('Error: '+e.message);}
-  finally{setBtn('resBtn',false,'🔍 Research Now');}
+// ═══════════════════════════════════════════════════════
+G("btn-research").addEventListener("click",async function(){
+  if(!ST.ant){alert("Add API key in Settings.");return;}
+  var topic=val("res-topic");if(!topic){alert("Enter a topic.");return;}
+  setBtn("btn-research",true,"🔍 Researching...");
+  var prompt="Research for TheGloveSOS.com.
+Topic: "+topic+"
+Focus: "+val("res-focus")+"
+
+Return:
+===SUMMARY===
+[Why this matters for glove repair audience]
+
+===BLOG_IDEAS===
+1. [Title] | Category: [cat] | Angle: [angle]
+2. [Title] | Category: [cat] | Angle: [angle]
+3. [Title] | Category: [cat] | Angle: [angle]
+4. [Title] | Category: [cat] | Angle: [angle]
+5. [Title] | Category: [cat] | Angle: [angle]
+
+===KEYWORDS===
+[12 SEO keywords]
+
+===SOURCES===
+[3-4 source types]";
+  try{
+    var t=await AI(prompt,1400);
+    txt("res-results",t);show("res-output");LASTRES=t;
+  }catch(e){alert("❌ "+e.message);}
+  finally{setBtn("btn-research",false,"🔍 Research Now");}
 });
-el('saveResBtn').addEventListener('click', function() {
-  if(!LASTRES){alert('Run research first.');return;}
-  var sec=extr(LASTRES,'BLOG_IDEAS');
-  var lines=sec.split('\n').filter(function(l){return l.trim()&&/^\d+\./.test(l.trim());});
+G("btn-save-res").addEventListener("click",function(){
+  if(!LASTRES){alert("Run research first.");return;}
+  var sec=extr(LASTRES,"BLOG_IDEAS");
+  var lines=sec.split("
+").filter(function(l){return l.trim()&&/^\d+\./.test(l.trim());});
   lines.forEach(function(line){
-    var c=line.replace(/^\d+\.\s*/,'').split('|');
-    var t=(c[0]||'').trim(),cm=(c[1]||'').match(/Category:\s*(.+)/i),am=(c[2]||'').match(/Angle:\s*(.+)/i);
-    if(t) IDEAS.unshift({id:Date.now()+Math.random(),title:t,priority:'Medium',category:cm?cm[1].trim():'Glove Repair',season:'Any',audience:'All Players',notes:am?am[1].trim():'',status:'New',dateFound:new Date().toISOString()});
+    var c=line.replace(/^\d+\.\s*/,"").split("|");
+    var t=(c[0]||"").trim(),cm=(c[1]||"").match(/Category:\s*(.+)/i),am=(c[2]||"").match(/Angle:\s*(.+)/i);
+    if(t)IDEAS.unshift({id:Date.now()+Math.random(),title:t,priority:"Medium",category:cm?cm[1].trim():"Glove Repair",season:"Any",audience:"All Players",notes:am?am[1].trim():"",status:"New",dateFound:new Date().toISOString()});
   });
-  updateCounts(); alert('✅ '+lines.length+' ideas saved!');
+  updateCounts();alert("✅ "+lines.length+" ideas saved!");
 });
 
-
-// ─────────────────────────────────────────────
-// LOGO UPLOAD
-// ─────────────────────────────────────────────
-function loadLogoPreview(url) {
-  if (!url) return;
-  // Settings preview
-  var img = el('logoImg'), ph = el('logoPlaceholder');
-  if (img) { img.src = url; img.style.display = 'block'; }
-  if (ph) ph.style.display = 'none';
-  // Sidebar logo — replace SOS square with actual logo
-  var sbImg = el('sbLogoImg'), sbTxt = el('sbLogoText'), sbLogo = el('sbLogo');
-  if (sbImg && sbTxt && sbLogo) {
-    sbImg.src = url;
-    sbImg.style.display = 'block';
-    sbTxt.style.display = 'none';
-    sbLogo.style.background = 'transparent';
-    sbLogo.style.padding = '0';
-  }
-}
-
-function clearLogoPreview() {
-  var img = el('logoImg'), ph = el('logoPlaceholder');
-  if (img) { img.src = ''; img.style.display = 'none'; }
-  if (ph) ph.style.display = 'block';
-  // Restore SOS placeholder
-  var sbImg = el('sbLogoImg'), sbTxt = el('sbLogoText'), sbLogo = el('sbLogo');
-  if (sbImg && sbTxt && sbLogo) {
-    sbImg.style.display = 'none';
-    sbTxt.style.display = 'block';
-    sbLogo.style.background = '';
-    sbLogo.style.padding = '';
-  }
-}
-
-el('sLogoFile').addEventListener('change', function() {
-  var file = this.files[0];
-  if (!file) return;
-  if (file.size > 2 * 1024 * 1024) { showAl('logoAl', '❌ File too large — max 2MB.', 'er'); return; }
-  var reader = new FileReader();
-  reader.onload = function(e) { loadLogoPreview(e.target.result); };
-  reader.readAsDataURL(file);
-});
-
-el('uploadLogoBtn').addEventListener('click', async function() {
-  var file = el('sLogoFile').files[0];
-  if (!file) { showAl('logoAl', 'Select a logo file first.', 'er'); return; }
-  if (!ST.url || !ST.key) { showAl('logoAl', 'Save Supabase credentials in Settings first.', 'er'); return; }
-  setBtn('uploadLogoBtn', true, '⏳ Uploading...');
-  try {
-    var bucket = ST.bkt || 'blog-images';
-    var fileName = 'brand/logo.' + file.name.split('.').pop();
-    var r = await fetch(ST.url + '/storage/v1/object/' + bucket + '/' + fileName, {
-      method: 'POST',
-      headers: { apikey: ST.key, Authorization: 'Bearer ' + ST.key, 'Content-Type': file.type, 'x-upsert': 'true' },
-      body: file
-    });
-    if (!r.ok) { var e = await r.json().catch(function(){return{};}); throw new Error(e.message || 'HTTP ' + r.status); }
-    var logoUrl = ST.url + '/storage/v1/object/public/' + bucket + '/' + fileName;
-    // Save URL to app_settings
-    await sbUpsert('app_settings', [{ key: 'logo_url', value: logoUrl }]);
-    loadLogoPreview(logoUrl);
-    showAl('logoAl', '✅ Logo uploaded and saved!', 'ok');
-  } catch(e) {
-    showAl('logoAl', '❌ Upload failed: ' + e.message, 'er');
-  } finally {
-    setBtn('uploadLogoBtn', false, '⬆ Upload to Supabase');
-  }
-});
-
-el('removeLogoBtn').addEventListener('click', async function() {
-  clearLogoPreview();
-
-  try { await sbUpsert('app_settings', [{ key: 'logo_url', value: '' }]); } catch(e) {}
-});
-
-
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
 // IMAGE STUDIO
-// ─────────────────────────────────────────────
-el('imgFile').addEventListener('change', function() {
-  var file = this.files[0]; if(!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    el('imgPreview').src = e.target.result;
-    show('imgPreviewWrap');
-  };
-  reader.readAsDataURL(file);
+// ═══════════════════════════════════════════════════════
+G("btn-img-prompt").addEventListener("click",async function(){
+  if(!ST.ant){alert("Add API key in Settings.");return;}
+  var tmap={hero:"landscape hero banner 1200x628px",social:"square social 1080x1080px",thumb:"YouTube thumbnail 1280x720px with text overlay space",product:"glove product closeup",composite:"glove with custom background composite"};
+  var prompt="Generate a detailed image generation prompt for TheGloveSOS.com.
+Type: "+(tmap[val("img-type")]||val("img-type"))+"
+Context: "+(val("img-context")||"baseball/softball glove repair")+"
+Details: "+(val("img-details")||"professional photography")+"
+Brand: Dark moody atmosphere, teal #00cccc accents, deep purple highlights, authentic sports photography, leather texture focus.
+Return ONLY the image prompt — no explanation. Ready to paste into Midjourney, DALL-E, or Adobe Firefly.";
+  setBtn("btn-img-prompt",true,"⏳ Generating...");
+  try{var t=await AI(prompt,500);txt("img-prompt-text",t.trim());show("img-prompt-out");}
+  catch(e){alert("❌ "+e.message);}
+  finally{setBtn("btn-img-prompt",false,"✨ Generate Prompt");}
 });
-
-el('imgPromptBtn').addEventListener('click', async function() {
-  if (!ST.ant) { alert('Add your Anthropic API key in Settings first.'); return; }
-  var type = val('imgType'), context = val('imgContext'), details = val('imgDetails');
-  var typeMap = {
-    hero: 'wide landscape hero banner image (1200x628px)',
-    social: 'square social media image (1080x1080px)',
-    thumbnail: 'YouTube thumbnail (1280x720px) with bold composition and space for text overlay on left',
-    product: 'product photography closeup',
-    background: 'background/environment image',
-    composite: 'composite image showing a glove with a swappable background'
-  };
-  var prompt = 'Generate a detailed image generation prompt for TheGloveSOS.com.
-
-Image type: ' + (typeMap[type]||type) + '
-Context: ' + (context||'baseball/softball glove repair and care') + '
-Details: ' + (details||'professional photography style') + '
-
-Brand aesthetic: Dark moody atmosphere, teal (#00cccc) and deep purple accent colors, professional sports photography, leather texture emphasis, authentic and gritty feel.
-
-Return ONLY the image generation prompt itself — no explanation, no preamble. Make it detailed, specific, and ready to paste directly into Midjourney, DALL-E, Adobe Firefly, or similar tools. Include style, lighting, composition, mood, and technical camera details.';
-  setBtn('imgPromptBtn', true, '⏳ Generating...');
-  try {
-    var txt = await callAI(prompt, 500);
-    el('imgPromptTxt').textContent = txt.trim();
-    show('imgPromptOut');
-  } catch(e) { alert('Error: ' + e.message); }
-  finally { setBtn('imgPromptBtn', false, '✨ Generate Image Prompt'); }
+G("btn-copy-img-prompt").addEventListener("click",function(){
+  var e=G("img-prompt-text");if(!e)return;
+  navigator.clipboard.writeText(e.textContent).then(function(){alert("✅ Prompt copied!");});
 });
-
-el('copyImgPromptBtn').addEventListener('click', function() {
-  navigator.clipboard.writeText(el('imgPromptTxt').textContent).then(function(){ alert('✅ Prompt copied!'); });
+G("img-file").addEventListener("change",function(){
+  var f=this.files[0];if(!f)return;
+  var r=new FileReader();r.onload=function(e){G("img-preview").src=e.target.result;show("img-preview-wrap");};r.readAsDataURL(f);
 });
-
-el('imgUploadBtn').addEventListener('click', async function() {
-  var file = el('imgFile').files[0];
-  if (!file) { showAl('imgUploadAl', 'Select an image file first.', 'er'); return; }
-  if (file.size > 10 * 1024 * 1024) { showAl('imgUploadAl', '❌ File too large — max 10MB.', 'er'); return; }
-  if (!ST.url || !ST.key) { showAl('imgUploadAl', 'Add Supabase credentials in Settings first.', 'er'); return; }
-  var folder = val('imgFolder') || 'blog-images/misc';
-  var ext = file.name.split('.').pop().toLowerCase();
-  var baseName = val('imgName') || file.name.replace(/\.[^/.]+$/, '').replace(/\s+/g,'-').toLowerCase();
-  var fileName = baseName + '-' + Date.now() + '.' + ext;
-  var fullPath = folder + '/' + fileName;
-  // Extract bucket name (first part before first /)
-  var bucket = folder.split('/')[0];
-  var pathInBucket = folder.split('/').slice(1).join('/') + '/' + fileName;
-  setBtn('imgUploadBtn', true, '⏳ Uploading...');
-  try {
-    var r = await fetch(ST.url + '/storage/v1/object/' + bucket + '/' + pathInBucket, {
-      method: 'POST',
-      headers: { apikey: ST.key, Authorization: 'Bearer ' + ST.key, 'Content-Type': file.type, 'x-upsert': 'true' },
-      body: file
+G("btn-img-upload").addEventListener("click",async function(){
+  var f=G("img-file").files[0];
+  if(!f){alert2("img-upload-alert","Select an image first.","er");return;}
+  if(f.size>10*1024*1024){alert2("img-upload-alert","Max 10MB.","er");return;}
+  if(!ST.url||!ST.key){alert2("img-upload-alert","Add Supabase credentials first.","er");return;}
+  var folder=val("img-folder")||"misc";
+  var ext=f.name.split(".").pop().toLowerCase();
+  var name=(val("img-name")||f.name.replace(/\.[^/.]+$/,"").replace(/\s+/g,"-").toLowerCase())+"-"+Date.now()+"."+ext;
+  var bucket=ST.bkt||"blog-images";
+  var path=folder+"/"+name;
+  setBtn("btn-img-upload",true,"⏳ Uploading...");
+  try{
+    var r=await fetch(ST.url+"/storage/v1/object/"+bucket+"/"+path,{
+      method:"POST",headers:{apikey:ST.key,Authorization:"Bearer "+ST.key,"Content-Type":f.type,"x-upsert":"true"},body:f
     });
-    if (!r.ok) { var e = await r.json().catch(function(){return{};}); throw new Error(e.message || 'HTTP ' + r.status); }
-    var publicUrl = ST.url + '/storage/v1/object/public/' + bucket + '/' + pathInBucket;
-    el('imgUrl').value = publicUrl;
-    showAl('imgUploadAl', '✅ Uploaded! URL copied to field below.', 'ok');
-  } catch(e) {
-    showAl('imgUploadAl', '❌ Upload failed: ' + e.message, 'er');
-  } finally {
-    setBtn('imgUploadBtn', false, '⬆ Upload to Supabase');
-  }
+    if(!r.ok){var e=await r.json().catch(function(){return{};});throw new Error(e.message||"HTTP "+r.status);}
+    var url=ST.url+"/storage/v1/object/public/"+bucket+"/"+path;
+    G("img-url").value=url;alert2("img-upload-alert","✅ Uploaded! URL ready below.","ok");
+  }catch(e){alert2("img-upload-alert","❌ "+e.message,"er");}
+  finally{setBtn("btn-img-upload",false,"⬆ Upload to Supabase");}
+});
+G("btn-img-clear").addEventListener("click",function(){
+  G("img-file").value="";G("img-name").value="";G("img-url").value="";
+  G("img-preview").src="";hide("img-preview-wrap");if(G("img-upload-alert"))G("img-upload-alert").innerHTML="";
+});
+G("btn-copy-img-url").addEventListener("click",function(){
+  var u=val("img-url");if(!u){alert("No URL yet.");return;}
+  navigator.clipboard.writeText(u).then(function(){alert("✅ URL copied!");});
+});
+G("btn-preview-url").addEventListener("click",function(){
+  var u=val("img-url");if(!u){alert("No URL yet.");return;}
+  G("img-url-img").src=u;show("img-url-preview");
 });
 
-el('imgClearBtn').addEventListener('click', function() {
-  el('imgFile').value = '';
-  el('imgName').value = '';
-  el('imgPreview').src = '';
-  hide('imgPreviewWrap');
-  el('imgUrl').value = '';
-  clearAl('imgUploadAl');
-});
-
-el('copyImgUrlBtn').addEventListener('click', function() {
-  var url = el('imgUrl').value || el('imgUrlManual').value;
-  if (!url) { alert('No URL to copy.'); return; }
-  navigator.clipboard.writeText(url).then(function(){ alert('✅ URL copied!'); });
-});
-
-el('previewUrlBtn').addEventListener('click', function() {
-  var url = el('imgUrl').value || val('imgUrlManual');
-  if (!url) { alert('Enter or upload an image URL first.'); return; }
-  el('imgUrlPreviewImg').src = url;
-  show('imgUrlPreview');
-});
-
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
 // INIT
-// ─────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
-  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  el('nlMo').value = months[new Date().getMonth()];
-  el('psDate').value = new Date().toISOString().split('T')[0];
+// ═══════════════════════════════════════════════════════
+document.addEventListener("DOMContentLoaded",function(){
+  var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  G("nl-month").value=months[new Date().getMonth()];
+  G("push-date").value=new Date().toISOString().split("T")[0];
   renderToggles();
-  // Pre-fill URL/key if saved
-  if (ST.url) el('sUrl').value = ST.url;
-  if (ST.key) el('sKey').value = ST.key;
-  // Auto-load settings if we have credentials
-  if (ST.url && ST.key) loadSettings().then(function(){
-    var ge=el('gExp'); if(ge&&ST.voice&&!ge.value) ge.value=ST.voice;
-    var gd=el('gDna'); if(gd&&ST.dna&&!gd.value) gd.value=ST.dna;
-  });
-  else showAl('sAl','👋 First time setup: enter your Supabase URL and Anon Key in Settings, then click Save.','in');
-
+  if(ST.url){G("s-url").value=ST.url;}
+  if(ST.key){G("s-key").value=ST.key;}
+  if(ST.url&&ST.key){
+    loadSettings();
+  } else {
+    updateCounts();
+    alert2("s-alert","👋 First time? Enter Supabase URL and Anon Key above, then click Save All Settings to Supabase.","in");
+  }
 });
 </script>
 </body>
