@@ -1,7 +1,7 @@
 {
   "name": "glovesos-toolshed",
   "private": true,
-  "version": "1.0.0",
+  "version": "v.3.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
