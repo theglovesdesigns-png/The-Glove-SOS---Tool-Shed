@@ -143,6 +143,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:var(--bg2)}
 ::-webkit-scrollbar-thumb{background:rgba(0,204,204,.2);border-radius:2px}
+.sync-warn{background:rgba(255,140,66,.1);border:1px solid var(--orange);color:var(--orange);border-radius:7px;padding:8px 12px;font-size:12px;margin-bottom:10px;display:none}
 </style>
 </head>
 <body>
@@ -152,7 +153,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.1</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.2</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -184,7 +185,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
     <span class="topbar-badge">TheGloveSOS.com</span>
-    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.1</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.2</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -296,10 +297,9 @@ tr:hover td{background:rgba(0,204,204,.03)}
             <option value="Approved">Mark Approved</option><option value="Scheduled">Schedule</option>
           </select>
           <input type="date" id="push-date" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:8px 10px;border-radius:7px;font-size:13px"/>
-          <button class="btn btn-teal" id="btn-push-queue"> Push to Queue</button>
-          <button class="btn btn-pur btn-sm" id="btn-push-sb"> Supabase</button>
-          <button class="btn btn-gold btn-sm" id="btn-save-as-idea"> Save as Idea</button>
-          <button class="btn btn-out btn-sm" id="btn-to-image-studio"> Send to Image Studio</button>
+          <button class="btn btn-teal" id="btn-push-queue">🚀 Save to Queue (Supabase)</button>
+          <button class="btn btn-gold btn-sm" id="btn-save-as-idea">💡 Save as Idea</button>
+          <button class="btn btn-out btn-sm" id="btn-to-image-studio">🎨 Send to Image Studio</button>
         </div>
       </div>
     </div>
@@ -315,6 +315,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
       <div class="stat-box"><div class="stat-num" id="q-scheduled">0</div><div class="stat-lbl">Scheduled</div></div>
       <div class="stat-box"><div class="stat-num" id="q-published">0</div><div class="stat-lbl">Published</div></div>
     </div>
+    <div id="queue-sync-warn" class="sync-warn">⚠️ Some items below haven't synced to Supabase yet. Click "Sync Supabase" to retry.</div>
     <div class="card" style="padding:12px">
       <div class="bgroup" style="margin-bottom:12px">
         <input type="text" id="q-search" placeholder="Search..." style="flex:1;min-width:140px"/>
@@ -335,7 +336,8 @@ tr:hover td{background:rgba(0,204,204,.03)}
 
   <!-- IDEAS -->
   <div class="page" id="page-ideas">
-    <div class="page-hdr"><h2>Blog Ideas</h2><p>Ideas auto-save to Supabase — accessible from any device</p></div>
+    <div class="page-hdr"><h2>Blog Ideas</h2><p>Ideas save to Supabase — accessible from any device</p></div>
+    <div id="ideas-sync-warn" class="sync-warn">⚠️ Some ideas below haven't synced to Supabase yet.</div>
     <div class="card">
       <div class="card-title">💡 Add New Idea</div>
       <div class="r2">
@@ -478,7 +480,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
     <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.1</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-04-28</span></div>
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.2</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-05-06</span></div>
         <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
       </div>
     </div>
@@ -582,7 +584,19 @@ var ST={
   voice:"",dna:""
 };
 var TOGS={ap:false,ag:false,nl:true,em:true};
-var QUEUE=[],IDEAS=[],GEN=null,LASTRES="";
+
+// QUEUE / IDEAS now persist to localStorage immediately as a safety net,
+// and re-hydrate on load so a refresh or network hiccup never loses data.
+var QUEUE=loadLocal("gsos_queue_v32",[]);
+var IDEAS=loadLocal("gsos_ideas_v32",[]);
+var GEN=null,LASTRES="";
+
+function loadLocal(key,fallback){
+  try{ var raw=localStorage.getItem(key); return raw?JSON.parse(raw):fallback; }
+  catch(e){ return fallback; }
+}
+function saveQueueLocal(){ try{ localStorage.setItem("gsos_queue_v32",JSON.stringify(QUEUE)); }catch(e){} }
+function saveIdeasLocal(){ try{ localStorage.setItem("gsos_ideas_v32",JSON.stringify(IDEAS)); }catch(e){} }
 
 // ═══════════════════════════════════════════════════════
 // UTILS
@@ -656,6 +670,13 @@ function updateCounts(){
   txt("q-scheduled",QUEUE.filter(function(x){return x.uploadStatus==="Scheduled";}).length);
   txt("q-published",pub);
   txt("ideas-count","("+IDEAS.length+" ideas)");
+
+  // Unsynced indicators — anything without a supabaseId hasn't actually been confirmed saved
+  var qUnsynced=QUEUE.filter(function(x){return !x.supabaseId;}).length;
+  var iUnsynced=IDEAS.filter(function(x){return !x.supabaseId;}).length;
+  var qw=G("queue-sync-warn"); if(qw) qw.style.display = qUnsynced>0 ? "block" : "none";
+  var iw=G("ideas-sync-warn"); if(iw) iw.style.display = iUnsynced>0 ? "block" : "none";
+
   var hs=G("home-status");
   if(hs)hs.innerHTML=
     " <b>"+q+"</b> blogs in queue &nbsp;|&nbsp; "+
@@ -672,7 +693,7 @@ var PAGE_META={
   home:{t:"Home",s:"Welcome to the Tool Shed"},
   generator:{t:"Blog Generator",s:"Generate complete SEO-optimized blog content"},
   queue:{t:"Blog Queue",s:"Track all blogs from Pending to Published to Site"},
-  ideas:{t:"Blog Ideas",s:"Ideas auto-save to Supabase"},
+  ideas:{t:"Blog Ideas",s:"Ideas save to Supabase"},
   newsletter:{t:"Newsletter",s:"Auto-build monthly newsletter from top blogs"},
   research:{t:"Research Hub",s:"Find trending topics to fuel your content"},
   images:{t:"Image Studio",s:"Generate prompts, upload photos, save to Supabase"},
@@ -811,13 +832,19 @@ async function loadSettings(){
 async function loadQueueFromSB(){
   try{
     var d=await SBGet(ST.tbl||"blog_posts","select=*&order=created_at.desc&limit=100");
-    if(Array.isArray(d))QUEUE=d.map(function(b){return{id:b.id,title:b.title,slug:b.slug,category:b.category,author:b.author||"JB",uploadStatus:b.upload_status||"Pending",wordCount:b.word_count,publishDate:b.publish_date,blogUrl:b.blog_url,createdAt:b.created_at};});
+    if(Array.isArray(d)){
+      QUEUE=d.map(function(b){return{id:b.id,supabaseId:b.id,title:b.title,slug:b.slug,category:b.category,author:b.author||"JB",uploadStatus:b.upload_status||"Pending",wordCount:b.word_count,publishDate:b.publish_date,blogUrl:b.blog_url,createdAt:b.created_at};});
+      saveQueueLocal();
+    }
   }catch(e){console.log("Queue:",e.message);}
 }
 async function loadIdeasFromSB(){
   try{
     var d=await SBGet(ST.idt||"blog_ideas","select=*&order=created_at.desc&limit=200");
-    if(Array.isArray(d))IDEAS=d.map(function(i){return{id:i.id,title:i.title,priority:i.priority||"Medium",category:i.category||"Glove Repair",season:i.season_relevance||"Any",audience:i.target_audience||"All Players",notes:i.notes||"",status:i.status||"New"};});
+    if(Array.isArray(d)){
+      IDEAS=d.map(function(i){return{id:i.id,supabaseId:i.id,title:i.title,priority:i.priority||"Medium",category:i.category||"Glove Repair",season:i.season_relevance||"Any",audience:i.target_audience||"All Players",notes:i.notes||"",status:i.status||"New"};});
+      saveIdeasLocal();
+    }
   }catch(e){console.log("Ideas:",e.message);}
 }
 
@@ -902,7 +929,7 @@ function parseBlog(t,title,cat){
     metaDescription:md,seoKeywords:kw,excerpt:ex,markdownContent:con||t,
     wordCount:wc,readTime:rt,uploadStatus:"Pending",
     blogUrl:(ST.site||"https://theglovesos.com")+"/blog/"+slug,
-    heroImageURL:"",publishDate:"",source:"AI",createdAt:new Date().toISOString()};
+    heroImageURL:"",heroImagePrompt:hero,publishDate:"",source:"AI",createdAt:new Date().toISOString()};
   G("push-date").value=new Date().toISOString().split("T")[0];
   show("g-output");
   document.querySelectorAll(".tab-btn").forEach(function(b,i){b.classList.toggle("on",i===0);});
@@ -916,44 +943,64 @@ G("btn-copy-md").addEventListener("click",function(){
   var e=G("out-markdown");if(!e)return;
   navigator.clipboard.writeText(e.textContent).then(function(){alert("OK: Markdown copied!");});
 });
-G("btn-push-queue").addEventListener("click",function(){
+
+// ═══════════════════════════════════════════════════════
+// PUSH TO QUEUE — now a single action that writes to Supabase
+// FIRST, and only reports success / adds to local QUEUE once
+// Supabase actually confirms the write. No more silent data loss.
+// ═══════════════════════════════════════════════════════
+G("btn-push-queue").addEventListener("click",async function(){
   if(!GEN){alert2("g-alert","Generate a blog first.","er");return;}
-  var b=Object.assign({},GEN,{uploadStatus:val("push-status"),publishDate:val("push-date"),id:Date.now()});
-  QUEUE.unshift(b);updateCounts();alert2("g-alert","OK: Pushed to queue!","ok");
-  setTimeout(function(){navTo("queue");},1200);
-});
-G("btn-push-sb").addEventListener("click",async function(){
-  if(!GEN){alert2("g-alert","Generate a blog first.","er");return;}
-  if(!ST.url||!ST.key){alert2("g-alert","Add Supabase credentials in Settings.","er");return;}
-  setBtn("btn-push-sb",true,"......");
+  if(!ST.url||!ST.key){alert2("g-alert","Add Supabase credentials in Settings before saving to the queue.","er");return;}
+  var status=val("push-status"),date=val("push-date");
+  setBtn("btn-push-queue",true,"... Saving to Supabase...");
   try{
-    await SBPost(ST.tbl||"blog_posts",{title:GEN.title,slug:GEN.slug,category:GEN.category,author:GEN.author,tags:GEN.tags,meta_description:GEN.metaDescription,seo_keywords:GEN.seoKeywords,excerpt:GEN.excerpt,content:GEN.markdownContent,word_count:GEN.wordCount,status:"pending",blog_url:GEN.blogUrl,created_at:new Date().toISOString()});
-    alert2("g-alert","OK: Pushed to Supabase!","ok");
-  }catch(e){alert2("g-alert","ERROR: "+e.message,"er");}
-  finally{setBtn("btn-push-sb",false," Supabase");}
+    var result=await SBPost(ST.tbl||"blog_posts",{
+      title:GEN.title,slug:GEN.slug,category:GEN.category,author:GEN.author,tags:GEN.tags,
+      meta_description:GEN.metaDescription,seo_keywords:GEN.seoKeywords,excerpt:GEN.excerpt,
+      content:GEN.markdownContent,word_count:GEN.wordCount,upload_status:status,
+      publish_date:date||null,blog_url:GEN.blogUrl,created_at:new Date().toISOString()
+    });
+    var newId=(result&&result[0]&&result[0].id)?result[0].id:null;
+    var b=Object.assign({},GEN,{uploadStatus:status,publishDate:date,id:newId||Date.now(),supabaseId:newId});
+    QUEUE.unshift(b);saveQueueLocal();updateCounts();
+    alert2("g-alert","OK: Saved to queue and confirmed in Supabase!","ok");
+    setTimeout(function(){navTo("queue");},1200);
+  }catch(e){
+    alert2("g-alert","ERROR: Save failed, nothing was lost -- fix the issue and try again. ("+e.message+")","er");
+  }finally{
+    setBtn("btn-push-queue",false,"🚀 Save to Queue (Supabase)");
+  }
 });
 
 // ═══════════════════════════════════════════════════════
-// QUEUE
-// ═══════════════════════════════════════════════════════
-
-// ═══════════════════════════════════════════════════════
-// EXTRA GENERATOR BUTTONS
+// SAVE AS IDEA — same fix: Supabase confirms before success shown
 // ═══════════════════════════════════════════════════════
 G("btn-save-as-idea").addEventListener("click", async function(){
   if(!GEN){ alert2("g-alert","Generate a blog first.","er"); return; }
+  if(!ST.url||!ST.key){ alert2("g-alert","Add Supabase credentials in Settings before saving an idea.","er"); return; }
+  setBtn("btn-save-as-idea",true,"... Saving...");
   var idea = {
-    id: Date.now(), title: GEN.title, priority: "High",
+    title: GEN.title, priority: "High",
     category: GEN.category, season: "Any", audience: "All Players",
     notes: "Saved from generated blog. Slug: "+GEN.slug,
     status: "New", dateFound: new Date().toISOString()
   };
-  IDEAS.unshift(idea); updateCounts();
-  if(ST.url && ST.key){
-    try{ await SBPost(ST.idt||"blog_ideas",{title:idea.title,status:"New",priority:"High",topic_keywords:GEN.seoKeywords||idea.title,season_relevance:"Any",target_audience:"All Players",notes:idea.notes,date_found:idea.dateFound}); }
-    catch(e){ console.log("Idea:", e.message); }
+  try{
+    var result=await SBPost(ST.idt||"blog_ideas",{
+      title:idea.title,status:"New",priority:"High",
+      topic_keywords:GEN.seoKeywords||idea.title,season_relevance:"Any",
+      target_audience:"All Players",notes:idea.notes,date_found:idea.dateFound
+    });
+    var newId=(result&&result[0]&&result[0].id)?result[0].id:null;
+    idea.id=newId||Date.now(); idea.supabaseId=newId;
+    IDEAS.unshift(idea); saveIdeasLocal(); updateCounts();
+    alert2("g-alert","OK: Saved to Ideas and confirmed in Supabase!","ok");
+  }catch(e){
+    alert2("g-alert","ERROR: Idea save failed, try again. ("+e.message+")","er");
+  }finally{
+    setBtn("btn-save-as-idea",false,"💡 Save as Idea");
   }
-  alert2("g-alert","OK: Saved to Ideas!","ok");
 });
 
 G("btn-to-image-studio").addEventListener("click", function(){
@@ -968,6 +1015,9 @@ G("btn-to-image-studio").addEventListener("click", function(){
   navTo("images");
 });
 
+// ═══════════════════════════════════════════════════════
+// QUEUE
+// ═══════════════════════════════════════════════════════
 function renderQueue(){
   var srch=(val("q-search")||"").toLowerCase(),fil=G("q-filter").value;
   var data=QUEUE.filter(function(b){return(!srch||b.title.toLowerCase().includes(srch)||(b.category||"").toLowerCase().includes(srch))&&(!fil||b.uploadStatus===fil);});
@@ -975,7 +1025,9 @@ function renderQueue(){
   if(!data.length){tb.innerHTML="<tr><td colspan='6' style='text-align:center;color:var(--t3);padding:28px'>No blogs yet -- generate your first one!</td></tr>";updateCounts();return;}
   var bm={"Pending":"b-pen","Review":"b-rev","Approved":"b-app","Scheduled":"b-sch","Published to Site":"b-pub"};
   tb.innerHTML=data.map(function(b){return"<tr>"+
-    "<td><span class='badge "+(bm[b.uploadStatus]||"b-def")+"'>"+esc(b.uploadStatus||"Pending")+"</span></td>"+
+    "<td><span class='badge "+(bm[b.uploadStatus]||"b-def")+"'>"+esc(b.uploadStatus||"Pending")+"</span>"+
+    (b.supabaseId?"":" <span title='Not yet confirmed in Supabase' style='color:var(--orange);font-size:11px'>&#9888;</span>")+
+    "</td>"+
     "<td style='max-width:200px'><div style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500'>"+esc(b.title)+"</div></td>"+
     "<td style='color:var(--t3)'>"+esc(b.category||"--")+"</td>"+
     "<td style='color:var(--t3)'>"+(b.wordCount||"--")+"</td>"+
@@ -987,10 +1039,18 @@ function renderQueue(){
       "<button class='q-del-btn btn btn-xs btn-out' data-id='"+b.id+"' style='color:var(--red);border-color:var(--red)'>✕</button>"+
     "</div></td></tr>";}).join("");
   document.querySelectorAll(".q-stat-sel").forEach(function(sel){
-    sel.addEventListener("change",function(){
+    sel.addEventListener("change",async function(){
       var id=this.getAttribute("data-id"),status=this.value;
       var b=QUEUE.find(function(x){return String(x.id)===id;});
-      if(b){b.uploadStatus=status;updateCounts();}
+      if(!b)return;
+      b.uploadStatus=status;saveQueueLocal();updateCounts();
+      if(b.supabaseId&&ST.url&&ST.key){
+        try{
+          await fetch(ST.url+"/rest/v1/"+(ST.tbl||"blog_posts")+"?id=eq."+b.supabaseId,{
+            method:"PATCH",headers:SBH(),body:JSON.stringify({upload_status:status})
+          });
+        }catch(e){ console.log("Status sync failed:",e.message); }
+      }
     });
   });
   document.querySelectorAll(".q-del-btn").forEach(function(btn){
@@ -998,18 +1058,24 @@ function renderQueue(){
       if(!confirm("Delete this blog?"))return;
       var id=this.getAttribute("data-id");
       QUEUE=QUEUE.filter(function(x){return String(x.id)!==id;});
-      renderQueue();updateCounts();
+      saveQueueLocal();renderQueue();updateCounts();
     });
   });
   updateCounts();
 }
 G("q-search").addEventListener("input",function(){renderQueue();});
 G("q-filter").addEventListener("change",function(){renderQueue();});
-G("btn-pub-all").addEventListener("click",function(){
+G("btn-pub-all").addEventListener("click",async function(){
   var r=QUEUE.filter(function(x){return x.uploadStatus==="Approved"||x.uploadStatus==="Scheduled";});
   if(!r.length){alert("No Approved or Scheduled blogs.");return;}
-  r.forEach(function(b){b.uploadStatus="Published to Site";b.publishedAt=new Date().toISOString().split("T")[0];});
-  renderQueue();updateCounts();alert("OK: "+r.length+" blog(s) marked Published to Site!");
+  for(var k=0;k<r.length;k++){
+    r[k].uploadStatus="Published to Site";r[k].publishedAt=new Date().toISOString().split("T")[0];
+    if(r[k].supabaseId&&ST.url&&ST.key){
+      try{ await fetch(ST.url+"/rest/v1/"+(ST.tbl||"blog_posts")+"?id=eq."+r[k].supabaseId,{method:"PATCH",headers:SBH(),body:JSON.stringify({upload_status:"Published to Site"})}); }
+      catch(e){}
+    }
+  }
+  saveQueueLocal();renderQueue();updateCounts();alert("OK: "+r.length+" blog(s) marked Published to Site!");
 });
 G("btn-sync").addEventListener("click",async function(){
   if(!ST.url||!ST.key){alert("Add Supabase credentials in Settings first.");return;}
@@ -1020,20 +1086,31 @@ G("btn-sync").addEventListener("click",async function(){
 });
 
 // ═══════════════════════════════════════════════════════
-// IDEAS
+// IDEAS — same fix: Supabase confirms before success shown,
+// and local backup always written immediately.
 // ═══════════════════════════════════════════════════════
 G("btn-save-idea").addEventListener("click",async function(){
   var title=val("idea-title");
   if(!title){alert2("idea-alert","Please enter an idea title.","er");return;}
-  var idea={id:Date.now(),title:title,priority:val("idea-pri"),category:val("idea-cat"),
+  if(!ST.url||!ST.key){alert2("idea-alert","Add Supabase credentials in Settings before saving.","er");return;}
+  var idea={title:title,priority:val("idea-pri"),category:val("idea-cat"),
     season:val("idea-season"),audience:val("idea-aud"),notes:val("idea-notes"),
     status:"New",dateFound:new Date().toISOString()};
-  IDEAS.unshift(idea);renderIdeas();updateCounts();
-  ["idea-title","idea-notes"].forEach(function(id){var e=G(id);if(e)e.value="";});
-  alert2("idea-alert","OK: Saved to Supabase!","ok");
-  if(ST.url&&ST.key){
-    try{await SBPost(ST.idt||"blog_ideas",{title:idea.title,status:"New",priority:idea.priority,topic_keywords:idea.title,season_relevance:idea.season,target_audience:idea.audience,notes:idea.notes,date_found:idea.dateFound});}
-    catch(e){console.log("Idea SB:",e.message);}
+  setBtn("btn-save-idea",true,"... Saving...");
+  try{
+    var result=await SBPost(ST.idt||"blog_ideas",{
+      title:idea.title,status:"New",priority:idea.priority,topic_keywords:idea.title,
+      season_relevance:idea.season,target_audience:idea.audience,notes:idea.notes,date_found:idea.dateFound
+    });
+    var newId=(result&&result[0]&&result[0].id)?result[0].id:null;
+    idea.id=newId||Date.now(); idea.supabaseId=newId;
+    IDEAS.unshift(idea);saveIdeasLocal();renderIdeas();updateCounts();
+    ["idea-title","idea-notes"].forEach(function(id){var e=G(id);if(e)e.value="";});
+    alert2("idea-alert","OK: Saved and confirmed in Supabase!","ok");
+  }catch(e){
+    alert2("idea-alert","ERROR: Save failed, nothing was lost -- fix the issue and try again. ("+e.message+")","er");
+  }finally{
+    setBtn("btn-save-idea",false,"💾 Save Idea to Supabase");
   }
 });
 G("btn-clear-idea").addEventListener("click",function(){
@@ -1045,7 +1122,7 @@ function renderIdeas(){
   var pc={High:"var(--red)",Medium:"var(--gold)",Low:"var(--t3)"};
   list.innerHTML=IDEAS.map(function(idea){return"<div class='idea-card'>"+
     "<div class='idea-body'>"+
-      "<div class='idea-title'>"+esc(idea.title)+"</div>"+
+      "<div class='idea-title'>"+esc(idea.title)+(idea.supabaseId?"":" <span title='Not yet confirmed in Supabase' style='color:var(--orange);font-size:11px'>&#9888;</span>")+"</div>"+
       "<div class='idea-meta'>"+esc(idea.category)+" &bull; <span style='color:"+(pc[idea.priority]||"var(--t3)")+"'>"+esc(idea.priority)+"</span> &bull; "+esc(idea.season)+"</div>"+
       (idea.notes?"<div style='font-size:12px;color:var(--t2);margin-top:3px'>"+esc(idea.notes)+"</div>":"")+
     "</div>"+
@@ -1068,7 +1145,7 @@ function renderIdeas(){
       if(!confirm("Delete?"))return;
       var id=this.getAttribute("data-id");
       IDEAS=IDEAS.filter(function(x){return String(x.id)!==id;});
-      renderIdeas();updateCounts();
+      saveIdeasLocal();renderIdeas();updateCounts();
     });
   });
 }
@@ -1113,16 +1190,27 @@ G("btn-research").addEventListener("click",async function(){
   }catch(e){alert("ERROR: "+e.message);}
   finally{setBtn("btn-research",false," Research Now");}
 });
-G("btn-save-res").addEventListener("click",function(){
+G("btn-save-res").addEventListener("click",async function(){
   if(!LASTRES){alert("Run research first.");return;}
   var sec=extr(LASTRES,"BLOG_IDEAS");
   var lines=sec.split("\n").filter(function(l){return l.trim()&&/^\d+\./.test(l.trim());});
-  lines.forEach(function(line){
-    var c=line.replace(/^\d+\.\s*/,"").split("|");
+  var saved=0,failed=0;
+  for(var k=0;k<lines.length;k++){
+    var c=lines[k].replace(/^\d+\.\s*/,"").split("|");
     var t=(c[0]||"").trim(),cm=(c[1]||"").match(/Category:\s*(.+)/i),am=(c[2]||"").match(/Angle:\s*(.+)/i);
-    if(t)IDEAS.unshift({id:Date.now()+Math.random(),title:t,priority:"Medium",category:cm?cm[1].trim():"Glove Repair",season:"Any",audience:"All Players",notes:am?am[1].trim():"",status:"New",dateFound:new Date().toISOString()});
-  });
-  updateCounts();alert("OK: "+lines.length+" ideas saved!");
+    if(!t)continue;
+    var idea={title:t,priority:"Medium",category:cm?cm[1].trim():"Glove Repair",season:"Any",audience:"All Players",notes:am?am[1].trim():"",status:"New",dateFound:new Date().toISOString()};
+    if(ST.url&&ST.key){
+      try{
+        var result=await SBPost(ST.idt||"blog_ideas",{title:idea.title,status:"New",priority:"Medium",topic_keywords:idea.title,season_relevance:"Any",target_audience:"All Players",notes:idea.notes,date_found:idea.dateFound});
+        var newId=(result&&result[0]&&result[0].id)?result[0].id:null;
+        idea.id=newId||Date.now(); idea.supabaseId=newId; saved++;
+      }catch(e){ idea.id=Date.now()+k; failed++; }
+    }else{ idea.id=Date.now()+k; failed++; }
+    IDEAS.unshift(idea);
+  }
+  saveIdeasLocal();updateCounts();
+  alert("OK: "+saved+" idea(s) saved to Supabase"+(failed?", "+failed+" saved locally only (check Supabase credentials)":"")+"!");
 });
 
 // ═══════════════════════════════════════════════════════
@@ -1183,7 +1271,6 @@ G("btn-preview-url").addEventListener("click",function(){
 // INIT
 // ═══════════════════════════════════════════════════════
 document.addEventListener("DOMContentLoaded",function(){
-  updateVersionDisplay();
   var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
   G("nl-month").value=months[new Date().getMonth()];
   G("push-date").value=new Date().toISOString().split("T")[0];
