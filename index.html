@@ -153,7 +153,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.2</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.3</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -185,7 +185,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
     <span class="topbar-badge">TheGloveSOS.com</span>
-    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.2</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.3</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -342,16 +342,9 @@ tr:hover td{background:rgba(0,204,204,.03)}
       <div class="card-title">💡 Add New Idea</div>
       <div class="r2">
         <div class="fg"><label>Idea Title *</label><input type="text" id="idea-title" placeholder="e.g. Why Professional Relacing Beats DIY"/></div>
-        <div class="r2" style="margin:0">
-          <div class="fg"><label>Priority</label><select id="idea-pri"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
-          <div class="fg"><label>Category</label><select id="idea-cat"><option>Glove Care</option><option>Glove Repair</option><option>Glove Provider Spotlight</option><option>Behind the Scenes</option><option>Customer Stories</option><option>General Tips</option></select></div>
-        </div>
+        <div class="fg"><label>Category</label><select id="idea-cat"><option>Glove Care</option><option>Glove Repair</option><option>Glove Provider Spotlight</option><option>Behind the Scenes</option><option>Customer Stories</option><option>General Tips</option></select></div>
       </div>
-      <div class="r2">
-        <div class="fg"><label>Season</label><select id="idea-season"><option>Any</option><option>Offseason</option><option>Spring Training</option><option>In-Season</option><option>Fall Ball</option></select></div>
-        <div class="fg"><label>Audience</label><select id="idea-aud"><option>All Players</option><option>Youth</option><option>High School</option><option>College</option><option>Adult/Rec</option><option>Coaches</option><option>Parents</option></select></div>
-      </div>
-      <div class="fg"><label>Notes</label><textarea id="idea-notes" rows="2" placeholder="Angle, key points, seasonal hook..."></textarea></div>
+      <div class="fg"><label>Details &amp; Content</label><textarea id="idea-notes" rows="4" placeholder="Angle, key points, seasonal hook, anything the generator should know when writing this blog..."></textarea></div>
       <div id="idea-alert"></div>
       <div class="bgroup">
         <button class="btn btn-teal" id="btn-save-idea">💾 Save Idea to Supabase</button>
@@ -480,7 +473,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
     <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.2</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-05-06</span></div>
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.3</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-08-24</span></div>
         <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
       </div>
     </div>
@@ -842,7 +835,7 @@ async function loadIdeasFromSB(){
   try{
     var d=await SBGet(ST.idt||"blog_ideas","select=*&order=created_at.desc&limit=200");
     if(Array.isArray(d)){
-      IDEAS=d.map(function(i){return{id:i.id,supabaseId:i.id,title:i.title,priority:i.priority||"Medium",category:i.category||"Glove Repair",season:i.season_relevance||"Any",audience:i.target_audience||"All Players",notes:i.notes||"",status:i.status||"New"};});
+      IDEAS=d.map(function(i){return{id:i.id,supabaseId:i.id,title:i.title,category:i.category||"Glove Repair",notes:i.notes||"",status:i.status||"New"};});
       saveIdeasLocal();
     }
   }catch(e){console.log("Ideas:",e.message);}
@@ -929,7 +922,9 @@ function parseBlog(t,title,cat){
     metaDescription:md,seoKeywords:kw,excerpt:ex,markdownContent:con||t,
     wordCount:wc,readTime:rt,uploadStatus:"Pending",
     blogUrl:(ST.site||"https://theglovesos.com")+"/blog/"+slug,
-    heroImageURL:"",heroImagePrompt:hero,publishDate:"",source:"AI",createdAt:new Date().toISOString()};
+    heroImageURL:"",heroImagePrompt:hero,socialImagePrompt:soc,thumbnailPrompt:thu,
+    insertImagePrompts:ins,socialCaption:cap,internalLinks:intl,externalLinks:extl,
+    publishDate:"",source:"AI",createdAt:new Date().toISOString()};
   G("push-date").value=new Date().toISOString().split("T")[0];
   show("g-output");
   document.querySelectorAll(".tab-btn").forEach(function(b,i){b.classList.toggle("on",i===0);});
@@ -958,8 +953,12 @@ G("btn-push-queue").addEventListener("click",async function(){
     var result=await SBPost(ST.tbl||"blog_posts",{
       title:GEN.title,slug:GEN.slug,category:GEN.category,author:GEN.author,tags:GEN.tags,
       meta_description:GEN.metaDescription,seo_keywords:GEN.seoKeywords,excerpt:GEN.excerpt,
-      content:GEN.markdownContent,word_count:GEN.wordCount,upload_status:status,
-      publish_date:date||null,blog_url:GEN.blogUrl,created_at:new Date().toISOString()
+      content:GEN.markdownContent,word_count:GEN.wordCount,read_time:GEN.readTime,
+      upload_status:status,publish_date:date||null,blog_url:GEN.blogUrl,
+      hero_image_prompt:GEN.heroImagePrompt,social_image_prompt:GEN.socialImagePrompt,
+      thumbnail_prompt:GEN.thumbnailPrompt,insert_image_prompts:GEN.insertImagePrompts,
+      social_caption:GEN.socialCaption,internal_links:GEN.internalLinks,
+      external_links:GEN.externalLinks,created_at:new Date().toISOString()
     });
     var newId=(result&&result[0]&&result[0].id)?result[0].id:null;
     var b=Object.assign({},GEN,{uploadStatus:status,publishDate:date,id:newId||Date.now(),supabaseId:newId});
@@ -981,16 +980,14 @@ G("btn-save-as-idea").addEventListener("click", async function(){
   if(!ST.url||!ST.key){ alert2("g-alert","Add Supabase credentials in Settings before saving an idea.","er"); return; }
   setBtn("btn-save-as-idea",true,"... Saving...");
   var idea = {
-    title: GEN.title, priority: "High",
-    category: GEN.category, season: "Any", audience: "All Players",
-    notes: "Saved from generated blog. Slug: "+GEN.slug,
+    title: GEN.title, category: GEN.category,
+    notes: "Banked from a generated blog. Slug: "+GEN.slug,
     status: "New", dateFound: new Date().toISOString()
   };
   try{
     var result=await SBPost(ST.idt||"blog_ideas",{
-      title:idea.title,status:"New",priority:"High",
-      topic_keywords:GEN.seoKeywords||idea.title,season_relevance:"Any",
-      target_audience:"All Players",notes:idea.notes,date_found:idea.dateFound
+      title:idea.title,status:"New",category:idea.category,
+      topic_keywords:GEN.seoKeywords||idea.title,notes:idea.notes,date_found:idea.dateFound
     });
     var newId=(result&&result[0]&&result[0].id)?result[0].id:null;
     idea.id=newId||Date.now(); idea.supabaseId=newId;
@@ -1093,14 +1090,13 @@ G("btn-save-idea").addEventListener("click",async function(){
   var title=val("idea-title");
   if(!title){alert2("idea-alert","Please enter an idea title.","er");return;}
   if(!ST.url||!ST.key){alert2("idea-alert","Add Supabase credentials in Settings before saving.","er");return;}
-  var idea={title:title,priority:val("idea-pri"),category:val("idea-cat"),
-    season:val("idea-season"),audience:val("idea-aud"),notes:val("idea-notes"),
+  var idea={title:title,category:val("idea-cat"),notes:val("idea-notes"),
     status:"New",dateFound:new Date().toISOString()};
   setBtn("btn-save-idea",true,"... Saving...");
   try{
     var result=await SBPost(ST.idt||"blog_ideas",{
-      title:idea.title,status:"New",priority:idea.priority,topic_keywords:idea.title,
-      season_relevance:idea.season,target_audience:idea.audience,notes:idea.notes,date_found:idea.dateFound
+      title:idea.title,status:"New",category:idea.category,topic_keywords:idea.title,
+      notes:idea.notes,date_found:idea.dateFound
     });
     var newId=(result&&result[0]&&result[0].id)?result[0].id:null;
     idea.id=newId||Date.now(); idea.supabaseId=newId;
@@ -1119,15 +1115,14 @@ G("btn-clear-idea").addEventListener("click",function(){
 function renderIdeas(){
   var list=G("ideas-list");
   if(!IDEAS.length){list.innerHTML="<div style='color:var(--t3);text-align:center;padding:24px;font-size:13px'>No ideas yet!</div>";return;}
-  var pc={High:"var(--red)",Medium:"var(--gold)",Low:"var(--t3)"};
   list.innerHTML=IDEAS.map(function(idea){return"<div class='idea-card'>"+
     "<div class='idea-body'>"+
       "<div class='idea-title'>"+esc(idea.title)+(idea.supabaseId?"":" <span title='Not yet confirmed in Supabase' style='color:var(--orange);font-size:11px'>&#9888;</span>")+"</div>"+
-      "<div class='idea-meta'>"+esc(idea.category)+" &bull; <span style='color:"+(pc[idea.priority]||"var(--t3)")+"'>"+esc(idea.priority)+"</span> &bull; "+esc(idea.season)+"</div>"+
+      "<div class='idea-meta'>"+esc(idea.category)+"</div>"+
       (idea.notes?"<div style='font-size:12px;color:var(--t2);margin-top:3px'>"+esc(idea.notes)+"</div>":"")+
     "</div>"+
     "<div class='bgroup'>"+
-      "<button class='btn btn-teal btn-sm idea-gen-btn' data-id='"+idea.id+"'>&#8594; Generate</button>"+
+      "<button class='btn btn-teal btn-sm idea-gen-btn' data-id='"+idea.id+"'>&#8594; Send to Generator</button>"+
       "<button class='btn btn-xs btn-out idea-del-btn' data-id='"+idea.id+"' style='color:var(--red);border-color:var(--red)'>&#10005;</button>"+
     "</div></div>";}).join("");
   document.querySelectorAll(".idea-gen-btn").forEach(function(btn){
@@ -1199,10 +1194,10 @@ G("btn-save-res").addEventListener("click",async function(){
     var c=lines[k].replace(/^\d+\.\s*/,"").split("|");
     var t=(c[0]||"").trim(),cm=(c[1]||"").match(/Category:\s*(.+)/i),am=(c[2]||"").match(/Angle:\s*(.+)/i);
     if(!t)continue;
-    var idea={title:t,priority:"Medium",category:cm?cm[1].trim():"Glove Repair",season:"Any",audience:"All Players",notes:am?am[1].trim():"",status:"New",dateFound:new Date().toISOString()};
+    var idea={title:t,category:cm?cm[1].trim():"Glove Repair",notes:am?am[1].trim():"",status:"New",dateFound:new Date().toISOString()};
     if(ST.url&&ST.key){
       try{
-        var result=await SBPost(ST.idt||"blog_ideas",{title:idea.title,status:"New",priority:"Medium",topic_keywords:idea.title,season_relevance:"Any",target_audience:"All Players",notes:idea.notes,date_found:idea.dateFound});
+        var result=await SBPost(ST.idt||"blog_ideas",{title:idea.title,status:"New",category:idea.category,topic_keywords:idea.title,notes:idea.notes,date_found:idea.dateFound});
         var newId=(result&&result[0]&&result[0].id)?result[0].id:null;
         idea.id=newId||Date.now(); idea.supabaseId=newId; saved++;
       }catch(e){ idea.id=Date.now()+k; failed++; }
