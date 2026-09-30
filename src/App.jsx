@@ -4,7 +4,7 @@ import LandingPage from './components/LandingPage.jsx'
 
 // ── Simple password gate so only JB can access ──────────────
 // Change this password to whatever you want
-const ACCESS_PASSWORD = 'glovesos2026'
+const ACCESS_PASSWORD = 'dont-let-the-glove-control-you-26'
 
 const s = {
   loginWrap: {
