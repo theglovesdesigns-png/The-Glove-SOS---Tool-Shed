@@ -18,7 +18,7 @@ npm run dev
 Connected to Netlify via GitHub. Every push to `main` auto-deploys.
 
 ## Access
-Password protected. Default: `glovesos2026`
+Password protected. Default: `dont-let-the-glove-control-you-26`
 Change in `src/App.jsx` line 6.
 
 ## Environment Variables (set in Netlify dashboard)
