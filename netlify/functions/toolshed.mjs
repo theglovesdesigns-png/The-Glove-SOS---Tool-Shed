@@ -28,6 +28,7 @@ import { timingSafeEqual, createHash } from "node:crypto";
 import * as db from "../lib/supabase.mjs";
 import { askAI, DEFAULT_MODELS } from "../lib/ai.mjs";
 import { publishPost, unpublishPost, nowInShopTZ, PUBLISH_HOUR } from "../lib/publish.mjs";
+import { withPlaybook, activePlaybook, DEFAULT_PLAYBOOK, checkSeo } from "../lib/seo.mjs"; // v3.6
 
 // ------------------------------------------------------------
 // RULES THE DATABASE ENFORCES (copied from Supabase so we can
@@ -48,6 +49,7 @@ const SETTING_KEYS = [
   "default_author", "min_word_count", "max_word_count",
   "site_url", "notification_email", "sheet_id", "sheet_tab",
   "auto_generate", "auto_newsletter", "email_notify",
+  "seo_playbook", // v3.6: JB's edited National SEO Playbook (blank = default)
 ];
 
 const BUCKET = "blog-images";
@@ -372,8 +374,24 @@ const actions = {
     if (!prompt) throw new Error("Empty prompt.");
     const s = await loadSettings().catch(() => ({}));
     const provider = s.ai_provider === "gemini" ? "gemini" : "claude";
-    const text = await askAI({ provider, model: s.ai_model, prompt, maxTokens: data.maxTokens });
+    // v3.6: wrap SEO-related tasks ("blog", "polish", "seo", "research")
+    // with the National SEO Playbook. Other tasks pass through unchanged.
+    const fullPrompt = withPlaybook(data.task, prompt, s.seo_playbook);
+    const text = await askAI({ provider, model: s.ai_model, prompt: fullPrompt, maxTokens: data.maxTokens });
     return { text, provider };
+  },
+
+  // ---------- SEO (v3.6) ----------
+  // The playbook currently in force (saved version, or the default).
+  async "seo.playbook"() {
+    const s = await loadSettings().catch(() => ({}));
+    const saved = String(s.seo_playbook || "").trim();
+    return { playbook: activePlaybook(saved), isDefault: !saved, defaultPlaybook: DEFAULT_PLAYBOOK };
+  },
+
+  // Grade a generated blog. Pure code, no AI cost.
+  async "seo.check"(data) {
+    return checkSeo(data || {});
   },
 
   // ---------- IMAGES ----------
