@@ -153,7 +153,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.5</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.6</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -185,7 +185,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
     <span class="topbar-badge">TheGloveSOS.com</span>
-    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.5</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.6</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -266,6 +266,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
           <div class="fg"><label>In-Blog Insert Prompts</label><div id="out-inserts" class="outbox" style="max-height:110px"></div></div>
         </div>
         <div class="tab-pane" id="tab-2">
+          <div class="fg"><label>🎯 Primary Keyword (national search target)</label><div id="out-pk" class="outbox" style="max-height:40px;color:var(--teal);font-weight:600"></div></div>
           <div class="r2">
             <div class="fg"><label>SEO Title</label><div id="out-seo-title" class="outbox" style="max-height:55px"></div></div>
             <div class="fg"><label>URL Slug</label><div id="out-slug" class="outbox" style="max-height:55px"></div></div>
@@ -294,6 +295,15 @@ tr:hover td{background:rgba(0,204,204,.03)}
             <button class="btn btn-out btn-sm" id="btn-copy-md">📋 Copy Markdown</button>
           </div>
         </div>
+      </div>
+      <!-- v3.6: SEO Score card -- filled in by runSeoCheck() after every generate -->
+      <div class="card" id="seo-card" style="display:none;margin-top:12px">
+        <div class="card-title" style="justify-content:space-between">
+          <span>📈 National SEO Score</span>
+          <span id="seo-grade" style="font-size:22px;font-weight:700"></span>
+        </div>
+        <div id="seo-checks" style="font-size:13px;line-height:1.7"></div>
+        <div class="hint" style="margin-top:6px">Aim for <b>B (80+) or better</b> before queuing. Edit the SEO tab text or regenerate to raise the score.</div>
       </div>
       <div class="push-bar">
         <div style="font-size:13px;color:var(--t2)">Push: <strong style="color:var(--teal)">Queue &#8594; Supabase &#8594; Lovable</strong></div>
@@ -508,7 +518,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
     <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.5</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-09-30</span></div>
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.6</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-09-30</span></div>
         <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
       </div>
     </div>
@@ -537,6 +547,13 @@ tr:hover td{background:rgba(0,204,204,.03)}
       <div class="fg"><label>Brand DNA — Core Philosophies</label>
         <textarea id="s-dna" rows="4" placeholder="e.g. TheGloveSOS connects players with trusted local glove repair shops. Quality repair matters..."></textarea>
         <div class="hint">Injected into every blog — keeps brand voice consistent every time</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 National SEO Playbook — Rules Every Blog Follows</div>
+      <div class="fg"><label>SEO Rules <span id="seo-pb-status" style="font-size:10px;color:var(--t3)"></span></label>
+        <textarea id="s-seo" rows="14" style="font-family:monospace;font-size:12px"></textarea>
+        <div class="hint">Applied to Generate, the SEO pack, and Research Hub. Edit and click Save All Settings. "Reset to Default" restores the built-in national rules.</div></div>
+      <div class="bgroup"><button class="btn btn-out btn-sm" id="btn-seo-reset">&#8635; Reset to Default</button></div>
     </div>
     <div class="card">
       <div class="card-title">🖼️ Brand Logo</div>
@@ -717,8 +734,11 @@ async function API(action,data){
 // AI CALL -- now goes through the back office, which picks
 // Claude or Gemini based on Settings > AI Provider.
 // ═══════════════════════════════════════════════════════
-async function AI(prompt,max){
-  var d=await API("ai.generate",{prompt:prompt,maxTokens:max||3000});
+// v3.6: "task" tells the back office which SEO rules to wrap around the prompt:
+//   "blog" / "polish" / "seo" / "research" = National SEO Playbook applied
+//   (left blank)                            = no SEO rules (proofread, newsletter, images)
+async function AI(prompt,max,task){
+  var d=await API("ai.generate",{prompt:prompt,maxTokens:max||3000,task:task||""});
   return d.text||"";
 }
 
@@ -896,9 +916,26 @@ async function loadSettings(){
     Object.keys(fm).forEach(function(id){var e=G(id);if(e)e.value=ST[fm[id]]||"";});
     renderToggles();
     if(G("s-alert"))G("s-alert").innerHTML="";
+    await loadSeoPlaybook();
     await loadQueueFromSB();await loadIdeasFromSB();updateCounts();
   }catch(e){alert2("s-alert","ERROR: Could not load: "+e.message,"er");}
 }
+// v3.6: show the SEO Playbook currently in force (saved, or built-in default).
+var SEO_DEFAULT="";
+async function loadSeoPlaybook(){
+  try{
+    var d=await API("seo.playbook");
+    SEO_DEFAULT=d.defaultPlaybook||"";
+    if(G("s-seo"))G("s-seo").value=d.playbook||"";
+    txt("seo-pb-status",d.isDefault?"(using built-in default)":"(your custom version)");
+  }catch(e){ console.log("Playbook:",e.message); }
+}
+G("btn-seo-reset").addEventListener("click",function(){
+  if(!SEO_DEFAULT)return;
+  G("s-seo").value=SEO_DEFAULT;
+  txt("seo-pb-status","(default restored -- click Save All Settings)");
+});
+
 // These now THROW on failure (instead of quietly logging),
 // so the Sync button can tell you when something is wrong.
 async function loadQueueFromSB(){
@@ -930,13 +967,17 @@ G("btn-save-settings").addEventListener("click",async function(){
     site_url:val("s-site")||"https://theglovesos.com",
     notification_email:val("s-email")||"theglovesdesigns@gmail.com",
     auto_generate:String(TOGS.ag),auto_newsletter:String(TOGS.nl),email_notify:String(TOGS.em),
-    jb_voice:val("s-voice"),brand_dna:val("s-dna")
+    jb_voice:val("s-voice"),brand_dna:val("s-dna"),
+    // v3.6: if the box matches the built-in default, store blank so future
+    // default improvements flow through automatically.
+    seo_playbook:(val("s-seo")===SEO_DEFAULT.trim()?"":G("s-seo").value)
   };
   try{
     await API("settings.save",{settings:s});
     ST.provider=s.ai_provider;ST.model=s.ai_model;ST.voice=s.jb_voice;ST.dna=s.brand_dna;
     ST.author=s.default_author;ST.site=s.site_url;
     if(G("s-pass"))G("s-pass").value="";
+    txt("seo-pb-status",s.seo_playbook?"(your custom version)":"(using built-in default)");
     await loadQueueFromSB();await loadIdeasFromSB();
     updateCounts();alert2("s-alert","OK: All settings saved to Supabase!","ok");
   }catch(e){alert2("s-alert","ERROR: Save failed: "+e.message,"er");}
@@ -1008,16 +1049,18 @@ G("btn-generate").addEventListener("click",async function(){
   // How long may the answer be? Polish = about the draft's length; Write = the word count.
   var targetWords=mode==="polish"?Math.round(details.split(/\s+/).length*1.2):Number(wc);
   try{
-    var tA=await AI(promptA,Math.min(Math.round(targetWords*1.7)+400,7000));
+    var tA=await AI(promptA,Math.min(Math.round(targetWords*1.7)+400,7000),mode==="polish"?"polish":"blog");
     // LINK GUARANTEE: check every pasted link made it in; add any the AI dropped.
     var chk=ensureLinks(extr(tA,"BLOG_CONTENT")||tA,links);
     var body=chk.content;
     LINK_REPORT={total:links.length,missing:chk.missing};
     setBtn("btn-generate",true,"... Step 2 of 2: SEO &amp; social pack...");
-    var promptB="You are the SEO editor for TheGloveSOS.com (national glove repair directory).\nBlog title: "+title+"\nCategory: "+cat+"\n\nBLOG (first part):\n"+body.slice(0,3500)+"\n\nReturn EXACTLY these sections with === markers:\n\n===SEO_TITLE===\n[55-65 chars]\n\n===SLUG===\n[lowercase-hyphenated, max 60 chars]\n\n===META_DESCRIPTION===\n[150-160 chars with primary keyword]\n\n===KEYWORDS===\n[12 keywords comma-separated]\n\n===TAGS===\n[10 tags, lowercase-hyphenated, comma-separated]\n\n===EXCERPT===\n[2-3 sentences ~60 words]\n\n===SOCIAL_CAPTION===\n[Caption + hashtags including #TheGloveSOS #GloveRepair]\n\n===HERO_IMAGE_PROMPT===\n[Detailed: baseball/softball glove, moody teal lighting, dark atmosphere, landscape 1200x628]\n\n===SOCIAL_IMAGE_PROMPT===\n[Square 1080x1080, bold, teal/purple palette]\n\n===THUMBNAIL_PROMPT===\n[YouTube 1280x720, high contrast, text overlay space]\n\n===INSERT_IMAGE_PROMPTS===\nInsert 1: [prompt]\nInsert 2: [prompt]\nInsert 3: [prompt]\n\n===INTERNAL_LINKS===\n[3-4 slug suggestions]\n\n===EXTERNAL_LINKS===\n[2-3 source types]";
-    var tB=await AI(promptB,1500);
+    var promptB="You are the SEO editor for TheGloveSOS.com (national glove repair directory).\nBlog title: "+title+"\nCategory: "+cat+"\n\nBLOG (first part):\n"+body.slice(0,3500)+"\n\nReturn EXACTLY these sections with === markers:\n\n===PRIMARY_KEYWORD===\n[the ONE national search phrase this blog targets, 2-5 words, lowercase, and it must already appear in the blog text]\n\n===SEO_TITLE===\n[50-60 chars, primary keyword near the front]\n\n===SLUG===\n[lowercase-hyphenated, includes the primary keyword, max 60 chars]\n\n===META_DESCRIPTION===\n[140-160 chars, includes the primary keyword]\n\n===KEYWORDS===\n[12 national keywords comma-separated, primary keyword first]\n\n===TAGS===\n[10 tags, lowercase-hyphenated, comma-separated]\n\n===EXCERPT===\n[2-3 sentences ~60 words]\n\n===SOCIAL_CAPTION===\n[Caption + hashtags including #TheGloveSOS #GloveRepair]\n\n===HERO_IMAGE_PROMPT===\n[Detailed: baseball/softball glove, moody teal lighting, dark atmosphere, landscape 1200x628]\n\n===SOCIAL_IMAGE_PROMPT===\n[Square 1080x1080, bold, teal/purple palette]\n\n===THUMBNAIL_PROMPT===\n[YouTube 1280x720, high contrast, text overlay space]\n\n===INSERT_IMAGE_PROMPTS===\nInsert 1: [prompt]\nInsert 2: [prompt]\nInsert 3: [prompt]\n\n===INTERNAL_LINKS===\n[3-4 slug suggestions]\n\n===EXTERNAL_LINKS===\n[2-3 source types]";
+    var tB=await AI(promptB,1600,"seo");
     // Stitch both answers together so parseBlog finds every section.
     parseBlog("===BLOG_CONTENT===\n"+body+"\n\n"+tB,title,cat);
+    GEN.mode=mode;
+    runSeoCheck(); // v3.6: grade it right away (free -- no AI call)
     // Tell JB how his links came through.
     if(LINK_REPORT.total){
       alert2("g-alert",LINK_REPORT.missing.length
@@ -1033,7 +1076,10 @@ function parseBlog(t,title,cat){
       ex=extr(t,"EXCERPT"),cap=extr(t,"SOCIAL_CAPTION"),
       hero=extr(t,"HERO_IMAGE_PROMPT"),soc=extr(t,"SOCIAL_IMAGE_PROMPT"),
       thu=extr(t,"THUMBNAIL_PROMPT"),ins=extr(t,"INSERT_IMAGE_PROMPTS"),
-      intl=extr(t,"INTERNAL_LINKS"),extl=extr(t,"EXTERNAL_LINKS");
+      intl=extr(t,"INTERNAL_LINKS"),extl=extr(t,"EXTERNAL_LINKS"),
+      pk=extr(t,"PRIMARY_KEYWORD").replace(/^["'\[]+|["'\].]+$/g,"").toLowerCase(); // v3.6
+  // Make sure the primary keyword leads the keyword list (saved to seo_keywords).
+  if(pk&&kw.toLowerCase().indexOf(pk)!==0)kw=pk+(kw?", "+kw:"");
   var wc=(con||t).split(/\s+/).filter(Boolean).length,rt=Math.ceil(wc/225);
   var slug=sl||title.toLowerCase().replace(/[^a-z0-9\s]/g,"").replace(/\s+/g,"-").slice(0,60);
   txt("out-content",con||t);txt("out-seo-title",st||title);txt("out-slug",slug);
@@ -1048,12 +1094,35 @@ function parseBlog(t,title,cat){
     blogUrl:(ST.site||"https://theglovesos.com")+"/blog/"+slug,
     heroImageURL:"",heroImagePrompt:hero,socialImagePrompt:soc,thumbnailPrompt:thu,
     insertImagePrompts:ins,socialCaption:cap,internalLinks:intl,externalLinks:extl,
-    publishDate:"",source:"AI",createdAt:new Date().toISOString()};
+    publishDate:"",source:"AI",createdAt:new Date().toISOString(),primaryKeyword:pk};
+  txt("out-pk",pk||"(none returned)");
   G("push-date").value=localToday();
   show("g-output");
   document.querySelectorAll(".tab-btn").forEach(function(b,i){b.classList.toggle("on",i===0);});
   document.querySelectorAll(".tab-pane").forEach(function(p,i){p.classList.toggle("on",i===0);});
 }
+// ───────────────────────────────────────────────────────
+// SEO SCORE (v3.6) -- asks the back office to grade the blog
+// against the National SEO Playbook. Pure code, no AI cost.
+// Shows a letter grade + a checklist with how to fix each miss.
+// ───────────────────────────────────────────────────────
+async function runSeoCheck(){
+  if(!GEN)return;
+  try{
+    var r=await API("seo.check",{title:GEN.title,slug:GEN.slug,meta:GEN.metaDescription,
+      content:GEN.markdownContent,primaryKeyword:GEN.primaryKeyword,mode:GEN.mode,category:GEN.category});
+    var col=r.score>=80?"var(--green,#22c55e)":r.score>=70?"var(--orange)":"var(--red)";
+    G("seo-grade").innerHTML="<span style='color:"+col+"'>"+r.grade+" &middot; "+r.score+"/100</span>";
+    var icon={pass:"&#9989;",warn:"&#9888;&#65039;",fail:"&#10060;"};
+    G("seo-checks").innerHTML=r.checks.map(function(c){
+      return "<div>"+icon[c.level]+" "+esc(c.label)+
+        (c.level==="pass"?"":" <span style='color:var(--t3)'>-- "+esc(c.tip)+"</span>")+"</div>";
+    }).join("");
+    show("seo-card");
+    GEN.seoScore=r.score;
+  }catch(e){ console.log("SEO check skipped:",e.message); }
+}
+
 // Generator MODE switch: relabel the big box so it's clear what goes in it.
 G("g-mode").addEventListener("change",function(){
   var polish=this.value==="polish";
@@ -1063,7 +1132,7 @@ G("g-mode").addEventListener("change",function(){
 G("g-det").addEventListener("input",function(){showLinkCount("g-det","g-link-count");});
 G("btn-clear-gen").addEventListener("click",function(){
   ["g-title","g-det","g-exp","g-dna"].forEach(function(id){var e=G(id);if(e)e.value="";});
-  G("g-cat").selectedIndex=0;hide("g-output");if(G("g-alert"))G("g-alert").innerHTML="";GEN=null;GEN_IDEA_ID=null;
+  G("g-cat").selectedIndex=0;hide("g-output");hide("seo-card");if(G("g-alert"))G("g-alert").innerHTML="";GEN=null;GEN_IDEA_ID=null;
 });
 G("btn-copy-md").addEventListener("click",function(){
   var e=G("out-markdown");if(!e)return;
@@ -1454,9 +1523,9 @@ G("btn-copy-nl").addEventListener("click",function(){
 G("btn-research").addEventListener("click",async function(){
   var topic=val("res-topic");if(!topic){alert("Enter a topic.");return;}
   setBtn("btn-research",true," Researching...");
-  var prompt="Research for TheGloveSOS.com.\nTopic: "+topic+"\nFocus: "+val("res-focus")+"\n\nReturn:\n===SUMMARY===\n[Why this matters for glove repair audience]\n\n===BLOG_IDEAS===\n1. [Title] | Category: [cat] | Angle: [angle]\n2. [Title] | Category: [cat] | Angle: [angle]\n3. [Title] | Category: [cat] | Angle: [angle]\n4. [Title] | Category: [cat] | Angle: [angle]\n5. [Title] | Category: [cat] | Angle: [angle]\n\n===KEYWORDS===\n[12 SEO keywords]\n\n===SOURCES===\n[3-4 source types]";
+  var prompt="Research for TheGloveSOS.com.\nTopic: "+topic+"\nFocus: "+val("res-focus")+"\n\nFind NATIONAL search demand (players, parents and coaches across the US) -- not local. Each idea must target one national search phrase people actually type.\nCategory must be one of: Glove Care, Glove Repair, Glove Provider Spotlight, Behind the Scenes, Customer Stories, General Tips.\n\nReturn:\n===SUMMARY===\n[Why this matters for glove repair audience nationally]\n\n===BLOG_IDEAS===\n1. [Title] | Category: [cat] | Angle: [angle]\n2. [Title] | Category: [cat] | Angle: [angle]\n3. [Title] | Category: [cat] | Angle: [angle]\n4. [Title] | Category: [cat] | Angle: [angle]\n5. [Title] | Category: [cat] | Angle: [angle + target keyword]\n\n===KEYWORDS===\n[12 national SEO keywords, highest search intent first]\n\n===SOURCES===\n[3-4 source types]";
   try{
-    var t=await AI(prompt,1400);
+    var t=await AI(prompt,1600,"research");  // v3.6: National SEO Playbook applied
     txt("res-results",t);show("res-output");LASTRES=t;
   }catch(e){alert("ERROR: "+e.message);}
   finally{setBtn("btn-research",false," Research Now");}
