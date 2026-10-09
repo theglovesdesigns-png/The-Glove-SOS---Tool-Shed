@@ -144,6 +144,25 @@ tr:hover td{background:rgba(0,204,204,.03)}
 ::-webkit-scrollbar-track{background:var(--bg2)}
 ::-webkit-scrollbar-thumb{background:rgba(0,204,204,.2);border-radius:2px}
 .sync-warn{background:rgba(255,140,66,.1);border:1px solid var(--orange);color:var(--orange);border-radius:7px;padding:8px 12px;font-size:12px;margin-bottom:10px;display:none}
+/* v3.7: SOURCE DOCS */
+.doc-drop{border:1px dashed var(--bdr2);border-radius:8px;padding:10px;background:var(--bg3)}
+.doc-chip{display:flex;align-items:center;gap:8px;background:var(--bg4);border:1px solid var(--bdr);border-radius:7px;padding:6px 10px;margin-top:6px;font-size:12px}
+.doc-chip .doc-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.doc-chip .doc-meta{color:var(--t3);font-size:11px;white-space:nowrap}
+.doc-x{background:none;border:none;color:var(--red);cursor:pointer;font-size:13px;padding:0 2px}
+/* v3.7: REVIEW + FACT CHECK */
+#review-card{border-color:rgba(240,165,0,.35);margin-top:12px}
+.fc-counts{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 8px}
+.fc-item{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:7px;margin-bottom:6px;font-size:12px;line-height:1.5;cursor:pointer;border:1px solid var(--bdr);background:var(--bg3)}
+.fc-item:hover{border-color:var(--teal)}
+.fc-item.bad{border-color:rgba(204,51,68,.5)}
+.fc-item.check{border-color:rgba(240,165,0,.45)}
+.fc-claim{color:var(--text)}
+.fc-note{color:var(--t3);margin-top:2px}
+mark.hl-bad{background:rgba(204,51,68,.35);color:var(--text);border-radius:3px;padding:0 2px}
+mark.hl-check{background:rgba(240,165,0,.3);color:var(--text);border-radius:3px;padding:0 2px}
+mark.flash{outline:2px solid var(--teal)}
+.rv-section{border-top:1px solid var(--bdr);padding-top:12px;margin-top:12px}
 </style>
 </head>
 <body>
@@ -153,7 +172,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.6</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.7</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -185,7 +204,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
     <span class="topbar-badge">TheGloveSOS.com</span>
-    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.6</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.7</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -238,6 +257,14 @@ tr:hover td{background:rgba(0,204,204,.03)}
       <div class="fg"><label id="g-det-label">Details &amp; Context</label>
         <textarea id="g-det" rows="6" placeholder="Angle, key points, audience, seasonal tie-ins... Paste links and they'll be in the blog."></textarea>
         <div class="hint" id="g-link-count"></div></div>
+      <!-- v3.7: SOURCE DOCS -- text is pulled out right in the browser -->
+      <div class="fg"><label>📎 Source Docs <span style="font-size:10px;color:var(--t3)">(optional -- PDF, Word .docx, .txt, .md)</span></label>
+        <div class="doc-drop">
+          <input type="file" id="gen-docs-file" multiple accept=".pdf,.docx,.txt,.md,.markdown,.csv,application/pdf,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+          <div class="hint" id="gen-docs-hint">The AI pulls facts from these docs, and the fact check uses them to double-check the blog.</div>
+          <div class="hint" id="gen-docs-status"></div>
+          <div id="gen-docs-list"></div>
+        </div></div>
       <div class="r2">
         <div class="fg"><label>🏆 JB Expert Take <span style="font-size:10px;color:var(--t3)">(pre-filled from Settings)</span></label>
           <textarea id="g-exp" rows="3" placeholder="Your voice, experience, unique take..."></textarea></div>
@@ -296,7 +323,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
           </div>
         </div>
       </div>
-      <!-- v3.6: SEO Score card -- filled in by runSeoCheck() after every generate -->
+      <!-- v3.7: SEO Score card -- filled in by runSeoCheck() after every generate -->
       <div class="card" id="seo-card" style="display:none;margin-top:12px">
         <div class="card-title" style="justify-content:space-between">
           <span>📈 National SEO Score</span>
@@ -305,15 +332,62 @@ tr:hover td{background:rgba(0,204,204,.03)}
         <div id="seo-checks" style="font-size:13px;line-height:1.7"></div>
         <div class="hint" style="margin-top:6px">Aim for <b>B (80+) or better</b> before queuing. Edit the SEO tab text or regenerate to raise the score.</div>
       </div>
-      <div class="push-bar">
-        <div style="font-size:13px;color:var(--t2)">Push: <strong style="color:var(--teal)">Queue &#8594; Supabase &#8594; Lovable</strong></div>
-        <div class="bgroup">
-          <select id="push-status" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:8px 10px;border-radius:7px;font-size:13px">
-            <option value="Pending">Save as Pending</option><option value="Review">Send to Review</option>
-            <option value="Approved">Mark Approved</option><option value="Scheduled">Schedule</option>
-          </select>
-          <input type="date" id="push-date" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:8px 10px;border-radius:7px;font-size:13px"/>
-          <button class="btn btn-teal" id="btn-push-queue">🚀 Save to Queue (Supabase)</button>
+      <!-- v3.7: REVIEW & APPROVE -- replaces the old "Save to Queue" bar.
+           Flow: Generate -> draft auto-saves as "Review" -> fact check ->
+           Approve as-is, OR Edit -> Approve Edits -> pick upload day. -->
+      <div class="card" id="review-card">
+        <div class="card-title" style="justify-content:space-between">
+          <span>✅ Review &amp; Approve</span>
+          <span id="rv-state" class="badge b-def">Not saved yet</span>
+        </div>
+        <div id="rv-alert"></div>
+
+        <!-- FACT CHECK -->
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <div style="font-family:Oswald,sans-serif;font-size:14px;color:var(--gold)">🔎 Fact Check</div>
+          <button class="btn btn-out btn-xs" id="btn-fc-run">&#8635; Run Fact Check</button>
+        </div>
+        <div id="fc-summary" style="font-size:13px;color:var(--t2);margin-top:6px"></div>
+        <div id="fc-list" style="margin-top:6px"></div>
+        <div class="hint">The fact check is AI double-checking AI against your source docs and notes. It catches made-up numbers, fake quotes and claims nothing backs up -- but <b>your read is the final word</b>. Click a flagged line to jump to it in the Content tab.</div>
+
+        <!-- EDITOR (hidden until you click Edit) -->
+        <div id="rv-edit" class="rv-section" style="display:none">
+          <div class="fg"><label>Title</label><input type="text" id="rv-title"/></div>
+          <div class="r2">
+            <div class="fg"><label>Meta Description <span id="rv-meta-count" style="color:var(--t3)"></span></label><textarea id="rv-meta" rows="3"></textarea></div>
+            <div class="fg"><label>Excerpt</label><textarea id="rv-excerpt" rows="3"></textarea></div>
+          </div>
+          <div class="fg"><label>Blog Content (Markdown)</label>
+            <textarea id="rv-content" rows="22" style="font-family:monospace;font-size:12px"></textarea>
+            <div class="hint" id="rv-wc"></div></div>
+        </div>
+
+        <div class="fg rv-section"><label>Review Notes <span style="font-size:10px;color:var(--t3)">(optional, private -- never shows on the website)</span></label>
+          <textarea id="rv-notes" rows="2" placeholder="e.g. Double-checked the lace width with my supplier."></textarea></div>
+
+        <!-- MAIN ACTIONS -->
+        <div class="bgroup" id="rv-actions">
+          <button class="btn btn-out" id="btn-save-draft" style="display:none">💾 Save Draft</button>
+          <button class="btn btn-teal" id="btn-approve">✅ Approve As-Is</button>
+          <button class="btn btn-pur" id="btn-edit">✏️ Edit</button>
+          <button class="btn btn-teal" id="btn-approve-edits" style="display:none">✅ Approve Edits</button>
+          <button class="btn btn-out btn-sm" id="btn-save-edits" style="display:none">💾 Save Edits (stay in Review)</button>
+          <button class="btn btn-out btn-sm" id="btn-cancel-edit" style="display:none">Cancel</button>
+        </div>
+
+        <!-- AFTER APPROVAL -->
+        <div id="rv-after" class="rv-section" style="display:none">
+          <div style="font-size:13px;color:var(--green);margin-bottom:8px" id="rv-after-msg">Approved! Pick its upload day -- it goes live at 7 AM Eastern that day.</div>
+          <div class="bgroup">
+            <input type="date" id="push-date" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:8px 10px;border-radius:7px;font-size:13px;width:auto"/>
+            <button class="btn btn-teal" id="btn-schedule">📅 Schedule It</button>
+            <button class="btn btn-out btn-sm" id="btn-go-queue">📋 Go to Blog Queue</button>
+          </div>
+        </div>
+
+        <!-- EXTRAS -->
+        <div class="bgroup rv-section">
           <button class="btn btn-gold btn-sm" id="btn-save-as-idea">💡 Save as Idea</button>
           <button class="btn btn-out btn-sm" id="btn-to-image-studio">🎨 Send to Image Studio</button>
         </div>
@@ -368,6 +442,14 @@ tr:hover td{background:rgba(0,204,204,.03)}
         <div class="hint" id="idea-mode-hint">The AI writes the full blog, and every point, fact, and link in your notes MUST be included.</div></div>
       <div class="fg"><label>Your Draft, Notes &amp; Links</label><textarea id="idea-notes" rows="10" placeholder="Write as much or as little as you want. Paste links right in -- e.g. shout-out to https://example-glove-shop.com -- and they'll be clickable links in the blog."></textarea>
         <div class="hint" id="idea-link-count"></div></div>
+      <!-- v3.7: SOURCE DOCS for this idea -->
+      <div class="fg"><label>📎 Source Docs <span style="font-size:10px;color:var(--t3)">(optional -- PDF, Word .docx, .txt, .md)</span></label>
+        <div class="doc-drop">
+          <input type="file" id="idea-docs-file" multiple accept=".pdf,.docx,.txt,.md,.markdown,.csv,application/pdf,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+          <div class="hint">Attach research, supplier sheets, your own notes -- anything with facts. They go with this idea to the Generator, the AI uses them, and the fact check checks the blog against them.</div>
+          <div class="hint" id="idea-docs-status"></div>
+          <div id="idea-docs-list"></div>
+        </div></div>
       <div id="idea-proof-out" style="display:none;margin-bottom:12px">
         <div class="card-title" style="font-size:13px">✅ Proofread Version</div>
         <div id="idea-proof-text" class="outbox" style="max-height:320px;white-space:pre-wrap"></div>
@@ -518,7 +600,7 @@ tr:hover td{background:rgba(0,204,204,.03)}
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
     <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.6</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-09-30</span></div>
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.7</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-09</span></div>
         <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
       </div>
     </div>
@@ -633,6 +715,17 @@ var QUEUE=loadLocal("gsos_queue_v34",[]);
 var IDEAS=loadLocal("gsos_ideas_v34",[]);
 var GEN=null,LASTRES="",GEN_IDEA_ID=null,LINK_REPORT={total:0,missing:[]};
 
+// v3.7: source docs waiting on each page.
+//   DOCS.idea = docs on the Blog Ideas form
+//   DOCS.gen  = docs on the Blog Generator
+// Each doc looks like: {name, type, size, chars, text, added_at}
+var DOCS={idea:[],gen:[]};
+// When editing an existing idea, its docs load from Supabase first.
+// Until they arrive, saving must NOT touch the idea's docs.
+var IDEA_DOCS_READY=true;
+var FC_RUNNING=false;   // true while the fact check is running
+var EDITING=false;      // true while the review editor is open
+
 function loadLocal(key,fallback){
   try{ var raw=localStorage.getItem(key); return raw?JSON.parse(raw):fallback; }
   catch(e){ return fallback; }
@@ -694,6 +787,154 @@ function showLinkCount(boxId,outId){
   var n=findLinks(val(boxId)).length,o=G(outId);
   if(o)o.innerHTML=n?"&#128279; "+n+" link"+(n>1?"s":"")+" found -- "+(n>1?"they":"it")+" will be clickable in the blog":"";
 }
+
+// ═══════════════════════════════════════════════════════
+// SOURCE DOCS (v3.7)
+// The TEXT is pulled out of each file right here in your
+// browser -- the file itself never gets uploaded anywhere.
+//   PDF   -> pdf.js (free library, loads the first time you need it)
+//   .docx -> mammoth (free library, same idea)
+//   .txt / .md / .csv -> read directly
+// Scanned PDFs are just pictures of text, so they have no text
+// to pull out -- you'll get a clear message if that happens.
+// ═══════════════════════════════════════════════════════
+var DOC_LIMITS={maxDocs:8,maxChars:60000,maxTotal:200000}; // same limits the back office uses
+var LIB_URLS={
+  pdf:"https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js",
+  pdfWorker:"https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js",
+  docx:"https://cdn.jsdelivr.net/npm/mammoth@1.13.0/mammoth.browser.min.js"
+};
+// Load a helper library by adding a <script> tag (only once).
+var LIB_LOADS={};
+function loadScript(src){
+  if(!LIB_LOADS[src]){
+    LIB_LOADS[src]=new Promise(function(resolve,reject){
+      var s=document.createElement("script");
+      s.src=src;s.async=true;
+      s.onload=function(){resolve();};
+      s.onerror=function(){delete LIB_LOADS[src];reject(new Error("Couldn't load the document reader -- check your internet and try again."));};
+      document.head.appendChild(s);
+    });
+  }
+  return LIB_LOADS[src];
+}
+async function pdfToText(file){
+  await loadScript(LIB_URLS.pdf);
+  var lib=window.pdfjsLib;
+  if(!lib)throw new Error("The PDF reader didn't start. Refresh the page and try again.");
+  lib.GlobalWorkerOptions.workerSrc=LIB_URLS.pdfWorker;
+  var pdf=await lib.getDocument({data:await file.arrayBuffer()}).promise;
+  var pages=[];
+  for(var p=1;p<=Math.min(pdf.numPages,300);p++){
+    var page=await pdf.getPage(p);
+    var tc=await page.getTextContent();
+    // hasEOL = "this piece ends a line"
+    pages.push(tc.items.map(function(it){return(it.str||"")+(it.hasEOL?"\n":" ");}).join(""));
+  }
+  return pages.join("\n\n");
+}
+async function docxToText(file){
+  await loadScript(LIB_URLS.docx);
+  if(!window.mammoth)throw new Error("The Word reader didn't start. Refresh the page and try again.");
+  var r=await window.mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});
+  return r.value||"";
+}
+// extractDocText(file) -> {name, type, size, chars, text, added_at, cut}
+async function extractDocText(file){
+  var name=file.name||"document",low=name.toLowerCase(),text;
+  if(file.size>25*1024*1024)throw new Error("over 25 MB -- too big to read in the browser.");
+  if(/\.(txt|md|markdown|csv)$/.test(low)||/^text\//.test(file.type||"")){
+    text=await file.text();
+  }else if(/\.pdf$/.test(low)||file.type==="application/pdf"){
+    text=await pdfToText(file);
+  }else if(/\.docx$/.test(low)){
+    text=await docxToText(file);
+  }else if(/\.doc$/.test(low)){
+    throw new Error("old Word (.doc) files can't be read. In Word: File > Save As > .docx (or PDF), then attach that.");
+  }else if(/^image\//.test(file.type||"")){
+    throw new Error("pictures can't be read as text. Type the key facts into your notes instead.");
+  }else{
+    throw new Error("this file type isn't supported. Use PDF, Word .docx, .txt or .md.");
+  }
+  // Tidy up: no Windows line endings, no runs of spaces or blank lines.
+  text=String(text||"").replace(/\r/g,"").replace(/[ \t]+/g," ").replace(/ *\n */g,"\n").replace(/\n{3,}/g,"\n\n").trim();
+  if(!text)throw new Error("no text found. If it's a scanned PDF, it's only a picture of words -- type the key facts into your notes instead.");
+  var cut=text.length>DOC_LIMITS.maxChars;
+  if(cut)text=text.slice(0,DOC_LIMITS.maxChars);
+  return{name:name,type:file.type||"",size:file.size||0,chars:text.length,text:text,added_at:new Date().toISOString(),cut:cut};
+}
+function docWords(chars){return Math.max(1,Math.round(chars/6)).toLocaleString();} // rough word count
+function totalDocChars(arr){return arr.reduce(function(n,d){return n+(d.chars||0);},0);}
+
+// Draw the list of attached docs for "idea" or "gen".
+function renderDocs(which){
+  var list=G(which+"-docs-list");if(!list)return;
+  var arr=DOCS[which];
+  list.innerHTML=arr.map(function(d,i){
+    return"<div class='doc-chip'><span>&#128196;</span><span class='doc-name' title='"+esc(d.name)+"'>"+esc(d.name)+"</span>"+
+      "<span class='doc-meta'>~"+docWords(d.chars)+" words"+(d.cut?" (trimmed to fit)":"")+"</span>"+
+      "<button class='doc-x' data-w='"+which+"' data-i='"+i+"' title='Remove this doc'>&#10005;</button></div>";
+  }).join("");
+  list.querySelectorAll(".doc-x").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var w=this.getAttribute("data-w"),i=Number(this.getAttribute("data-i"));
+      DOCS[w].splice(i,1);renderDocs(w);docsChanged(w);
+    });
+  });
+}
+// Called whenever docs are added or removed.
+// On the Generator, if a draft is already saved, keep its docs in sync
+// so the fact check can be re-run later from the Blog Queue.
+async function docsChanged(which){
+  if(which!=="gen"||!GEN||!GEN.postId)return;
+  if(GEN.factCheck)GEN.factStale=true;
+  renderFactCheck();
+  try{await API("queue.review",{id:GEN.postId,source_docs:DOCS.gen});}
+  catch(e){alert2("rv-alert","ERROR: Docs changed on screen but didn't save: "+esc(e.message),"er");}
+}
+// Hook up a file picker ("idea" or "gen").
+function wireDocInput(which){
+  var inp=G(which+"-docs-file");if(!inp)return;
+  inp.addEventListener("change",async function(){
+    var files=[].slice.call(this.files||[]);this.value=""; // clear so the same file can be picked again
+    if(!files.length)return;
+    var st=G(which+"-docs-status");
+    if(which==="idea"&&!IDEA_DOCS_READY){
+      if(st)st.innerHTML="<span style='color:var(--orange)'>Wait for this idea's docs to finish loading, then try again.</span>";
+      return;
+    }
+    var added=0,problems=[];
+    for(var k=0;k<files.length;k++){
+      var f=files[k];
+      if(DOCS[which].length>=DOC_LIMITS.maxDocs){problems.push(f.name+": limit is "+DOC_LIMITS.maxDocs+" docs");continue;}
+      if(st)st.innerHTML="<div class='spin' style='display:inline-block;vertical-align:middle'></div> Reading "+esc(f.name)+"...";
+      try{
+        var d=await extractDocText(f);
+        if(totalDocChars(DOCS[which])+d.chars>DOC_LIMITS.maxTotal){problems.push(f.name+": all docs together are too long -- remove one first");continue;}
+        DOCS[which].push(d);added++;
+      }catch(e){problems.push(f.name+": "+e.message);}
+    }
+    if(st)st.innerHTML=(added?"<span style='color:var(--green)'>&#10003; Read "+added+" doc"+(added>1?"s":"")+".</span> ":"")+
+      (problems.length?"<span style='color:var(--orange)'>"+problems.map(esc).join("<br>")+"</span>":"");
+    renderDocs(which);
+    if(added)docsChanged(which);
+  });
+}
+// Build the "SOURCE DOCUMENTS" part of an AI prompt, staying under
+// a character budget so the AI call finishes inside Netlify's time limit.
+//   sourcesBlock(DOCS.gen, 24000) -> {text:"--- SOURCE 1: lace.pdf ---\n...", cut:false}
+function sourcesBlock(arr,budget){
+  var out="",used=0,cut=false;
+  arr.forEach(function(d,i){
+    var room=budget-used;
+    if(room<400){cut=true;return;}
+    var t=d.text||"";
+    if(t.length>room){t=t.slice(0,room);cut=true;}
+    out+="--- SOURCE "+(i+1)+": "+d.name+" ---\n"+t+"\n\n";
+    used+=t.length;
+  });
+  return{text:out.trim(),cut:cut};
+}
 function extr(t,tag){var p=t.split("===");for(var i=0;i<p.length;i++){if(p[i].trim()===tag&&p[i+1]!==undefined)return p[i+1].trim();}return"";}
 function alert2(id,msg,type){
   var e=G(id);if(!e)return;
@@ -734,7 +975,7 @@ async function API(action,data){
 // AI CALL -- now goes through the back office, which picks
 // Claude or Gemini based on Settings > AI Provider.
 // ═══════════════════════════════════════════════════════
-// v3.6: "task" tells the back office which SEO rules to wrap around the prompt:
+// v3.7: "task" tells the back office which SEO rules to wrap around the prompt:
 //   "blog" / "polish" / "seo" / "research" = National SEO Playbook applied
 //   (left blank)                            = no SEO rules (proofread, newsletter, images)
 async function AI(prompt,max,task){
@@ -747,7 +988,8 @@ function postToQueueItem(b){
   return{id:b.id,supabaseId:b.id,title:b.title,slug:b.slug,category:b.category,author:b.author||"JB",
     uploadStatus:b.upload_status||"Pending",wordCount:b.word_count,publishDate:b.publish_date||"",
     blogUrl:b.blog_url,createdAt:b.created_at,isPublished:!!b.is_published,
-    publishedAt:b.published_at,heroUrl:b.featured_image_url||""};
+    publishedAt:b.published_at,heroUrl:b.featured_image_url||"",
+    approvedAt:b.approved_at||null,ideaId:b.idea_id||null};   // v3.7
 }
 
 // ═══════════════════════════════════════════════════════
@@ -920,7 +1162,7 @@ async function loadSettings(){
     await loadQueueFromSB();await loadIdeasFromSB();updateCounts();
   }catch(e){alert2("s-alert","ERROR: Could not load: "+e.message,"er");}
 }
-// v3.6: show the SEO Playbook currently in force (saved, or built-in default).
+// v3.7: show the SEO Playbook currently in force (saved, or built-in default).
 var SEO_DEFAULT="";
 async function loadSeoPlaybook(){
   try{
@@ -968,7 +1210,7 @@ G("btn-save-settings").addEventListener("click",async function(){
     notification_email:val("s-email")||"theglovesdesigns@gmail.com",
     auto_generate:String(TOGS.ag),auto_newsletter:String(TOGS.nl),email_notify:String(TOGS.em),
     jb_voice:val("s-voice"),brand_dna:val("s-dna"),
-    // v3.6: if the box matches the built-in default, store blank so future
+    // v3.7: if the box matches the built-in default, store blank so future
     // default improvements flow through automatically.
     seo_playbook:(val("s-seo")===SEO_DEFAULT.trim()?"":G("s-seo").value)
   };
@@ -1012,8 +1254,9 @@ G("btn-generate").addEventListener("click",async function(){
   if(!title){alert2("g-alert","Please enter a blog title.","er");return;}
   if(!cat){alert2("g-alert","Please select a category.","er");return;}
   var wc=val("g-wc")||"1500";
-  setBtn("btn-generate",true,"... Step 1 of 2: writing the blog...");hide("g-output");
+  setBtn("btn-generate",true,"... Step 1 of 4: writing the blog...");hide("g-output");
   if(G("g-alert"))G("g-alert").innerHTML="";
+  resetReviewPanel(); // v3.7: fresh blog = fresh review (old draft stays safe in the queue)
   // v3.4: the blog is written in TWO smaller AI calls instead of one
   // giant one, so each finishes well inside Netlify's 60-second limit.
   //   Call 1 = the blog itself.   Call 2 = SEO + social + image prompts.
@@ -1023,6 +1266,15 @@ G("btn-generate").addEventListener("click",async function(){
   var links=findLinks(details);   // every link JB pasted -- we'll verify each one later
   var linkRule=links.length
     ?"\n\nLINKS -- REQUIRED: Include EVERY one of these links in the blog as a markdown link [natural anchor text](url), placed where it fits naturally (credit, shout-out, or reference). Copy each URL exactly:\n"+links.map(function(u){return"- "+u;}).join("\n")
+    :"";
+  // v3.7: accuracy rules on EVERY write, plus JB's source docs (if any).
+  var accuracyRule="\n\nACCURACY RULES -- VERY IMPORTANT:\n"+
+    "- Never invent statistics, studies, surveys, quotes, prices, dates, or product specs.\n"+
+    "- Only use a specific number or fact if it is in JB's notes or the source documents below, or it is widely known and undisputed.\n"+
+    "- If you are not sure something is true, leave it out or say it in general terms.";
+  var src=sourcesBlock(DOCS.gen,24000);
+  var sourceRule=src.text
+    ?"\n\nSOURCE DOCUMENTS FROM JB -- use these for facts. Pull in the useful details (specs, steps, measurements, history) that fit this blog, use them accurately, and never contradict them. If a source and JB's notes disagree, follow JB's notes. Do not mention the documents or their file names in the blog.\n\n"+src.text
     :"";
   var promptA;
   if(mode==="polish"){
@@ -1043,7 +1295,7 @@ G("btn-generate").addEventListener("click",async function(){
     promptA="You are writing a blog for TheGloveSOS.com -- the national glove repair directory.\n\nJB VOICE:\n"+voice+"\n\nBRAND DNA:\n"+dna+
       "\n\nBLOG:\nTitle: "+title+"\nCategory: "+cat+"\nWords: "+wc+
       "\n\nJB'S NOTES -- REQUIREMENTS, NOT SUGGESTIONS: Cover every point below. Use any facts, numbers, names, quotes or stories exactly as JB gives them. Do not contradict anything he says.\n"+
-      (details||"Write from expert perspective")+linkRule+
+      (details||"Write from expert perspective")+linkRule+accuracyRule+sourceRule+
       "\n\nReturn EXACTLY this, with the === marker on its own line:\n\n===BLOG_CONTENT===\n[Full markdown ~"+wc+" words. ## and ### headers. Real conversational voice. No title line at the top.]";
   }
   // How long may the answer be? Polish = about the draft's length; Write = the word count.
@@ -1054,19 +1306,32 @@ G("btn-generate").addEventListener("click",async function(){
     var chk=ensureLinks(extr(tA,"BLOG_CONTENT")||tA,links);
     var body=chk.content;
     LINK_REPORT={total:links.length,missing:chk.missing};
-    setBtn("btn-generate",true,"... Step 2 of 2: SEO &amp; social pack...");
+    setBtn("btn-generate",true,"... Step 2 of 4: SEO &amp; social pack...");
     var promptB="You are the SEO editor for TheGloveSOS.com (national glove repair directory).\nBlog title: "+title+"\nCategory: "+cat+"\n\nBLOG (first part):\n"+body.slice(0,3500)+"\n\nReturn EXACTLY these sections with === markers:\n\n===PRIMARY_KEYWORD===\n[the ONE national search phrase this blog targets, 2-5 words, lowercase, and it must already appear in the blog text]\n\n===SEO_TITLE===\n[50-60 chars, primary keyword near the front]\n\n===SLUG===\n[lowercase-hyphenated, includes the primary keyword, max 60 chars]\n\n===META_DESCRIPTION===\n[140-160 chars, includes the primary keyword]\n\n===KEYWORDS===\n[12 national keywords comma-separated, primary keyword first]\n\n===TAGS===\n[10 tags, lowercase-hyphenated, comma-separated]\n\n===EXCERPT===\n[2-3 sentences ~60 words]\n\n===SOCIAL_CAPTION===\n[Caption + hashtags including #TheGloveSOS #GloveRepair]\n\n===HERO_IMAGE_PROMPT===\n[Detailed: baseball/softball glove, moody teal lighting, dark atmosphere, landscape 1200x628]\n\n===SOCIAL_IMAGE_PROMPT===\n[Square 1080x1080, bold, teal/purple palette]\n\n===THUMBNAIL_PROMPT===\n[YouTube 1280x720, high contrast, text overlay space]\n\n===INSERT_IMAGE_PROMPTS===\nInsert 1: [prompt]\nInsert 2: [prompt]\nInsert 3: [prompt]\n\n===INTERNAL_LINKS===\n[3-4 slug suggestions]\n\n===EXTERNAL_LINKS===\n[2-3 source types]";
     var tB=await AI(promptB,1600,"seo");
     // Stitch both answers together so parseBlog finds every section.
     parseBlog("===BLOG_CONTENT===\n"+body+"\n\n"+tB,title,cat);
     GEN.mode=mode;
-    runSeoCheck(); // v3.6: grade it right away (free -- no AI call)
-    // Tell JB how his links came through.
+    GEN.notes=details;   // v3.7: the fact check compares the blog to your notes
+    runSeoCheck(); // v3.7: grade it right away (free -- no AI call)
+    // Tell JB how his links came through (plus a heads-up if long docs got trimmed).
+    var msgs=[];
     if(LINK_REPORT.total){
-      alert2("g-alert",LINK_REPORT.missing.length
+      msgs.push(LINK_REPORT.missing.length
         ?"&#128279; "+LINK_REPORT.total+" link(s) in your notes. The AI skipped "+LINK_REPORT.missing.length+", so Tool Shed added "+(LINK_REPORT.missing.length>1?"them":"it")+" under <b>Sources &amp; Shout-outs</b> at the end. All "+LINK_REPORT.total+" are in the blog."
-        :"&#128279; All "+LINK_REPORT.total+" link(s) from your notes are in the blog.","in");  // "in" = stays on screen (ok auto-hides)
+        :"&#128279; All "+LINK_REPORT.total+" link(s) from your notes are in the blog.");
     }
+    if(src.cut&&mode!=="polish")msgs.push("&#128196; Your source docs are long, so the writer read the first ~4,000 words of them.");
+    if(msgs.length)alert2("g-alert",msgs.join("<br>"),"in");  // "in" = stays on screen (ok auto-hides)
+
+    // v3.7 STEP 3: save it right away as a "Review" draft -- nothing gets lost.
+    setBtn("btn-generate",true,"... Step 3 of 4: saving your draft...");
+    try{ await saveDraft(); }
+    catch(e){ alert2("rv-alert","ERROR: The draft didn't save -- your blog is still on screen. Click <b>Save Draft</b> to try again. ("+esc(e.message)+")","er"); }
+
+    // v3.7 STEP 4: fact check (its own AI call, so it gets its own time limit).
+    setBtn("btn-generate",true,"... Step 4 of 4: fact-checking...");
+    await runFactCheck();
   }catch(e){alert2("g-alert","ERROR: "+e.message,"er");}
   finally{setBtn("btn-generate",false," Generate Master Blog");}
 });
@@ -1077,32 +1342,46 @@ function parseBlog(t,title,cat){
       hero=extr(t,"HERO_IMAGE_PROMPT"),soc=extr(t,"SOCIAL_IMAGE_PROMPT"),
       thu=extr(t,"THUMBNAIL_PROMPT"),ins=extr(t,"INSERT_IMAGE_PROMPTS"),
       intl=extr(t,"INTERNAL_LINKS"),extl=extr(t,"EXTERNAL_LINKS"),
-      pk=extr(t,"PRIMARY_KEYWORD").replace(/^["'\[]+|["'\].]+$/g,"").toLowerCase(); // v3.6
+      pk=extr(t,"PRIMARY_KEYWORD").replace(/^["'\[]+|["'\].]+$/g,"").toLowerCase(); // v3.7
   // Make sure the primary keyword leads the keyword list (saved to seo_keywords).
   if(pk&&kw.toLowerCase().indexOf(pk)!==0)kw=pk+(kw?", "+kw:"");
   var wc=(con||t).split(/\s+/).filter(Boolean).length,rt=Math.ceil(wc/225);
   var slug=sl||title.toLowerCase().replace(/[^a-z0-9\s]/g,"").replace(/\s+/g,"-").slice(0,60);
-  txt("out-content",con||t);txt("out-seo-title",st||title);txt("out-slug",slug);
-  txt("out-meta",md);txt("out-keywords",kw);txt("out-tags",tg);txt("out-excerpt",ex);
-  txt("out-caption",cap);txt("out-wc",wc+" words");txt("out-rt",rt+" min read");
-  txt("out-author",ST.author||"JB");txt("out-hero",hero);txt("out-social",soc);
-  txt("out-thumb",thu);txt("out-inserts",ins);txt("out-internal",intl);txt("out-external",extl);
-  txt("out-markdown",con||t);
   GEN={title:st||title,slug:slug,category:cat,author:ST.author||"JB",tags:tg,
     metaDescription:md,seoKeywords:kw,excerpt:ex,markdownContent:con||t,
     wordCount:wc,readTime:rt,uploadStatus:"Pending",
     blogUrl:(ST.site||"https://theglovesos.com")+"/blog/"+slug,
     heroImageURL:"",heroImagePrompt:hero,socialImagePrompt:soc,thumbnailPrompt:thu,
     insertImagePrompts:ins,socialCaption:cap,internalLinks:intl,externalLinks:extl,
-    publishDate:"",source:"AI",createdAt:new Date().toISOString(),primaryKeyword:pk};
-  txt("out-pk",pk||"(none returned)");
-  G("push-date").value=localToday();
+    publishDate:"",source:"AI",createdAt:new Date().toISOString(),primaryKeyword:pk,
+    // v3.7 review fields
+    postId:null,status:"",factCheck:null,factStale:false,factError:"",notes:""};
+  fillOutputs();
+}
+
+// v3.7: draw every output box from GEN. Used after Generate,
+// after you save edits, and when you open a draft from the Queue.
+function fillOutputs(){
+  if(!GEN)return;
+  txt("out-seo-title",GEN.title);txt("out-slug",GEN.slug);
+  txt("out-meta",GEN.metaDescription);txt("out-keywords",GEN.seoKeywords);txt("out-tags",GEN.tags);
+  txt("out-excerpt",GEN.excerpt);txt("out-caption",GEN.socialCaption);
+  txt("out-wc",GEN.wordCount+" words");txt("out-rt",GEN.readTime+" min read");
+  txt("out-author",GEN.author||"JB");txt("out-hero",GEN.heroImagePrompt);txt("out-social",GEN.socialImagePrompt);
+  txt("out-thumb",GEN.thumbnailPrompt);txt("out-inserts",GEN.insertImagePrompts);
+  txt("out-internal",GEN.internalLinks);txt("out-external",GEN.externalLinks);
+  txt("out-markdown",GEN.markdownContent);
+  txt("out-pk",GEN.primaryKeyword||"(none returned)");
+  renderContentHighlights(); // the Content tab, with fact-check highlights
+  G("push-date").value=GEN.publishDate||localToday();
   show("g-output");
   document.querySelectorAll(".tab-btn").forEach(function(b,i){b.classList.toggle("on",i===0);});
   document.querySelectorAll(".tab-pane").forEach(function(p,i){p.classList.toggle("on",i===0);});
+  renderReview();
+  renderFactCheck();
 }
 // ───────────────────────────────────────────────────────
-// SEO SCORE (v3.6) -- asks the back office to grade the blog
+// SEO SCORE (v3.7) -- asks the back office to grade the blog
 // against the National SEO Playbook. Pure code, no AI cost.
 // Shows a letter grade + a checklist with how to fix each miss.
 // ───────────────────────────────────────────────────────
@@ -1128,11 +1407,17 @@ G("g-mode").addEventListener("change",function(){
   var polish=this.value==="polish";
   txt("g-det-label",polish?"Your Draft (the AI keeps your words -- just proofreads & smooths)":"Details & Context (the AI must follow these)");
   G("g-det").rows=polish?14:6;
+  // v3.7: in "Use my words" mode the docs never add content -- they only feed the fact check.
+  txt("gen-docs-hint",polish
+    ?"Your words stay yours: these docs are used ONLY by the fact check, to double-check what you wrote."
+    :"The AI pulls facts from these docs, and the fact check uses them to double-check the blog.");
 });
 G("g-det").addEventListener("input",function(){showLinkCount("g-det","g-link-count");});
 G("btn-clear-gen").addEventListener("click",function(){
   ["g-title","g-det","g-exp","g-dna"].forEach(function(id){var e=G(id);if(e)e.value="";});
   G("g-cat").selectedIndex=0;hide("g-output");hide("seo-card");if(G("g-alert"))G("g-alert").innerHTML="";GEN=null;GEN_IDEA_ID=null;
+  // v3.7: clear docs + review panel too. (A saved draft stays safe in the Blog Queue.)
+  DOCS.gen=[];renderDocs("gen");txt("gen-docs-status","");resetReviewPanel();
 });
 G("btn-copy-md").addEventListener("click",function(){
   var e=G("out-markdown");if(!e)return;
@@ -1140,38 +1425,335 @@ G("btn-copy-md").addEventListener("click",function(){
 });
 
 // ═══════════════════════════════════════════════════════
-// PUSH TO QUEUE — now a single action that writes to Supabase
-// FIRST, and only reports success / adds to local QUEUE once
-// Supabase actually confirms the write. No more silent data loss.
+// REVIEW & APPROVE (v3.7)
+// Replaces the old "Save to Queue" bar. The flow is ONE way:
+//   Generate -> draft saves as "Review" (automatic)
+//            -> fact check (automatic)
+//            -> Approve As-Is   OR   Edit -> Approve Edits
+//            -> pick an upload day -> Schedule It
+// Every step writes to Supabase FIRST and only shows success
+// after Supabase confirms. Your blog stays on screen if anything fails.
 // ═══════════════════════════════════════════════════════
-G("btn-push-queue").addEventListener("click",async function(){
-  if(!GEN){alert2("g-alert","Generate a blog first.","er");return;}
-  var status=val("push-status"),date=val("push-date");
-  if(status==="Scheduled"&&!date){alert2("g-alert","Pick an upload day to schedule this blog.","er");return;}
-  setBtn("btn-push-queue",true,"... Saving to Supabase...");
-  try{
-    var d=await API("queue.create",{ideaId:GEN_IDEA_ID,post:{
-      title:GEN.title,slug:GEN.slug,category:GEN.category,author:GEN.author,tags:GEN.tags,
-      meta_description:GEN.metaDescription,seo_keywords:GEN.seoKeywords,excerpt:GEN.excerpt,
-      content:GEN.markdownContent,word_count:GEN.wordCount,read_time:GEN.readTime,
-      upload_status:status,publish_date:date||null,
-      hero_image_prompt:GEN.heroImagePrompt,social_image_prompt:GEN.socialImagePrompt,
-      thumbnail_prompt:GEN.thumbnailPrompt,insert_image_prompts:GEN.insertImagePrompts,
-      social_caption:GEN.socialCaption,internal_links:GEN.internalLinks,
-      external_links:GEN.externalLinks
-    }});
-    // Only now -- after Supabase confirmed -- does it show in the queue.
-    QUEUE.unshift(postToQueueItem(d.post));saveQueueLocal();
-    if(GEN_IDEA_ID){IDEAS=IDEAS.filter(function(x){return String(x.id)!==String(GEN_IDEA_ID);});saveIdeasLocal();GEN_IDEA_ID=null;}
-    updateCounts();
-    alert2("g-alert","OK: Saved to queue and confirmed in Supabase! Next: add a hero image in Image Studio.","ok");
-    setTimeout(function(){navTo("queue");},1500);
-  }catch(e){
-    alert2("g-alert","ERROR: Save failed, nothing was lost -- your blog is still on screen. ("+e.message+")","er");
-  }finally{
-    setBtn("btn-push-queue",false,"&#128640; Save to Queue (Supabase)");
+
+// Put a fresh copy of a blog (from Supabase) into the Queue list.
+function upsertQueueItem(post){
+  var fresh=postToQueueItem(post),found=false;
+  QUEUE=QUEUE.map(function(x){if(String(x.id)===String(fresh.id)){found=true;return fresh;}return x;});
+  if(!found)QUEUE.unshift(fresh);
+  saveQueueLocal();updateCounts();
+}
+// Copy the saved blog's wording back into GEN (after edits/approval).
+function applyPostToGen(p){
+  GEN.title=p.title;GEN.metaDescription=p.meta_description||"";GEN.excerpt=p.excerpt||"";
+  GEN.markdownContent=p.content||"";GEN.wordCount=p.word_count||0;GEN.readTime=p.read_time||0;
+  GEN.status=p.upload_status;GEN.publishDate=p.publish_date||"";GEN.isPublished=!!p.is_published;
+}
+
+// STEP 3: save the generated blog as a "Review" draft.
+async function saveDraft(){
+  if(!GEN)return;
+  var d=await API("queue.create",{ideaId:GEN_IDEA_ID,source_docs:DOCS.gen,
+    fact_check:GEN.factCheck||undefined,post:{
+    title:GEN.title,slug:GEN.slug,category:GEN.category,author:GEN.author,tags:GEN.tags,
+    meta_description:GEN.metaDescription,seo_keywords:GEN.seoKeywords,excerpt:GEN.excerpt,
+    content:GEN.markdownContent,word_count:GEN.wordCount,read_time:GEN.readTime,
+    upload_status:"Review",publish_date:null,
+    hero_image_prompt:GEN.heroImagePrompt,social_image_prompt:GEN.socialImagePrompt,
+    thumbnail_prompt:GEN.thumbnailPrompt,insert_image_prompts:GEN.insertImagePrompts,
+    social_caption:GEN.socialCaption,internal_links:GEN.internalLinks,
+    external_links:GEN.externalLinks
+  }});
+  GEN.postId=d.post.id;GEN.slug=d.post.slug;GEN.status=d.post.upload_status;
+  upsertQueueItem(d.post);
+  // The idea stays on your Ideas list as "In Review" until you approve.
+  if(GEN_IDEA_ID){
+    IDEAS=IDEAS.map(function(x){if(String(x.id)===String(GEN_IDEA_ID))x.status="In Progress";return x;});
+    saveIdeasLocal();
   }
+  renderReview();
+  if(d.warning)alert2("rv-alert","WARNING: "+esc(d.warning),"er");
+  else alert2("rv-alert","OK: Draft saved to Supabase as <b>Review</b>. Read it over, then approve it.","ok");
+}
+
+// STEP 4: FACT CHECK -- a second AI reads the blog and lists every
+// factual claim as OK (backed up), CHECK (worth a look) or BAD
+// (can't be verified / looks wrong).
+async function runFactCheck(){
+  if(!GEN||FC_RUNNING)return;
+  FC_RUNNING=true;GEN.factError="";renderFactCheck();
+  var src=sourcesBlock(DOCS.gen,30000);
+  var prompt="You are a strict fact-checker for TheGloveSOS.com, a national baseball and softball glove repair directory. Check the BLOG below.\n\n"+
+    "Judge each claim against, in this order:\n"+
+    "1. SOURCE DOCUMENTS from JB (trusted).\n"+
+    "2. JB'S NOTES (trusted -- JB is the expert).\n"+
+    "3. Widely known, undisputed baseball/softball glove knowledge.\n\n"+
+    "List the blog's factual claims: numbers, measurements, prices, times, dates, brand or model details, materials, names, quotes, studies, statistics, \"most players...\" style claims, and how-to steps that could damage a glove or be unsafe if wrong. Skip opinions and JB's personal philosophy (for example \"don't let the glove control you\").\n\n"+
+    "Give ONE line per claim in this exact format:\n"+
+    "OK | exact words copied from the blog | what backs it up (source name, JB's notes, or common knowledge)\n"+
+    "CHECK | exact words copied from the blog | why JB should double-check it\n"+
+    "BAD | exact words copied from the blog | why it can't be verified or looks wrong, and what to do\n\n"+
+    "RULES:\n"+
+    "- Copy the claim words EXACTLY from the blog, 4 to 25 words, plain text without ** or # marks, so they can be highlighted.\n"+
+    "- Use BAD for any statistic, study, survey, quote, price or specific number that is NOT in the source documents or JB's notes.\n"+
+    "- Use BAD if the blog contradicts the source documents or JB's notes.\n"+
+    "- Never invent a source. If you are unsure, use CHECK.\n"+
+    "- At most 25 lines, most important first.\n\n"+
+    "Return EXACTLY:\n===SUMMARY===\n[1-2 plain sentences: how trustworthy the blog looks, and the #1 thing to fix if anything]\n\n===CLAIMS===\n[the lines]\n\n"+
+    "SOURCE DOCUMENTS:\n"+(src.text||"(none attached)")+"\n\n"+
+    "JB'S NOTES:\n"+(GEN.notes||"(none available)")+"\n\n"+
+    "BLOG:\n"+GEN.markdownContent.slice(0,16000);
+  var g=GEN; // remember WHICH blog we're checking, in case you open another one meanwhile
+  try{
+    var t=await AI(prompt,1800);
+    var fc=parseFactCheck(t);
+    if(src.cut)fc.summary+=" (Your docs are long -- the checker read the first ~5,000 words of them.)";
+    g.factCheck=fc;g.factStale=false;
+    if(g.postId){
+      try{await API("queue.review",{id:g.postId,fact_check:fc});}
+      catch(e){alert2("rv-alert","ERROR: Fact check finished but didn't save: "+esc(e.message),"er");}
+    }
+  }catch(e){g.factError=e.message;}
+  if(g!==GEN)return; // you moved on to another blog -- don't touch the screen
+  FC_RUNNING=false;
+  renderFactCheck();renderContentHighlights();
+}
+// Turn the checker's answer into {checked_at, summary, items:[{level, claim, note}]}
+//   "BAD | Most players re-lace twice a year | no source"
+//     -> {level:"bad", claim:"Most players re-lace twice a year", note:"no source"}
+function parseFactCheck(t){
+  var levels={OK:"ok",CHECK:"check",BAD:"bad"};
+  var items=[];
+  (extr(t,"CLAIMS")||t).split("\n").forEach(function(line){
+    var parts=line.replace(/^[\s\-*\d.)]+/,"").split("|");
+    if(parts.length<2)return;
+    var lv=levels[parts[0].trim().toUpperCase()];
+    var claim=parts[1].trim().replace(/^["']|["']$/g,"").replace(/\*\*/g,"");
+    if(!lv||!claim)return;
+    items.push({level:lv,claim:claim,note:parts.slice(2).join("|").trim()});
+  });
+  if(!items.length&&!extr(t,"SUMMARY"))throw new Error("The fact checker's answer came back in the wrong shape -- click Run Fact Check to try again.");
+  return{checked_at:new Date().toISOString(),summary:extr(t,"SUMMARY")||"",items:items.slice(0,40)};
+}
+
+// Draw the fact-check box.
+function renderFactCheck(){
+  var sum=G("fc-summary"),list=G("fc-list"),btn=G("btn-fc-run");
+  if(!sum||!list)return;
+  if(btn){btn.disabled=FC_RUNNING||!GEN;btn.innerHTML=GEN&&GEN.factCheck?"&#8635; Re-run Fact Check":"&#8635; Run Fact Check";}
+  if(!GEN){sum.innerHTML="";list.innerHTML="";return;}
+  if(FC_RUNNING){sum.innerHTML="<div class='spin' style='display:inline-block;vertical-align:middle'></div> Checking facts against your source docs and notes...";list.innerHTML="";return;}
+  if(GEN.factError){sum.innerHTML="<span style='color:var(--red)'>Fact check didn't finish: "+esc(GEN.factError)+"</span> Click <b>Run Fact Check</b> to try again.";list.innerHTML="";return;}
+  var fc=GEN.factCheck;
+  if(!fc){sum.innerHTML="<span style='color:var(--t3)'>Not checked yet.</span>";list.innerHTML="";return;}
+  var n={ok:0,check:0,bad:0};fc.items.forEach(function(it){n[it.level]++;});
+  sum.innerHTML="<div class='fc-counts'><span class='badge b-app'>&#9989; "+n.ok+" backed up</span>"+
+    "<span class='badge b-rev'>&#9888;&#65039; "+n.check+" worth a look</span>"+
+    "<span class='badge' style='background:rgba(204,51,68,.15);color:var(--red)'>&#10060; "+n.bad+" can't verify</span></div>"+
+    esc(fc.summary)+
+    (GEN.factStale?"<div style='color:var(--orange);margin-top:4px'>Checked BEFORE your latest changes -- click Re-run Fact Check.</div>":"");
+  var icon={ok:"&#9989;",check:"&#9888;&#65039;",bad:"&#10060;"};
+  function row(it){
+    var i=fc.items.indexOf(it);
+    return"<div class='fc-item "+it.level+"' data-i='"+i+"'><span>"+icon[it.level]+"</span><div><div class='fc-claim'>"+esc(it.claim)+"</div>"+
+      (it.note?"<div class='fc-note'>"+esc(it.note)+"</div>":"")+"</div></div>";
+  }
+  var flagged=fc.items.filter(function(it){return it.level!=="ok";});
+  flagged.sort(function(a,b){return(a.level==="bad"?0:1)-(b.level==="bad"?0:1);});
+  var oks=fc.items.filter(function(it){return it.level==="ok";});
+  list.innerHTML=(flagged.length?flagged.map(row).join(""):"<div style='color:var(--green);font-size:12px;margin-bottom:6px'>Nothing flagged.</div>")+
+    (oks.length?"<details><summary style='cursor:pointer;font-size:12px;color:var(--t3);margin:4px 0'>Show the "+oks.length+" backed-up claim"+(oks.length>1?"s":"")+"</summary>"+oks.map(row).join("")+"</details>":"");
+  // Click a flagged line -> jump to it in the Content tab.
+  list.querySelectorAll(".fc-item").forEach(function(el){
+    el.addEventListener("click",function(){
+      var m=G("fc-hl-"+this.getAttribute("data-i"));
+      if(!m){alert2("rv-alert","That exact wording couldn't be found in the blog to highlight (the checker may have reworded it). Search the Content tab for it.","in");return;}
+      document.querySelectorAll(".tab-btn")[0].click();
+      m.scrollIntoView({behavior:"smooth",block:"center"});
+      m.classList.add("flash");setTimeout(function(){m.classList.remove("flash");},1600);
+    });
+  });
+}
+// Content tab: the blog text with flagged claims highlighted.
+function renderContentHighlights(){
+  var box=G("out-content");if(!box||!GEN)return;
+  var html=esc(GEN.markdownContent);
+  var items=(GEN.factCheck&&GEN.factCheck.items)||[];
+  items.forEach(function(it,i){
+    if(it.level==="ok")return;
+    var needle=esc(it.claim).trim();
+    if(needle.length<8)return;
+    var idx=html.toLowerCase().indexOf(needle.toLowerCase());
+    if(idx<0)return;
+    var before=html.slice(0,idx);
+    // Don't start a highlight inside a tag, or inside another highlight.
+    if(before.lastIndexOf("<")>before.lastIndexOf(">"))return;
+    if((before.match(/<mark/g)||[]).length!==(before.match(/<\/mark>/g)||[]).length)return;
+    html=before+"<mark id='fc-hl-"+i+"' class='hl-"+it.level+"' title='"+esc(it.note)+"'>"+html.slice(idx,idx+needle.length)+"</mark>"+html.slice(idx+needle.length);
+  });
+  box.innerHTML=html;
+}
+
+// Show/hide the right buttons for where the blog stands.
+function renderReview(){
+  var st=G("rv-state");if(!st)return;
+  var saved=!!(GEN&&GEN.postId),s=GEN?GEN.status:"";
+  var approved=s==="Approved"||s==="Scheduled";
+  var live=!!(GEN&&GEN.isPublished)||s==="Published to Site";
+  if(!saved){st.className="badge b-pen";st.textContent="Not saved yet";}
+  else if(live){st.className="badge b-pub";st.textContent="Live on the website";}
+  else if(approved){st.className="badge b-app";st.textContent=s==="Scheduled"?"Approved + Scheduled":"Approved";}
+  else{st.className="badge b-rev";st.textContent="Draft -- In Review";}
+  var draft=saved&&!approved&&!live;
+  G("btn-save-draft").style.display=(GEN&&!saved)?"":"none";
+  G("btn-approve").style.display=draft&&!EDITING?"":"none";
+  G("btn-edit").style.display=draft&&!EDITING?"":"none";
+  G("btn-approve-edits").style.display=draft&&EDITING?"":"none";
+  G("btn-save-edits").style.display=draft&&EDITING?"":"none";
+  G("btn-cancel-edit").style.display=EDITING?"":"none";
+  G("rv-edit").style.display=EDITING?"block":"none";
+  G("rv-after").style.display=approved&&!live?"block":"none";
+  if(approved&&!live){
+    txt("rv-after-msg",s==="Scheduled"&&GEN.publishDate
+      ?"Scheduled for "+GEN.publishDate+" -- it goes live at 7 AM Eastern that day. Change the day below if you need to."
+      :"Approved! Pick its upload day -- it goes live at 7 AM Eastern that day.");
+  }
+}
+// Called before every new Generate.
+function resetReviewPanel(){
+  EDITING=false;FC_RUNNING=false;
+  if(G("rv-notes"))G("rv-notes").value="";
+  if(G("rv-alert"))G("rv-alert").innerHTML="";
+  // Wipe the last blog's fact check so it can't be mistaken for this one's.
+  if(G("fc-summary"))G("fc-summary").innerHTML="";
+  if(G("fc-list"))G("fc-list").innerHTML="";
+}
+// The editor's live word count + meta length.
+function updateEditCounts(){
+  var w=val("rv-content").split(/\s+/).filter(Boolean).length;
+  txt("rv-wc",w.toLocaleString()+" words (~"+Math.max(1,Math.ceil(w/225))+" min read)");
+  var m=G("rv-meta").value.length;
+  G("rv-meta-count").innerHTML="("+m+"/160)";
+  G("rv-meta-count").style.color=m>=140&&m<=165?"var(--green)":"var(--orange)";
+}
+function editorChanges(){
+  return{title:val("rv-title"),meta_description:G("rv-meta").value.trim(),
+    excerpt:G("rv-excerpt").value.trim(),content:G("rv-content").value};
+}
+
+G("btn-save-draft").addEventListener("click",async function(){
+  setBtn("btn-save-draft",true,"... Saving...");
+  try{await saveDraft();}
+  catch(e){alert2("rv-alert","ERROR: Still didn't save -- your blog is still on screen. ("+esc(e.message)+")","er");}
+  finally{setBtn("btn-save-draft",false,"&#128190; Save Draft");}
 });
+G("btn-fc-run").addEventListener("click",function(){runFactCheck();});
+
+// EDIT: open the editor with the current wording.
+G("btn-edit").addEventListener("click",function(){
+  if(!GEN||!GEN.postId)return;
+  G("rv-title").value=GEN.title;G("rv-meta").value=GEN.metaDescription||"";
+  G("rv-excerpt").value=GEN.excerpt||"";G("rv-content").value=GEN.markdownContent;
+  EDITING=true;updateEditCounts();renderReview();
+  G("rv-title").scrollIntoView({behavior:"smooth",block:"center"});
+});
+G("rv-content").addEventListener("input",updateEditCounts);
+G("rv-meta").addEventListener("input",updateEditCounts);
+G("btn-cancel-edit").addEventListener("click",function(){
+  if(!confirm("Throw away the changes in the editor?"))return;
+  EDITING=false;renderReview();
+});
+// SAVE EDITS: saves your wording, keeps it in Review.
+G("btn-save-edits").addEventListener("click",async function(){
+  var ch=editorChanges();
+  if(!ch.title||!ch.content.trim()){alert2("rv-alert","The blog needs a title and content.","er");return;}
+  setBtn("btn-save-edits",true,"... Saving...");
+  try{
+    var d=await API("queue.update",{id:GEN.postId,changes:ch});
+    applyPostToGen(d.post);upsertQueueItem(d.post);
+    if(GEN.factCheck)GEN.factStale=true;
+    EDITING=false;fillOutputs();runSeoCheck();
+    alert2("rv-alert","OK: Edits saved (still in Review). Click <b>Re-run Fact Check</b> to check your changes, then approve.","ok");
+  }catch(e){alert2("rv-alert","ERROR: Edits didn't save -- they're still in the editor. ("+esc(e.message)+")","er");}
+  finally{setBtn("btn-save-edits",false,"&#128190; Save Edits (stay in Review)");}
+});
+// One approve routine for both buttons.
+async function approveBlog(withEdits){
+  if(!GEN||!GEN.postId)return;
+  var fc=GEN.factCheck,bad=fc?fc.items.filter(function(it){return it.level==="bad";}).length:0;
+  var warn="";
+  if(!fc)warn="This blog hasn't been fact-checked.";
+  else if(bad)warn="The fact check flagged "+bad+" claim(s) it can't verify.";
+  if(withEdits&&fc)warn=(warn?warn+" ":"")+"Your edits haven't been fact-checked.";
+  if(warn&&!confirm(warn+"\n\nApprove it anyway?"))return;
+  var id=withEdits?"btn-approve-edits":"btn-approve",label=G(id).innerHTML;
+  setBtn(id,true,"... Approving...");
+  try{
+    var payload={id:GEN.postId,review_notes:G("rv-notes").value};
+    if(withEdits){
+      payload.changes=editorChanges();
+      if(!payload.changes.title||!payload.changes.content.trim())throw new Error("The blog needs a title and content.");
+    }
+    var d=await API("queue.approve",payload);
+    applyPostToGen(d.post);upsertQueueItem(d.post);
+    if(withEdits&&GEN.factCheck)GEN.factStale=true;
+    // The idea is done -- take it off the Ideas list.
+    var ideaId=d.post.idea_id||GEN_IDEA_ID;
+    if(ideaId){IDEAS=IDEAS.filter(function(x){return String(x.id)!==String(ideaId);});saveIdeasLocal();GEN_IDEA_ID=null;}
+    updateCounts();
+    EDITING=false;fillOutputs();
+    if(withEdits)runSeoCheck();
+    alert2("rv-alert",d.warning?"WARNING: "+esc(d.warning):"OK: Approved and confirmed in Supabase! Now pick its upload day.",d.warning?"er":"ok");
+    G("rv-after").scrollIntoView({behavior:"smooth",block:"center"});
+  }catch(e){alert2("rv-alert","ERROR: Not approved -- nothing was lost. ("+esc(e.message)+")","er");}
+  finally{setBtn(id,false,label);}
+}
+G("btn-approve").addEventListener("click",function(){approveBlog(false);});
+G("btn-approve-edits").addEventListener("click",function(){approveBlog(true);});
+// SCHEDULE: set the upload day + status Scheduled in one save.
+G("btn-schedule").addEventListener("click",async function(){
+  var day=val("push-date");
+  if(!day){alert2("rv-alert","Pick an upload day first.","er");return;}
+  setBtn("btn-schedule",true,"... Scheduling...");
+  try{
+    var d=await API("queue.update",{id:GEN.postId,changes:{publish_date:day,upload_status:"Scheduled"}});
+    applyPostToGen(d.post);upsertQueueItem(d.post);renderReview();
+    alert2("rv-alert","OK: Scheduled for "+esc(day)+". It goes live at 7 AM Eastern that day. Next: add a hero image in Image Studio.","ok");
+  }catch(e){alert2("rv-alert","ERROR: "+esc(e.message),"er");}
+  finally{setBtn("btn-schedule",false,"&#128197; Schedule It");}
+});
+G("btn-go-queue").addEventListener("click",function(){navTo("queue");});
+
+// Open a saved blog from the Blog Queue in the Review panel.
+async function openForReview(id){
+  var d;
+  try{d=await API("queue.get",{id:id});}
+  catch(e){alert("Couldn't open that blog: "+e.message);renderQueue();return;}
+  var p=d.post,rv=d.review||{};
+  GEN={title:p.title,slug:p.slug,category:p.category,author:p.author||"JB",
+    tags:Array.isArray(p.tags)?p.tags.join(", "):(p.tags||""),
+    metaDescription:p.meta_description||"",seoKeywords:p.seo_keywords||"",excerpt:p.excerpt||"",
+    markdownContent:p.content||"",wordCount:p.word_count||0,readTime:p.read_time||0,
+    uploadStatus:p.upload_status,blogUrl:p.blog_url,heroImageURL:p.featured_image_url||"",
+    heroImagePrompt:p.hero_image_prompt||"",socialImagePrompt:p.social_image_prompt||"",
+    thumbnailPrompt:p.thumbnail_prompt||"",insertImagePrompts:p.insert_image_prompts||"",
+    socialCaption:p.social_caption||"",internalLinks:p.internal_links||"",externalLinks:p.external_links||"",
+    publishDate:p.publish_date||"",source:p.source||"AI",createdAt:p.created_at,
+    primaryKeyword:String(p.seo_keywords||"").split(",")[0].trim().toLowerCase(),
+    postId:p.id,status:p.upload_status,isPublished:!!p.is_published,
+    factCheck:rv.fact_check||null,factStale:false,factError:"",notes:"",mode:"write"};
+  GEN_IDEA_ID=p.idea_id||null;
+  DOCS.gen=Array.isArray(rv.source_docs)?rv.source_docs:[];
+  renderDocs("gen");txt("gen-docs-status",DOCS.gen.length?DOCS.gen.length+" source doc(s) loaded with this blog.":"");
+  // Fill the form at the top so it's clear which blog this is.
+  G("g-title").value=p.title||"";G("g-det").value="";
+  var sel=G("g-cat");for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===p.category){sel.selectedIndex=i;break;}}
+  resetReviewPanel();
+  G("rv-notes").value=rv.review_notes||"";
+  navTo("generator");
+  fillOutputs();runSeoCheck();
+  alert2("g-alert","Opened \""+esc(p.title)+"\" from the Blog Queue. Review it below. (Clicking Generate would write a NEW blog.)","in");
+  G("review-card").scrollIntoView({behavior:"smooth",block:"start"});
+}
 
 // ═══════════════════════════════════════════════════════
 // SAVE AS IDEA — same fix: Supabase confirms before success shown
@@ -1181,8 +1763,9 @@ G("btn-save-as-idea").addEventListener("click", async function(){
   setBtn("btn-save-as-idea",true,"... Saving...");
   try{
     var d=await API("ideas.create",{title:GEN.title,category:GEN.category,
-      notes:"Banked from a generated blog. Slug: "+GEN.slug,topic_keywords:GEN.seoKeywords||GEN.title});
-    IDEAS.unshift({id:d.idea.id,supabaseId:d.idea.id,title:d.idea.title,category:d.idea.category,notes:d.idea.notes||"",status:"New"});
+      notes:"Banked from a generated blog. Slug: "+GEN.slug,topic_keywords:GEN.seoKeywords||GEN.title,
+      source_docs:DOCS.gen}); // v3.7: the docs come along
+    IDEAS.unshift(ideaFromRow(d.idea));
     saveIdeasLocal(); updateCounts();
     alert2("g-alert","OK: Saved to Ideas and confirmed in Supabase!","ok");
   }catch(e){
@@ -1233,9 +1816,12 @@ function renderQueue(){
       "<select class='q-stat-sel' data-id='"+b.id+"' style='"+ctl+"'>"+
       ["Pending","Review","Approved","Scheduled","Published to Site"].map(function(s){return"<option"+(b.uploadStatus===s?" selected":"")+">"+s+"</option>";}).join("")+
       "</select>"+
+      // v3.7: Review opens the blog to read / edit / approve.
+      // Publish Now only shows once a blog is approved.
       (b.isPublished
         ?"<button class='q-unpub-btn btn btn-xs btn-out' data-id='"+b.id+"' title='Take it off the website'>Unpublish</button>"
-        :"<button class='q-pub-btn btn btn-xs btn-teal' data-id='"+b.id+"' title='Put it on the website right now'>Publish Now</button>")+
+        :"<button class='q-rev-btn btn btn-xs btn-pur' data-id='"+b.id+"' title='Read, edit and approve'>"+(b.approvedAt?"Open":"Review")+"</button>"+
+          (b.approvedAt?"<button class='q-pub-btn btn btn-xs btn-teal' data-id='"+b.id+"' title='Put it on the website right now'>Publish Now</button>":""))+
       "<button class='q-del-btn btn btn-xs btn-out' data-id='"+b.id+"' style='color:var(--red);border-color:var(--red)'>&#10005;</button>"+
     "</div></td></tr>";}).join("");
 
@@ -1267,6 +1853,13 @@ function renderQueue(){
       if(!day&&b.uploadStatus==="Scheduled"){alert("A Scheduled blog needs an upload day. Change the status first to clear it.");renderQueue();return;}
       try{ var d=await API("queue.update",{id:id,changes:{publish_date:day||null}}); replaceItem(d.post); }
       catch(e){ alert("Couldn't save the upload day: "+e.message); renderQueue(); }
+    });
+  });
+  // v3.7: REVIEW -- open this blog in the Review & Approve panel.
+  document.querySelectorAll(".q-rev-btn").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      this.disabled=true;this.textContent="...";
+      openForReview(this.getAttribute("data-id"));
     });
   });
   // PUBLISH NOW
@@ -1354,10 +1947,18 @@ function resetIdeaForm(){
   txt("idea-form-title","💡 Add New Idea");
   G("btn-save-idea").innerHTML="&#128190; Save Idea to Supabase";
   hide("idea-proof-out");showLinkCount("idea-notes","idea-link-count");
+  DOCS.idea=[];IDEA_DOCS_READY=true;renderDocs("idea");txt("idea-docs-status",""); // v3.7
 }
 function ideaFromRow(i){
   return{id:i.id,supabaseId:i.id,title:i.title,category:i.category||"General Tips",
-    notes:i.notes||"",status:i.status||"New",mode:i.write_mode==="polish"?"polish":"write"};
+    notes:i.notes||"",status:i.status||"New",mode:i.write_mode==="polish"?"polish":"write",
+    sourceDocCount:i.source_doc_count||0};   // v3.7
+}
+// v3.7: the Ideas list only knows HOW MANY docs an idea has.
+// This fetches the docs themselves (for Edit / Send to Generator).
+async function loadIdeaDocs(id){
+  var d=await API("ideas.get",{id:id});
+  return Array.isArray(d.idea.source_docs)?d.idea.source_docs:[];
 }
 
 G("btn-save-idea").addEventListener("click",async function(){
@@ -1365,6 +1966,8 @@ G("btn-save-idea").addEventListener("click",async function(){
   if(!title){alert2("idea-alert","Please enter an idea title.","er");return;}
   setBtn("btn-save-idea",true,"... Saving...");
   var payload={title:title,category:val("idea-cat"),notes:G("idea-notes").value,write_mode:val("idea-mode")};
+  // v3.7: only send docs once they've fully loaded, so a slow load can never wipe them.
+  if(IDEA_DOCS_READY)payload.source_docs=DOCS.idea;
   try{
     // Goes to Supabase FIRST. Only shows in your list once confirmed.
     if(EDIT_IDEA_ID){
@@ -1443,7 +2046,9 @@ function renderIdeas(){
     return"<div class='idea-card'>"+
     "<div class='idea-body'>"+
       "<div class='idea-title'>"+esc(idea.title)+"</div>"+
-      "<div class='idea-meta'>"+esc(idea.category)+" &nbsp;"+badge+(nLinks?" &nbsp;&#128279; "+nLinks:"")+"</div>"+
+      "<div class='idea-meta'>"+esc(idea.category)+" &nbsp;"+badge+(nLinks?" &nbsp;&#128279; "+nLinks:"")+
+        (idea.sourceDocCount?" &nbsp;<span title='Source docs attached'>&#128206; "+idea.sourceDocCount+" doc"+(idea.sourceDocCount>1?"s":"")+"</span>":"")+
+        (idea.status==="In Progress"?" &nbsp;<span class='badge b-sch' title='A draft from this idea is waiting for your review in the Blog Queue'>Draft in Review</span>":"")+"</div>"+
       (preview?"<div style='font-size:12px;color:var(--t2);margin-top:3px;white-space:pre-wrap'>"+esc(preview)+"</div>":"")+
     "</div>"+
     "<div class='bgroup'>"+
@@ -1452,21 +2057,31 @@ function renderIdeas(){
       "<button class='btn btn-xs btn-out idea-del-btn' data-id='"+idea.id+"' style='color:var(--red);border-color:var(--red)'>&#10005;</button>"+
     "</div></div>";}).join("");
   document.querySelectorAll(".idea-gen-btn").forEach(function(btn){
-    btn.addEventListener("click",function(){
+    btn.addEventListener("click",async function(){
       var id=this.getAttribute("data-id");
       var idea=IDEAS.find(function(x){return String(x.id)===id;});
       if(!idea)return;
-      GEN_IDEA_ID=idea.id; // remember it, so saving the blog marks this idea "Used"
+      // v3.7: bring the idea's source docs along to the Generator.
+      var docs=[];
+      if(idea.sourceDocCount){
+        this.disabled=true;this.innerHTML="... Loading docs";
+        try{docs=await loadIdeaDocs(idea.id);}
+        catch(e){alert("Couldn't load this idea's source docs ("+e.message+"). Try again in a moment.");renderIdeas();return;}
+      }
+      GEN_IDEA_ID=idea.id; // remember it, so the draft links back to this idea
       G("g-title").value=idea.title;G("g-det").value=idea.notes||"";
       G("g-mode").value=idea.mode||"write";G("g-mode").dispatchEvent(new Event("change"));
       var sel=G("g-cat");for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===idea.category){sel.selectedIndex=i;break;}}
       showLinkCount("g-det","g-link-count");
+      DOCS.gen=docs;renderDocs("gen");
+      txt("gen-docs-status",docs.length?docs.length+" source doc(s) came over from the idea.":"");
       navTo("generator");
+      renderIdeas();
     });
   });
   // EDIT -- load the idea back into the form so you can keep working on your draft.
   document.querySelectorAll(".idea-edit-btn").forEach(function(btn){
-    btn.addEventListener("click",function(){
+    btn.addEventListener("click",async function(){
       var id=this.getAttribute("data-id");
       var idea=IDEAS.find(function(x){return String(x.id)===id;});
       if(!idea)return;
@@ -1478,6 +2093,18 @@ function renderIdeas(){
       G("btn-save-idea").innerHTML="&#128190; Update Idea";
       showLinkCount("idea-notes","idea-link-count");hide("idea-proof-out");
       G("idea-title").scrollIntoView({behavior:"smooth",block:"center"});
+      // v3.7: load this idea's docs. Until they arrive, saving won't touch them.
+      DOCS.idea=[];renderDocs("idea");
+      if(!idea.sourceDocCount){IDEA_DOCS_READY=true;txt("idea-docs-status","");return;}
+      IDEA_DOCS_READY=false;txt("idea-docs-status","Loading "+idea.sourceDocCount+" source doc(s)...");
+      try{
+        var docs=await loadIdeaDocs(idea.id);
+        if(EDIT_IDEA_ID!==idea.id)return; // you clicked a different idea meanwhile
+        DOCS.idea=docs;IDEA_DOCS_READY=true;renderDocs("idea");txt("idea-docs-status","");
+      }catch(e){
+        if(EDIT_IDEA_ID!==idea.id)return;
+        G("idea-docs-status").innerHTML="<span style='color:var(--orange)'>Couldn't load this idea's docs ("+esc(e.message)+"). Saving now will keep them as they are. Click Edit again to retry.</span>";
+      }
     });
   });
   document.querySelectorAll(".idea-del-btn").forEach(function(btn){
@@ -1525,7 +2152,7 @@ G("btn-research").addEventListener("click",async function(){
   setBtn("btn-research",true," Researching...");
   var prompt="Research for TheGloveSOS.com.\nTopic: "+topic+"\nFocus: "+val("res-focus")+"\n\nFind NATIONAL search demand (players, parents and coaches across the US) -- not local. Each idea must target one national search phrase people actually type.\nCategory must be one of: Glove Care, Glove Repair, Glove Provider Spotlight, Behind the Scenes, Customer Stories, General Tips.\n\nReturn:\n===SUMMARY===\n[Why this matters for glove repair audience nationally]\n\n===BLOG_IDEAS===\n1. [Title] | Category: [cat] | Angle: [angle]\n2. [Title] | Category: [cat] | Angle: [angle]\n3. [Title] | Category: [cat] | Angle: [angle]\n4. [Title] | Category: [cat] | Angle: [angle]\n5. [Title] | Category: [cat] | Angle: [angle + target keyword]\n\n===KEYWORDS===\n[12 national SEO keywords, highest search intent first]\n\n===SOURCES===\n[3-4 source types]";
   try{
-    var t=await AI(prompt,1600,"research");  // v3.6: National SEO Playbook applied
+    var t=await AI(prompt,1600,"research");  // v3.7: National SEO Playbook applied
     txt("res-results",t);show("res-output");LASTRES=t;
   }catch(e){alert("ERROR: "+e.message);}
   finally{setBtn("btn-research",false," Research Now");}
@@ -1697,6 +2324,7 @@ document.addEventListener("DOMContentLoaded",function(){
   G("nl-month").value=months[new Date().getMonth()];
   G("nl-year").value=new Date().getFullYear();
   G("push-date").value=localToday();
+  wireDocInput("idea");wireDocInput("gen"); // v3.7: source doc pickers
   renderToggles();updateCounts();
   if(ST.pass){
     loadSettings(); // pulls settings, queue and ideas fresh from Supabase
