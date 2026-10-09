@@ -1,5 +1,13 @@
 // ============================================================
-// netlify/functions/toolshed.mjs  --  Tool Shed v3.4 BACK OFFICE
+// netlify/functions/toolshed.mjs  --  Tool Shed v3.7 BACK OFFICE
+// ------------------------------------------------------------
+// v3.7 ADDED:
+//   - Source docs on ideas (ideas.get, source_docs on create/update)
+//   - Review & Approve flow: a new blog saves as a "Review" draft,
+//     then queue.approve marks it Approved. queue.get / queue.review
+//     load and save the private review data (docs, fact check, notes).
+//   - APPROVAL GATE: a blog can only be Scheduled or Published
+//     after it has been approved.
 // ------------------------------------------------------------
 // WHAT THIS FILE DOES (plain English):
 //   This is the "back office" behind the Tool Shed app.
@@ -28,7 +36,7 @@ import { timingSafeEqual, createHash } from "node:crypto";
 import * as db from "../lib/supabase.mjs";
 import { askAI, DEFAULT_MODELS } from "../lib/ai.mjs";
 import { publishPost, unpublishPost, nowInShopTZ, PUBLISH_HOUR } from "../lib/publish.mjs";
-import { withPlaybook, activePlaybook, DEFAULT_PLAYBOOK, checkSeo } from "../lib/seo.mjs"; // v3.6
+import { withPlaybook, activePlaybook, DEFAULT_PLAYBOOK, checkSeo } from "../lib/seo.mjs"; // v3.7
 
 // ------------------------------------------------------------
 // RULES THE DATABASE ENFORCES (copied from Supabase so we can
@@ -49,11 +57,106 @@ const SETTING_KEYS = [
   "default_author", "min_word_count", "max_word_count",
   "site_url", "notification_email", "sheet_id", "sheet_tab",
   "auto_generate", "auto_newsletter", "email_notify",
-  "seo_playbook", // v3.6: JB's edited National SEO Playbook (blank = default)
+  "seo_playbook", // v3.7: JB's edited National SEO Playbook (blank = default)
 ];
 
 const BUCKET = "blog-images";
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // 4 MB (Netlify caps requests at ~6 MB)
+
+// ---------- v3.7: SOURCE DOCS ----------
+// The browser pulls the TEXT out of a PDF / Word / text file and
+// sends us that text. We keep the text (not the original file),
+// because the text is what the AI reads.
+const MAX_DOCS = 8;               // docs per idea or per blog
+const MAX_DOC_CHARS = 60000;      // about 15 pages of text per doc
+const MAX_ALL_DOC_CHARS = 200000; // all docs together
+
+// One message used everywhere the approval gate says "not yet".
+const NOT_APPROVED_MSG =
+  "Approve this blog first. In the Blog Queue click Review, read it over, then click Approve.";
+
+// ------------------------------------------------------------
+// v3.7 HELPERS
+// ------------------------------------------------------------
+
+// Tidy a list of docs from the browser. Drops empty ones, trims
+// anything too big, and keeps only the fields we expect.
+//   cleanDocs([{name:"lace.pdf", text:"..."}]) -> [{name, type, size, chars, text, added_at}]
+function cleanDocs(list) {
+  if (!Array.isArray(list)) return [];
+  let total = 0;
+  const out = [];
+  for (const d of list.slice(0, MAX_DOCS)) {
+    const text = String((d && d.text) || "").slice(0, MAX_DOC_CHARS);
+    if (!text.trim()) continue;
+    if (total + text.length > MAX_ALL_DOC_CHARS) break; // stop before we go over the limit
+    total += text.length;
+    out.push({
+      name: String(d.name || "document").slice(0, 200),
+      type: String(d.type || "").slice(0, 100),
+      size: Number(d.size) || 0,
+      chars: text.length,
+      text,
+      added_at: d.added_at || new Date().toISOString(),
+    });
+  }
+  return out;
+}
+
+// Tidy a fact-check result from the browser.
+//   level: "ok" (backed up) | "check" (worth a look) | "bad" (can't verify)
+function cleanFactCheck(fc) {
+  if (!fc || typeof fc !== "object") return null;
+  const LEVELS = ["ok", "check", "bad"];
+  const items = (Array.isArray(fc.items) ? fc.items : []).slice(0, 40).map((it) => ({
+    level: LEVELS.includes(it && it.level) ? it.level : "check",
+    claim: String((it && it.claim) || "").slice(0, 400),
+    note: String((it && it.note) || "").slice(0, 400),
+  })).filter((it) => it.claim);
+  return {
+    checked_at: fc.checked_at || new Date().toISOString(),
+    summary: String(fc.summary || "").slice(0, 600),
+    items,
+  };
+}
+
+// Save the PRIVATE review data for one blog (docs, fact check,
+// notes). Lives in its own table so the public website can never
+// read it. Updates the row if it exists, otherwise creates it.
+async function saveReview(postId, fields) {
+  const row = Object.assign({}, fields, { updated_at: new Date().toISOString() });
+  const rows = await db.update("blog_post_reviews", "post_id=eq." + postId, row);
+  if (rows.length) return rows[0];
+  return db.insert("blog_post_reviews", Object.assign({ post_id: postId }, row));
+}
+
+// Wording edits JB made in the review editor -> database columns.
+// Recounts words and read time whenever the blog text changes.
+function editChanges(c) {
+  const out = {};
+  if (c.title !== undefined) {
+    out.title = String(c.title).trim();
+    if (!out.title) throw new Error("A blog needs a title.");
+  }
+  if (c.content !== undefined) {
+    out.content = String(c.content);
+    if (!out.content.trim()) throw new Error("A blog needs content.");
+    const words = out.content.split(/\s+/).filter(Boolean).length;
+    out.word_count = words;
+    out.read_time = Math.max(1, Math.ceil(words / 225));
+  }
+  if (c.excerpt !== undefined) out.excerpt = String(c.excerpt) || null;
+  if (c.meta_description !== undefined) out.meta_description = String(c.meta_description) || null;
+  return out;
+}
+
+// Mark an idea "Used" once its blog is approved. Never fails the
+// main action -- worst case the idea just stays on the list.
+async function markIdeaUsed(ideaId) {
+  if (!ideaId) return;
+  try { await db.update("blog_ideas", "id=eq." + needId(ideaId), { status: "Used" }); }
+  catch (e) { /* not worth failing over */ }
+}
 
 // ------------------------------------------------------------
 // SMALL HELPERS
@@ -200,11 +303,25 @@ const actions = {
   async "ideas.list"() {
     const ideas = await db.select(
       "blog_ideas",
-      "select=id,title,category,notes,status,topic_keywords,write_mode,created_at" +
+      // v3.7: source_doc_count (just the NUMBER of docs) keeps this list
+      // small and fast. The doc text itself loads with ideas.get.
+      "select=id,title,category,notes,status,topic_keywords,write_mode,created_at,source_doc_count" +
         // Hide ideas already turned into blogs ("Used") or shelved ("Archived").
         "&or=(status.is.null,status.not.in.(Used,Archived))&order=created_at.desc&limit=300"
     );
     return { ideas };
+  },
+
+  // v3.7: ONE idea, including the full text of its source docs.
+  // Used when you click Edit or Send to Generator.
+  async "ideas.get"(data) {
+    const id = needId(data && data.id);
+    const rows = await db.select(
+      "blog_ideas",
+      "select=id,title,category,notes,status,topic_keywords,write_mode,created_at,source_docs,source_doc_count&id=eq." + id
+    );
+    if (!rows.length) throw new Error("Idea not found (it may have been deleted).");
+    return { idea: rows[0] };
   },
 
   async "ideas.create"(data) {
@@ -216,9 +333,12 @@ const actions = {
       notes: data.notes || "",
       topic_keywords: data.topic_keywords || title,
       write_mode: fixMode(data.write_mode),
+      source_docs: cleanDocs(data.source_docs), // v3.7
       status: "New",
       date_found: new Date().toISOString(),
     });
+    // Don't send all the doc text back -- the list only needs the count.
+    delete idea.source_docs;
     return { idea };
   },
 
@@ -233,10 +353,12 @@ const actions = {
     if (data.notes !== undefined) changes.notes = String(data.notes);
     if (data.category !== undefined) changes.category = fixCategory(data.category);
     if (data.write_mode !== undefined) changes.write_mode = fixMode(data.write_mode);
+    if (data.source_docs !== undefined) changes.source_docs = cleanDocs(data.source_docs); // v3.7
     if (data.title !== undefined && !changes.title) throw new Error("An idea needs a title.");
     if (!Object.keys(changes).length) throw new Error("Nothing to change.");
     const rows = await db.update("blog_ideas", "id=eq." + id, changes);
     if (!rows.length) throw new Error("Idea not found.");
+    delete rows[0].source_docs; // list only needs source_doc_count
     return { idea: rows[0] };
   },
 
@@ -251,21 +373,23 @@ const actions = {
     const posts = await db.select(
       "blog_posts",
       "select=id,title,slug,category,author,upload_status,word_count,read_time,publish_date," +
-        "blog_url,created_at,is_published,published_at,featured_image_url,excerpt" +
+        "blog_url,created_at,is_published,published_at,featured_image_url,excerpt,approved_at,idea_id" +
         "&order=created_at.desc&limit=300"
     );
     return { posts };
   },
 
   // Save a freshly generated blog into the queue.
+  // v3.7: a new blog is ALWAYS a draft ("Review" or "Pending").
+  // It only becomes Approved through queue.approve -- so nothing
+  // can skip JB's review.
   async "queue.create"(data) {
     const p = (data && data.post) || {};
     if (!p.title || !p.content) throw new Error("A blog needs a title and content.");
 
-    const status = QUEUE_STATUSES.includes(p.upload_status) ? p.upload_status : "Pending";
+    const status = p.upload_status === "Pending" ? "Pending" : "Review";
     const date = cleanDate(p.publish_date);
-    if (status === "Scheduled" && !date) throw new Error("Pick an upload day to schedule this blog.");
-    if (status === "Published to Site") throw new Error("Save it first, then use Publish Now.");
+    const ideaId = data.ideaId ? needId(data.ideaId) : null;
 
     const settings = await loadSettings().catch(() => ({}));
     const site = (settings.site_url || "https://theglovesos.com").replace(/\/+$/, "");
@@ -296,6 +420,8 @@ const actions = {
       internal_links: p.internal_links || null,
       external_links: p.external_links || null,
       source: "AI",
+      idea_id: ideaId,   // v3.7: remember which idea this came from
+      approved_at: null, // v3.7: not approved until JB says so
     };
 
     // Slugs must be unique. If "glove-care-101" is taken, try
@@ -312,15 +438,78 @@ const actions = {
       }
     }
 
-    // If this blog came from an idea, mark that idea "Used".
-    if (data.ideaId) {
-      try { await db.update("blog_ideas", "id=eq." + needId(data.ideaId), { status: "Used" }); }
+    // v3.7: the idea is now "In Progress" (still on your Ideas list,
+    // marked as being worked on). It becomes "Used" when you approve.
+    if (ideaId) {
+      try { await db.update("blog_ideas", "id=eq." + ideaId, { status: "In Progress" }); }
       catch (e) { /* not worth failing the save over */ }
     }
-    return { post };
+
+    // v3.7: save the private review data (source docs + fact check).
+    // The blog itself is already safe, so a problem here is a warning.
+    let warning = "";
+    const docs = cleanDocs(data.source_docs);
+    const fc = cleanFactCheck(data.fact_check);
+    if (docs.length || fc) {
+      try { await saveReview(post.id, { source_docs: docs, fact_check: fc }); }
+      catch (e) { warning = "Blog saved, but its source docs didn't save: " + e.message; }
+    }
+    return { post, warning };
   },
 
-  // Change status / upload day / hero image of a queued blog.
+  // v3.7: ONE blog with EVERYTHING -- the full text plus its private
+  // review data. Used by the Review button in the Blog Queue.
+  async "queue.get"(data) {
+    const id = needId(data && data.id);
+    const rows = await db.select("blog_posts", "select=*&id=eq." + id);
+    if (!rows.length) throw new Error("Blog not found (it may have been deleted).");
+    const rev = await db.select(
+      "blog_post_reviews",
+      "select=source_docs,fact_check,review_notes,updated_at&post_id=eq." + id
+    );
+    return { post: rows[0], review: rev[0] || { source_docs: [], fact_check: null, review_notes: "" } };
+  },
+
+  // v3.7: save fact-check results, review notes and/or source docs.
+  async "queue.review"(data) {
+    const id = needId(data && data.id);
+    const fields = {};
+    if (data.fact_check !== undefined) fields.fact_check = cleanFactCheck(data.fact_check);
+    if (data.review_notes !== undefined) fields.review_notes = String(data.review_notes || "") || null;
+    if (data.source_docs !== undefined) fields.source_docs = cleanDocs(data.source_docs);
+    if (!Object.keys(fields).length) throw new Error("Nothing to save.");
+    const found = await db.select("blog_posts", "select=id&id=eq." + id);
+    if (!found.length) throw new Error("Blog not found (it may have been deleted).");
+    const review = await saveReview(id, fields);
+    return { review: { fact_check: review.fact_check, review_notes: review.review_notes } };
+  },
+
+  // v3.7: APPROVE a blog -- "as-is", or with the edits JB just made.
+  //   data = { id, changes: {title, content, excerpt, meta_description}, review_notes }
+  async "queue.approve"(data) {
+    const id = needId(data && data.id);
+    const found = await db.select("blog_posts", "select=id,is_published,idea_id&id=eq." + id);
+    if (!found.length) throw new Error("Blog not found (it may have been deleted).");
+    if (found[0].is_published) throw new Error("This blog is already live. Unpublish it first if you need to change it.");
+
+    const changes = Object.assign(editChanges((data && data.changes) || {}), {
+      upload_status: "Approved",
+      approved_at: new Date().toISOString(),
+      is_published: false,
+    });
+    const rows = await db.update("blog_posts", "id=eq." + id, changes);
+    if (!rows.length) throw new Error("Blog not found.");
+
+    let warning = "";
+    if (data.review_notes !== undefined) {
+      try { await saveReview(id, { review_notes: String(data.review_notes || "") || null }); }
+      catch (e) { warning = "Approved, but your review notes didn't save: " + e.message; }
+    }
+    await markIdeaUsed(found[0].idea_id);
+    return { post: rows[0], warning };
+  },
+
+  // Change status / upload day / hero image / wording of a queued blog.
   async "queue.update"(data) {
     const id = needId(data && data.id);
     const c = data.changes || {};
@@ -332,20 +521,46 @@ const actions = {
       changes.hero_image_url = c.featured_image_url || null;
     }
 
+    // v3.7: wording edits (title / content / excerpt / meta).
+    const edits = editChanges(c);
+    const editing = Object.keys(edits).length > 0;
+
+    // Look up where the blog stands now (needed for the approval gate).
+    let cur = null;
+    if (editing || c.upload_status !== undefined) {
+      const found = await db.select("blog_posts", "select=publish_date,approved_at,is_published,idea_id&id=eq." + id);
+      if (!found.length) throw new Error("Blog not found (it may have been deleted).");
+      cur = found[0];
+    }
+
+    // Changing the words means it needs a fresh approval.
+    if (editing) {
+      if (cur.is_published) throw new Error("This blog is live on the website. Unpublish it first, then edit.");
+      Object.assign(changes, edits, { upload_status: "Review", approved_at: null, is_published: false });
+    }
+
     if (c.upload_status !== undefined) {
-      if (!QUEUE_STATUSES.includes(c.upload_status)) throw new Error("Unknown status: " + c.upload_status);
+      const s = c.upload_status;
+      if (!QUEUE_STATUSES.includes(s)) throw new Error("Unknown status: " + s);
+      if (editing && s !== "Review" && s !== "Pending") throw new Error("Save your edits first, then approve them.");
+
+      // THE APPROVAL GATE: no scheduling or publishing without approval.
+      if ((s === "Scheduled" || s === "Published to Site") && !cur.approved_at) throw new Error(NOT_APPROVED_MSG);
+
       // Choosing "Published to Site" really publishes it.
-      if (c.upload_status === "Published to Site") {
+      if (s === "Published to Site") {
         if (Object.keys(changes).length) await db.update("blog_posts", "id=eq." + id, changes);
         return { post: await publishPost(id) };
       }
-      changes.upload_status = c.upload_status;
+      changes.upload_status = s;
       changes.is_published = false; // any other status = not live on the site
-      if (c.upload_status === "Scheduled") {
-        const cur = await db.select("blog_posts", "select=publish_date&id=eq." + id);
-        const d = changes.publish_date !== undefined ? changes.publish_date : cur[0] && cur[0].publish_date;
+      if (s === "Approved") changes.approved_at = cur.approved_at || new Date().toISOString();
+      if (s === "Pending" || s === "Review") changes.approved_at = null; // back to draft = needs approval again
+      if (s === "Scheduled") {
+        const d = changes.publish_date !== undefined ? changes.publish_date : cur.publish_date;
         if (!d) throw new Error("Set an upload day before choosing Scheduled.");
       }
+      if (s === "Approved") await markIdeaUsed(cur.idea_id);
     }
 
     if (!Object.keys(changes).length) throw new Error("Nothing to change.");
@@ -355,11 +570,20 @@ const actions = {
   },
 
   async "queue.publish"(data) {
-    return { post: await publishPost(needId(data && data.id)) };
+    const id = needId(data && data.id);
+    // v3.7 approval gate
+    const found = await db.select("blog_posts", "select=approved_at&id=eq." + id);
+    if (!found.length) throw new Error("Blog not found (it may have been deleted).");
+    if (!found[0].approved_at) throw new Error(NOT_APPROVED_MSG);
+    return { post: await publishPost(id) };
   },
 
   async "queue.unpublish"(data) {
-    return { post: await unpublishPost(needId(data && data.id), "Review") };
+    const id = needId(data && data.id);
+    await unpublishPost(id, "Review");
+    // v3.7: back in Review = needs a fresh approval before it goes live again.
+    const rows = await db.update("blog_posts", "id=eq." + id, { approved_at: null });
+    return { post: rows[0] };
   },
 
   async "queue.delete"(data) {
@@ -374,14 +598,14 @@ const actions = {
     if (!prompt) throw new Error("Empty prompt.");
     const s = await loadSettings().catch(() => ({}));
     const provider = s.ai_provider === "gemini" ? "gemini" : "claude";
-    // v3.6: wrap SEO-related tasks ("blog", "polish", "seo", "research")
+    // v3.7: wrap SEO-related tasks ("blog", "polish", "seo", "research")
     // with the National SEO Playbook. Other tasks pass through unchanged.
     const fullPrompt = withPlaybook(data.task, prompt, s.seo_playbook);
     const text = await askAI({ provider, model: s.ai_model, prompt: fullPrompt, maxTokens: data.maxTokens });
     return { text, provider };
   },
 
-  // ---------- SEO (v3.6) ----------
+  // ---------- SEO (v3.7) ----------
   // The playbook currently in force (saved version, or the default).
   async "seo.playbook"() {
     const s = await loadSettings().catch(() => ({}));
