@@ -163,6 +163,10 @@ mark.hl-bad{background:rgba(204,51,68,.35);color:var(--text);border-radius:3px;p
 mark.hl-check{background:rgba(240,165,0,.3);color:var(--text);border-radius:3px;padding:0 2px}
 mark.flash{outline:2px solid var(--teal)}
 .rv-section{border-top:1px solid var(--bdr);padding-top:12px;margin-top:12px}
+/* v3.9: hero image pictures (Review panel + Blogs Posted) */
+.hero-box{width:100%;max-width:480px;aspect-ratio:1200/628;object-fit:cover;border-radius:7px;border:1px solid var(--bdr);display:block;background:var(--bg3)}
+.hero-thumb{width:76px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--bdr);display:block}
+.hero-missing{width:76px;height:40px;border-radius:4px;border:1px dashed var(--orange);color:var(--orange);font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:none}
 </style>
 </head>
 <body>
@@ -172,7 +176,7 @@ mark.flash{outline:2px solid var(--teal)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.8.1</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.9</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -183,6 +187,7 @@ mark.flash{outline:2px solid var(--teal)}
     <div class="slbl">Content</div>
     <div class="sitem" data-page="generator"><span class="sico">✍️</span><span class="stxt">Blog Generator</span></div>
     <div class="sitem" data-page="queue"><span class="sico">📋</span><span class="stxt">Blog Queue</span><span class="sbdg" id="bdg-q">0</span></div>
+    <div class="sitem" data-page="posted"><span class="sico">🏆</span><span class="stxt">Blogs Posted</span><span class="sbdg" id="bdg-p">0</span></div>
     <div class="sitem" data-page="ideas"><span class="sico">💡</span><span class="stxt">Blog Ideas</span><span class="sbdg" id="bdg-i">0</span></div>
   </div>
   <div class="sgrp">
@@ -195,7 +200,7 @@ mark.flash{outline:2px solid var(--teal)}
     <div class="slbl">System</div>
     <div class="sitem" data-page="settings"><span class="sico">⚙️</span><span class="stxt">Settings</span></div>
   </div>
-  <div class="sfoot"><span>Queue: <b id="sf-q">0</b><br/>Ideas: <b id="sf-i">0</b></span></div>
+  <div class="sfoot"><span>Queue: <b id="sf-q">0</b><br/>Posted: <b id="sf-p">0</b><br/>Ideas: <b id="sf-i">0</b></span></div>
 </div>
 
 <!-- MAIN -->
@@ -204,7 +209,7 @@ mark.flash{outline:2px solid var(--teal)}
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
     <span class="topbar-badge">TheGloveSOS.com</span>
-    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.8.1</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.9</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -386,6 +391,42 @@ mark.flash{outline:2px solid var(--teal)}
           </div>
         </div>
 
+        <!-- v3.9: HERO IMAGE -- shows once the blog is saved.
+             Pick a photo -> frame it -> Upload. Tool Shed crops it to
+             1200 x 628, saves a web-ready JPG in Supabase (blog-images/hero/)
+             and links it to this blog. No copying URLs. -->
+        <div id="rv-hero" class="rv-section" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+            <div style="font-family:Oswald,sans-serif;font-size:14px;color:var(--gold)">🖼 Hero Image</div>
+            <span id="rv-hero-state" class="badge b-def">No hero yet</span>
+          </div>
+          <div id="rv-hero-current" style="display:none;margin-top:8px">
+            <img id="rv-hero-img" class="hero-box" src="" alt=""/>
+            <div class="bgroup" style="margin-top:6px">
+              <a id="rv-hero-open" href="#" target="_blank" class="btn btn-out btn-xs" style="text-decoration:none">Open full size</a>
+              <button class="btn btn-out btn-xs" id="btn-hero-remove" style="color:var(--red);border-color:var(--red)">Remove</button>
+            </div>
+          </div>
+          <div class="r2" style="margin-top:8px">
+            <div class="fg"><label id="rv-hero-file-lbl">Pick a photo (JPG / PNG / WEBP)</label>
+              <input type="file" id="rv-hero-file" accept="image/jpeg,image/png,image/webp"/></div>
+            <div class="fg"><label>Alt text <span style="font-size:10px;color:var(--t3)">(describe the picture -- Google &amp; screen readers use it)</span></label>
+              <input type="text" id="rv-hero-alt" maxlength="160" placeholder="e.g. Re-laced Rawlings infield glove on a workbench"/></div>
+          </div>
+          <div id="rv-hero-frame" style="display:none">
+            <canvas id="rv-hero-canvas" class="hero-box" style="height:auto"></canvas>
+            <div class="fg" id="rv-hero-fx-wrap" style="max-width:480px;margin-top:6px"><label>Frame it: slide left / right</label><input type="range" id="rv-hero-fx" min="0" max="100" value="50"/></div>
+            <div class="fg" id="rv-hero-fy-wrap" style="max-width:480px;margin-top:6px"><label>Frame it: slide up / down</label><input type="range" id="rv-hero-fy" min="0" max="100" value="50"/></div>
+            <div class="hint" id="rv-hero-note"></div>
+          </div>
+          <div id="rv-hero-alert" style="margin-top:8px"></div>
+          <div class="bgroup">
+            <button class="btn btn-teal btn-sm" id="btn-hero-upload">&#11014; Upload &amp; Set as Hero</button>
+            <button class="btn btn-out btn-xs" id="btn-hero-alt-save" style="display:none">💾 Save Alt Text Only</button>
+          </div>
+          <div class="hint">Cropped to <b>1200 x 628</b> (the website's hero size) and saved as a web-ready JPG, usually 150-300 KB, so pages load fast.</div>
+        </div>
+
         <!-- EXTRAS -->
         <div class="bgroup rv-section">
           <button class="btn btn-gold btn-sm" id="btn-save-as-idea">💡 Save as Idea</button>
@@ -397,13 +438,13 @@ mark.flash{outline:2px solid var(--teal)}
 
   <!-- QUEUE -->
   <div class="page" id="page-queue">
-    <div class="page-hdr"><h2>Blog Queue</h2><p>Track every blog from Pending to Published to Site</p></div>
+    <div class="page-hdr"><h2>Blog Queue</h2><p>Blogs on their way to the website. Once one goes live it moves to <a href="#" id="q-to-posted" style="color:var(--teal)">Blogs Posted</a>.</p></div>
     <div class="stats-row stats-5">
       <div class="stat-box"><div class="stat-num" id="q-total">0</div><div class="stat-lbl">Total</div></div>
       <div class="stat-box"><div class="stat-num" id="q-pending">0</div><div class="stat-lbl">Pending</div></div>
       <div class="stat-box"><div class="stat-num" id="q-approved">0</div><div class="stat-lbl">Approved</div></div>
       <div class="stat-box"><div class="stat-num" id="q-scheduled">0</div><div class="stat-lbl">Scheduled</div></div>
-      <div class="stat-box"><div class="stat-num" id="q-published">0</div><div class="stat-lbl">Published</div></div>
+      <div class="stat-box" id="q-pub-box" style="cursor:pointer" title="See them in Blogs Posted"><div class="stat-num" id="q-published">0</div><div class="stat-lbl">Live &rarr; Posted</div></div>
     </div>
     <div id="queue-sync-warn" class="sync-warn">⚠️ Some items below haven't synced to Supabase yet. Click "Sync Supabase" to retry.</div>
     <div class="card" style="padding:12px">
@@ -411,7 +452,7 @@ mark.flash{outline:2px solid var(--teal)}
         <input type="text" id="q-search" placeholder="Search..." style="flex:1;min-width:140px"/>
         <select id="q-filter" style="width:155px">
           <option value="">All Status</option>
-          <option>Pending</option><option>Review</option><option>Approved</option><option>Scheduled</option><option>Published to Site</option>
+          <option>Pending</option><option>Review</option><option>Approved</option><option>Scheduled</option>
         </select>
         <button class="btn btn-out btn-sm" id="btn-sync">&#8595; Sync Supabase</button>
         <button class="btn btn-teal btn-sm" id="btn-pub-all">🚀 Publish Approved</button>
@@ -421,6 +462,30 @@ mark.flash{outline:2px solid var(--teal)}
           <th>Status</th><th>Title</th><th>Category</th><th>Words</th><th>Publish Date</th><th>Actions</th>
         </tr></thead><tbody id="queue-body"></tbody></table>
       </div>
+    </div>
+  </div>
+
+  <!-- v3.9: BLOGS POSTED -- every blog that's live on the website. -->
+  <div class="page" id="page-posted">
+    <div class="page-hdr"><h2>Blogs Posted</h2><p>Every blog that's live on the website -- your permanent record</p></div>
+    <div class="stats-row stats-4">
+      <div class="stat-box"><div class="stat-num" id="p-total">0</div><div class="stat-lbl">Live Blogs</div></div>
+      <div class="stat-box"><div class="stat-num" id="p-month">0</div><div class="stat-lbl">Posted This Month</div></div>
+      <div class="stat-box"><div class="stat-num" id="p-words">0</div><div class="stat-lbl">Words Published</div></div>
+      <div class="stat-box"><div class="stat-num" id="p-nohero">0</div><div class="stat-lbl">Missing Hero</div></div>
+    </div>
+    <div class="card" style="padding:12px">
+      <div class="bgroup" style="margin-bottom:12px">
+        <input type="text" id="p-search" placeholder="Search title or category..." style="flex:1;min-width:140px"/>
+        <select id="p-sort" style="width:155px"><option value="new">Newest first</option><option value="old">Oldest first</option></select>
+        <button class="btn btn-out btn-sm" id="btn-sync-posted">&#8595; Sync Supabase</button>
+      </div>
+      <div class="tbl-wrap">
+        <table><thead><tr>
+          <th>Hero</th><th>Title</th><th>Category</th><th>Words</th><th>Went Live</th><th>Actions</th>
+        </tr></thead><tbody id="posted-body"></tbody></table>
+      </div>
+      <div class="hint" style="margin-top:8px"><b>Open</b> lets you swap the hero picture. To change the wording, <b>Unpublish</b> first -- it goes back to the Blog Queue as a draft.</div>
     </div>
   </div>
 
@@ -600,7 +665,7 @@ mark.flash{outline:2px solid var(--teal)}
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
     <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.8.1</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-13</span></div>
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.9</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-13</span></div>
         <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
       </div>
     </div>
@@ -1143,20 +1208,23 @@ function postToQueueItem(b){
     uploadStatus:b.upload_status||"Pending",wordCount:b.word_count,publishDate:b.publish_date||"",
     blogUrl:b.blog_url,createdAt:b.created_at,isPublished:!!b.is_published,
     publishedAt:b.published_at,heroUrl:b.featured_image_url||"",
-    approvedAt:b.approved_at||null,ideaId:b.idea_id||null};   // v3.7
+    approvedAt:b.approved_at||null,ideaId:b.idea_id||null,   // v3.7
+    altText:b.alt_text||""};                                  // v3.9
 }
 
 // ═══════════════════════════════════════════════════════
 // COUNTS
 // ═══════════════════════════════════════════════════════
 function updateCounts(){
-  var q=QUEUE.length;
+  // v3.9: the Queue = blogs NOT live yet. Live ones count as "Posted".
+  var q=QUEUE.filter(function(x){return !x.isPublished;}).length;
   var i=IDEAS.filter(function(x){return x.status==="New"||x.status==="Pending";}).length;
-  var pub=QUEUE.filter(function(x){return x.uploadStatus==="Published to Site";}).length;
+  var pub=QUEUE.filter(function(x){return x.isPublished;}).length;
   var app=QUEUE.filter(function(x){return x.uploadStatus==="Approved";}).length;
   ["bdg-q","sf-q","h-queue","q-total"].forEach(function(id){txt(id,q);});
   ["bdg-i","sf-i","h-ideas"].forEach(function(id){txt(id,i);});
   txt("h-pub",pub); txt("h-app",app);
+  ["bdg-p","sf-p","p-total"].forEach(function(id){txt(id,pub);}); // v3.9
   txt("q-pending",QUEUE.filter(function(x){return x.uploadStatus==="Pending"||x.uploadStatus==="Review";}).length);
   txt("q-approved",app);
   txt("q-scheduled",QUEUE.filter(function(x){return x.uploadStatus==="Scheduled";}).length);
@@ -1184,7 +1252,8 @@ function updateCounts(){
 var PAGE_META={
   home:{t:"Home",s:"Welcome to the Tool Shed"},
   generator:{t:"Blog Generator",s:"Generate complete SEO-optimized blog content"},
-  queue:{t:"Blog Queue",s:"Track all blogs from Pending to Published to Site"},
+  queue:{t:"Blog Queue",s:"Blogs on their way to the website"},
+  posted:{t:"Blogs Posted",s:"Every blog that's live on the website"},
   ideas:{t:"Blog Ideas",s:"Ideas save to Supabase"},
   newsletter:{t:"Newsletter",s:"Auto-build monthly newsletter from top blogs"},
   research:{t:"Research Hub",s:"Find trending topics to fuel your content"},
@@ -1200,6 +1269,7 @@ function navTo(page){
   var m=PAGE_META[page]||{t:page,s:""};
   txt("page-title",m.t);txt("page-sub",m.s);
   if(page==="queue")renderQueue();
+  if(page==="posted")renderPosted(); // v3.9
   if(page==="ideas")renderIdeas();
   if(page==="images")fillAttachList();
   if(page==="generator"){
@@ -1790,6 +1860,7 @@ function renderReview(){
   G("btn-cancel-edit").style.display=EDITING?"":"none";
   G("rv-edit").style.display=EDITING?"block":"none";
   G("rv-after").style.display=approved&&!live?"block":"none";
+  renderHero(); // v3.9
   if(approved&&!live){
     txt("rv-after-msg",s==="Scheduled"&&GEN.publishDate
       ?"Scheduled for "+GEN.publishDate+" -- it goes live at 7 AM Eastern that day. Change the day below if you need to."
@@ -1804,6 +1875,8 @@ function resetReviewPanel(){
   // Wipe the last blog's fact check so it can't be mistaken for this one's.
   if(G("fc-summary"))G("fc-summary").innerHTML="";
   if(G("fc-list"))G("fc-list").innerHTML="";
+  clearHeroPicker(); // v3.9
+  if(G("rv-hero-alt"))G("rv-hero-alt").value="";
 }
 // The editor's live word count + meta length.
 function updateEditCounts(){
@@ -1895,14 +1968,14 @@ G("btn-schedule").addEventListener("click",async function(){
   try{
     var d=await API("queue.update",{id:GEN.postId,changes:{publish_date:day,upload_status:"Scheduled"}});
     applyPostToGen(d.post);upsertQueueItem(d.post);renderReview();
-    alert2("rv-alert","OK: Scheduled for "+esc(day)+". It goes live at 7 AM Eastern that day. Next: add a hero image in Image Studio.","ok");
+    alert2("rv-alert","OK: Scheduled for "+esc(day)+". It goes live at 7 AM Eastern that day."+(GEN.heroImageURL?"":" Next: add a hero image just below."),"ok");
   }catch(e){alert2("rv-alert","ERROR: "+esc(e.message),"er");}
   finally{setBtn("btn-schedule",false,"&#128197; Schedule It");}
 });
 G("btn-go-queue").addEventListener("click",function(){navTo("queue");});
 
 // Open a saved blog from the Blog Queue in the Review panel.
-async function openForReview(id){
+async function openForReview(id,toHero){ // v3.9: toHero = jump straight to the Hero Image box
   var d;
   try{d=await API("queue.get",{id:id});}
   catch(e){alert("Couldn't open that blog: "+e.message);renderQueue();return;}
@@ -1917,7 +1990,7 @@ async function openForReview(id){
     socialCaption:p.social_caption||"",internalLinks:p.internal_links||"",externalLinks:p.external_links||"",
     publishDate:p.publish_date||"",source:p.source||"AI",createdAt:p.created_at,
     primaryKeyword:String(p.seo_keywords||"").split(",")[0].trim().toLowerCase(),
-    postId:p.id,status:p.upload_status,isPublished:!!p.is_published,
+    postId:p.id,status:p.upload_status,isPublished:!!p.is_published,altText:p.alt_text||"", // v3.9
     factCheck:rv.fact_check||null,factStale:false,factError:"",notes:"",mode:"write"};
   GEN_IDEA_ID=p.idea_id||null;
   DOCS.gen=Array.isArray(rv.source_docs)?rv.source_docs:[];
@@ -1930,7 +2003,7 @@ async function openForReview(id){
   navTo("generator");
   fillOutputs();runSeoCheck();
   alert2("g-alert","Opened \""+esc(p.title)+"\" from the Blog Queue. Review it below. (Clicking Generate would write a NEW blog.)","in");
-  G("review-card").scrollIntoView({behavior:"smooth",block:"start"});
+  (toHero?G("rv-hero"):G("review-card")).scrollIntoView({behavior:"smooth",block:"start"});
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1970,16 +2043,17 @@ G("btn-to-image-studio").addEventListener("click", function(){
 // ═══════════════════════════════════════════════════════
 function renderQueue(){
   var srch=(val("q-search")||"").toLowerCase(),fil=G("q-filter").value;
-  var data=QUEUE.filter(function(b){return(!srch||(b.title||"").toLowerCase().includes(srch)||(b.category||"").toLowerCase().includes(srch))&&(!fil||b.uploadStatus===fil);});
+  // v3.9: live blogs live in the Blogs Posted tab now, not here.
+  var data=QUEUE.filter(function(b){return !b.isPublished&&(!srch||(b.title||"").toLowerCase().includes(srch)||(b.category||"").toLowerCase().includes(srch))&&(!fil||b.uploadStatus===fil);});
   var tb=G("queue-body");
-  if(!data.length){tb.innerHTML="<tr><td colspan='6' style='text-align:center;color:var(--t3);padding:28px'>No blogs yet -- generate your first one!</td></tr>";updateCounts();return;}
+  if(!data.length){tb.innerHTML="<tr><td colspan='6' style='text-align:center;color:var(--t3);padding:28px'>Nothing waiting -- generate your next one! (Live blogs are in Blogs Posted.)</td></tr>";updateCounts();return;}
   var bm={"Pending":"b-pen","Review":"b-rev","Approved":"b-app","Scheduled":"b-sch","Published to Site":"b-pub"};
   var ctl="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:3px 5px;border-radius:5px;font-size:11px";
   tb.innerHTML=data.map(function(b){
     // Little picture icon: green = hero image attached, orange = missing.
     var hero=b.heroUrl
       ?"<a href='"+esc(b.heroUrl)+"' target='_blank' title='Hero image attached' style='color:var(--green,#22c55e);text-decoration:none'>&#128247;</a>"
-      :"<span title='No hero image yet -- add one in Image Studio' style='color:var(--orange);font-size:11px'>&#128247;?</span>";
+      :"<span class='q-hero-add' data-id='"+b.id+"' title='No hero image yet -- click to add one' style='color:var(--orange);font-size:11px;cursor:pointer'>&#128247;?</span>";
     // "view" link is built from Settings > Site URL, so switching domains updates every link.
     var siteUrl=(ST.site||"https://theglovesos.com").replace(/\/+$/,"")+"/blog/"+b.slug;
     var live=b.isPublished&&b.slug?" <a href='"+esc(siteUrl)+"' target='_blank' title='View on site' style='font-size:11px;color:var(--teal)'>view</a>":"";
@@ -2032,6 +2106,10 @@ function renderQueue(){
       try{ var d=await API("queue.update",{id:id,changes:{publish_date:day||null}}); replaceItem(d.post); }
       catch(e){ alert("Couldn't save the upload day: "+e.message); renderQueue(); }
     });
+  });
+  // v3.9: the orange camera = "no hero yet" -- click it to open the blog and add one.
+  document.querySelectorAll(".q-hero-add").forEach(function(el){
+    el.addEventListener("click",function(){openForReview(this.getAttribute("data-id"),true);});
   });
   // v3.7: REVIEW -- open this blog in the Review & Approve panel.
   document.querySelectorAll(".q-rev-btn").forEach(function(btn){
@@ -2427,7 +2505,7 @@ async function resizeImageFile(file,o){
   ctx.drawImage(img,sx,sy,sw,sh,0,0,tw,th);
   URL.revokeObjectURL(img.src);
   var type=o.type||"image/jpeg";
-  var dataUrl=c.toDataURL(type,0.86);
+  var dataUrl=c.toDataURL(type,o.quality||0.86); // v3.9: o.quality lets heroes save smaller
   // Keep uploads comfortably under the 4 MB limit.
   if(type==="image/jpeg"&&dataUrl.length>4000000)dataUrl=c.toDataURL(type,0.72);
   return{dataUrl:dataUrl,w:tw,h:th,srcW:iw,srcH:ih};
@@ -2505,6 +2583,225 @@ G("btn-preview-url").addEventListener("click",function(){
   var u=val("img-url");if(!u){alert("No URL yet.");return;}
   G("img-url-img").src=u;show("img-url-preview");
 });
+
+// ═══════════════════════════════════════════════════════
+// HERO IMAGE in the Review panel (v3.9)
+// ───────────────────────────────────────────────────────
+// The picture at the top of a blog on the website.
+//   1. Pick a photo   2. Slide to frame it   3. Upload
+// Your browser crops it to 1200 x 628 and shrinks it to a web-ready
+// JPG. The back office saves it in Supabase Storage
+// (blog-images/hero/...) and writes its link into the blog's
+// featured_image_url -- the exact spot the website reads.
+// ═══════════════════════════════════════════════════════
+var HERO_SIZE={w:1200,h:628};   // the website's hero size
+var HERO_QUALITY=0.82;          // JPG quality: sharp, but small files
+
+// Show the current hero (if any) and the right buttons.
+function renderHero(){
+  var box=G("rv-hero");if(!box)return;
+  var saved=!!(GEN&&GEN.postId);
+  box.style.display=saved?"block":"none";   // needs a saved blog to attach to
+  if(!saved)return;
+  var url=GEN.heroImageURL||"";
+  var st=G("rv-hero-state");
+  if(url){st.className="badge b-app";st.textContent="Hero attached";}
+  else{st.className="badge b-pen";st.textContent="No hero yet";}
+  G("rv-hero-current").style.display=url?"block":"none";
+  if(url){G("rv-hero-img").src=url;G("rv-hero-img").alt=GEN.altText||GEN.title||"";G("rv-hero-open").href=url;}
+  txt("rv-hero-file-lbl",url?"Replace it with a new photo (JPG / PNG / WEBP)":"Pick a photo (JPG / PNG / WEBP)");
+  // Pre-fill alt text: the saved one, or the blog title as a starting point.
+  var alt=G("rv-hero-alt");
+  if(alt&&!alt.value)alt.value=GEN.altText||GEN.title||"";
+  G("btn-hero-alt-save").style.display=url?"":"none";
+}
+
+// Forget the picked file + preview (after upload, or a new blog).
+function clearHeroPicker(){
+  if(!G("rv-hero-file"))return;
+  G("rv-hero-file").value="";
+  G("rv-hero-fx").value=50;G("rv-hero-fy").value=50;
+  hide("rv-hero-frame");
+  if(G("rv-hero-alert"))G("rv-hero-alert").innerHTML="";
+}
+
+// Live preview of the crop while you slide.
+async function drawHeroPreview(){
+  var f=G("rv-hero-file").files[0];if(!f){hide("rv-hero-frame");return;}
+  try{
+    var r=await resizeImageFile(f,{w:HERO_SIZE.w,h:HERO_SIZE.h,fit:"cover",
+      fx:G("rv-hero-fx").value/100,fy:G("rv-hero-fy").value/100,
+      canvas:G("rv-hero-canvas"),quality:HERO_QUALITY});
+    show("rv-hero-frame");
+    // Only one direction ever gets trimmed -- hide the slider that does nothing.
+    var wider=(r.srcW/r.srcH)>(HERO_SIZE.w/HERO_SIZE.h);
+    G("rv-hero-fx-wrap").style.display=wider?"":"none";
+    G("rv-hero-fy-wrap").style.display=wider?"none":"";
+    // dataUrl is base64: every 4 characters = 3 bytes.
+    var kb=Math.round(r.dataUrl.length*0.75/1024);
+    var note="Final: "+r.w+" x "+r.h+"px, about "+kb+" KB";
+    if(r.srcW<r.w||r.srcH<r.h)note+=" -- <span style='color:var(--orange)'>your photo is smaller than this, so it may look a little soft</span>";
+    G("rv-hero-note").innerHTML=note;
+  }catch(e){alert2("rv-hero-alert","ERROR: "+esc(e.message),"er");}
+}
+G("rv-hero-file").addEventListener("change",drawHeroPreview);
+G("rv-hero-fx").addEventListener("input",drawHeroPreview);
+G("rv-hero-fy").addEventListener("input",drawHeroPreview);
+
+// After Supabase sends the blog back, update everything that shows it.
+function applyHeroPost(post){
+  GEN.heroImageURL=post.featured_image_url||"";
+  GEN.altText=post.alt_text||"";
+  upsertQueueItem(post);
+  renderHero();
+}
+
+// UPLOAD & SET AS HERO
+G("btn-hero-upload").addEventListener("click",async function(){
+  if(!GEN||!GEN.postId){alert2("rv-hero-alert","Save the blog first, then add its hero.","er");return;}
+  var f=G("rv-hero-file").files[0];
+  if(!f){alert2("rv-hero-alert","Pick a photo first.","er");return;}
+  if(f.size>25*1024*1024){alert2("rv-hero-alert","That photo is over 25 MB -- export a smaller copy first.","er");return;}
+  if(GEN.isPublished&&!confirm("This blog is LIVE. The new picture will show on the website right away. Continue?"))return;
+  var alt=val("rv-hero-alt")||GEN.title||"";
+  setBtn("btn-hero-upload",true,"... Uploading...");
+  try{
+    var r=await resizeImageFile(f,{w:HERO_SIZE.w,h:HERO_SIZE.h,fit:"cover",
+      fx:G("rv-hero-fx").value/100,fy:G("rv-hero-fy").value/100,quality:HERO_QUALITY});
+    // File name = the blog's slug, so you can tell files apart in Supabase.
+    var d=await API("image.upload",{base64:r.dataUrl,contentType:"image/jpeg",folder:"hero",
+      name:GEN.slug||GEN.title,attachToPostId:GEN.postId,altText:alt});
+    if(!d.post)throw new Error("The picture uploaded, but couldn't be linked to this blog. Try again.");
+    clearHeroPicker();
+    applyHeroPost(d.post);
+    alert2("rv-hero-alert","OK: Hero saved in Supabase and linked to this blog"+(GEN.isPublished?" -- it's on the website now.":". It'll show when the blog goes live."),"ok");
+  }catch(e){alert2("rv-hero-alert","ERROR: Hero not saved -- "+esc(e.message),"er");}
+  finally{setBtn("btn-hero-upload",false,"&#11014; Upload &amp; Set as Hero");}
+});
+
+// SAVE ALT TEXT ONLY (keep the same picture)
+G("btn-hero-alt-save").addEventListener("click",async function(){
+  if(!GEN||!GEN.postId)return;
+  setBtn("btn-hero-alt-save",true,"... Saving...");
+  try{
+    var d=await API("queue.update",{id:GEN.postId,changes:{alt_text:val("rv-hero-alt")}});
+    applyHeroPost(d.post);
+    alert2("rv-hero-alert","OK: Alt text saved.","ok");
+  }catch(e){alert2("rv-hero-alert","ERROR: "+esc(e.message),"er");}
+  finally{setBtn("btn-hero-alt-save",false,"&#128190; Save Alt Text Only");}
+});
+
+// REMOVE the hero from this blog (the file stays in Supabase, just unlinked).
+G("btn-hero-remove").addEventListener("click",async function(){
+  if(!GEN||!GEN.postId)return;
+  if(!confirm("Remove the hero picture from this blog?"+(GEN.isPublished?"\n\nIt's LIVE -- the website will show no picture.":"")))return;
+  setBtn("btn-hero-remove",true,"...");
+  try{
+    var d=await API("queue.update",{id:GEN.postId,changes:{featured_image_url:""}});
+    G("rv-hero-alt").value="";
+    applyHeroPost(d.post);
+    alert2("rv-hero-alert","OK: Hero removed.","ok");
+  }catch(e){alert2("rv-hero-alert","ERROR: "+esc(e.message),"er");}
+  finally{setBtn("btn-hero-remove",false,"Remove");}
+});
+
+// ═══════════════════════════════════════════════════════
+// BLOGS POSTED (v3.9)
+// ───────────────────────────────────────────────────────
+// Every blog that's live on the website (is_published = true).
+// Same list the Queue uses (QUEUE) -- just the live ones, newest first.
+// When the 7 AM auto-publisher (or Publish Now) puts a blog live,
+// it shows up here the next time the app syncs with Supabase.
+// ═══════════════════════════════════════════════════════
+// "2026-10-14T11:00:00Z" -> "Oct 14, 2026" (Ohio time)
+function fmtLiveDate(iso){
+  if(!iso)return"--";
+  var d=new Date(iso);if(isNaN(d))return"--";
+  return d.toLocaleDateString("en-US",{timeZone:"America/New_York",month:"short",day:"numeric",year:"numeric"});
+}
+// "2026-10" for the month a blog went live (Ohio time) -- for "This Month".
+function liveMonth(iso){
+  if(!iso)return"";
+  return new Intl.DateTimeFormat("en-CA",{timeZone:"America/New_York",year:"numeric",month:"2-digit"}).format(new Date(iso));
+}
+function postedUrl(b){
+  return b.blogUrl||((ST.site||"https://theglovesos.com").replace(/\/+$/,"")+"/blog/"+b.slug);
+}
+
+function renderPosted(){
+  var tb=G("posted-body");if(!tb)return;
+  var all=QUEUE.filter(function(b){return b.isPublished;});
+  // Stats (count every live blog, not just the search results)
+  var thisMonth=liveMonth(new Date().toISOString());
+  txt("p-total",all.length);
+  txt("p-month",all.filter(function(b){return liveMonth(b.publishedAt)===thisMonth;}).length);
+  txt("p-words",all.reduce(function(n,b){return n+(Number(b.wordCount)||0);},0).toLocaleString());
+  txt("p-nohero",all.filter(function(b){return !b.heroUrl;}).length);
+
+  var srch=(val("p-search")||"").toLowerCase(),oldFirst=val("p-sort")==="old";
+  var data=all.filter(function(b){return !srch||(b.title||"").toLowerCase().includes(srch)||(b.category||"").toLowerCase().includes(srch);});
+  data.sort(function(a,b){
+    var x=new Date(a.publishedAt||0)-new Date(b.publishedAt||0);
+    return oldFirst?x:-x;
+  });
+  if(!data.length){
+    tb.innerHTML="<tr><td colspan='6' style='text-align:center;color:var(--t3);padding:28px'>"+
+      (all.length?"No live blogs match that search.":"No blogs live yet. When one goes live it lands here automatically.")+"</td></tr>";
+    return;
+  }
+  tb.innerHTML=data.map(function(b){
+    var url=postedUrl(b);
+    var pic=b.heroUrl
+      ?"<a href='"+esc(b.heroUrl)+"' target='_blank' title='Open hero picture'><img class='hero-thumb' loading='lazy' src='"+esc(b.heroUrl)+"' alt='"+esc(b.altText||b.title)+"'/></a>"
+      :"<button class='hero-missing p-open-btn' data-id='"+b.id+"' data-hero='1' title='No hero picture -- click to add one'>+ hero</button>";
+    return"<tr>"+
+      "<td>"+pic+"</td>"+
+      "<td style='max-width:260px'><div style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500'>"+esc(b.title)+"</div>"+
+        "<div style='font-size:10px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>/blog/"+esc(b.slug||"")+"</div></td>"+
+      "<td style='color:var(--t3)'>"+esc(b.category||"--")+"</td>"+
+      "<td style='color:var(--t3)'>"+(b.wordCount||"--")+"</td>"+
+      "<td style='color:var(--t2);white-space:nowrap'>"+fmtLiveDate(b.publishedAt)+"</td>"+
+      "<td><div style='display:flex;gap:4px;flex-wrap:wrap'>"+
+        "<a class='btn btn-xs btn-teal' href='"+esc(url)+"' target='_blank' style='text-decoration:none'>View Live</a>"+
+        "<button class='p-open-btn btn btn-xs btn-pur' data-id='"+b.id+"' title='Open it -- swap the hero picture, read the fact check'>Open</button>"+
+        "<button class='p-copy-btn btn btn-xs btn-out' data-url='"+esc(url)+"' title='Copy the link to share'>Copy Link</button>"+
+        "<button class='p-unpub-btn btn btn-xs btn-out' data-id='"+b.id+"' title='Take it off the website (back to the Queue)'>Unpublish</button>"+
+      "</div></td></tr>";
+  }).join("");
+
+  document.querySelectorAll(".p-open-btn").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      this.disabled=true;
+      openForReview(this.getAttribute("data-id"),this.getAttribute("data-hero")==="1");
+    });
+  });
+  document.querySelectorAll(".p-copy-btn").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var u=this.getAttribute("data-url"),me=this;
+      navigator.clipboard.writeText(u).then(function(){me.textContent="Copied!";setTimeout(function(){me.textContent="Copy Link";},1500);});
+    });
+  });
+  document.querySelectorAll(".p-unpub-btn").forEach(function(btn){
+    btn.addEventListener("click",async function(){
+      var id=this.getAttribute("data-id"),b=QUEUE.find(function(x){return String(x.id)===String(id);});
+      if(!b||!confirm("Take \""+b.title+"\" off the website?\n\nIt goes back to the Blog Queue as a draft (Review) so you can edit and re-approve it."))return;
+      this.disabled=true;this.textContent="...";
+      try{ var d=await API("queue.unpublish",{id:id}); upsertQueueItem(d.post); renderPosted(); }
+      catch(e){ alert("Unpublish failed: "+e.message); renderPosted(); }
+    });
+  });
+}
+G("p-search").addEventListener("input",renderPosted);
+G("p-sort").addEventListener("change",renderPosted);
+G("btn-sync-posted").addEventListener("click",async function(){
+  setBtn("btn-sync-posted",true,"... Syncing...");
+  try{await loadQueueFromSB();renderPosted();updateCounts();}
+  catch(e){alert("Sync failed: "+e.message);}
+  finally{setBtn("btn-sync-posted",false,"&#8595; Sync Supabase");}
+});
+// Queue page shortcuts to Blogs Posted
+G("q-to-posted").addEventListener("click",function(e){e.preventDefault();navTo("posted");});
+G("q-pub-box").addEventListener("click",function(){navTo("posted");});
 
 // ═══════════════════════════════════════════════════════
 // INIT
