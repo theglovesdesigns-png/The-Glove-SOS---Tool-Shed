@@ -176,7 +176,7 @@ mark.flash{outline:2px solid var(--teal)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.9</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v4.0</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -209,7 +209,7 @@ mark.flash{outline:2px solid var(--teal)}
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
     <span class="topbar-badge">TheGloveSOS.com</span>
-    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.9</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v4.0</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -257,7 +257,7 @@ mark.flash{outline:2px solid var(--teal)}
       <div class="fg"><label>Mode</label>
         <select id="g-mode">
           <option value="write">🤖 Write it for me -- follow my notes</option>
-          <option value="polish">✍️ Use my words -- polish my draft below</option>
+          <option value="polish">✍️ Use my words -- polish + SEO my draft</option>
         </select></div>
       <div class="fg"><label id="g-det-label">Details &amp; Context</label>
         <textarea id="g-det" rows="6" placeholder="Angle, key points, audience, seasonal tie-ins... Paste links and they'll be in the blog."></textarea>
@@ -336,6 +336,12 @@ mark.flash{outline:2px solid var(--teal)}
         </div>
         <div id="seo-checks" style="font-size:13px;line-height:1.7"></div>
         <div class="hint" style="margin-top:6px">Aim for <b>B (80+) or better</b> before queuing. Edit the SEO tab text or regenerate to raise the score.</div>
+        <!-- v4.0: re-do the meta / keywords / tags / excerpt / caption for this blog -->
+        <div class="bgroup" style="margin-top:8px">
+          <button class="btn btn-pur btn-sm" id="btn-seo-refresh">🔁 Refresh SEO Pack</button>
+          <span class="hint" style="margin:0">Rewrites the SEO title, meta, keywords, tags, excerpt &amp; social caption from the blog as it is now. Your blog text isn't touched.</span>
+        </div>
+        <div id="seo-refresh-alert" style="margin-top:8px"></div>
       </div>
       <!-- v3.7: REVIEW & APPROVE -- replaces the old "Save to Queue" bar.
            Flow: Generate -> draft auto-saves as "Review" -> fact check ->
@@ -366,6 +372,15 @@ mark.flash{outline:2px solid var(--teal)}
           <div class="fg"><label>Blog Content (Markdown)</label>
             <textarea id="rv-content" rows="22" style="font-family:monospace;font-size:12px"></textarea>
             <div class="hint" id="rv-wc"></div></div>
+          <!-- v4.0: the SEO + social fields are editable too -->
+          <div class="r2">
+            <div class="fg"><label>Slug <span style="font-size:10px;color:var(--t3)">(web address: /blog/...)</span></label><input type="text" id="rv-slug"/></div>
+            <div class="fg"><label>Keywords <span style="font-size:10px;color:var(--t3)">(comma-separated, primary keyword FIRST)</span></label><input type="text" id="rv-keywords"/></div>
+          </div>
+          <div class="r2">
+            <div class="fg"><label>Tags <span style="font-size:10px;color:var(--t3)">(comma-separated)</span></label><textarea id="rv-tags" rows="2"></textarea></div>
+            <div class="fg"><label>Social Caption</label><textarea id="rv-caption" rows="4"></textarea></div>
+          </div>
         </div>
 
         <div class="fg rv-section"><label>Review Notes <span style="font-size:10px;color:var(--t3)">(optional, private -- never shows on the website)</span></label>
@@ -388,6 +403,7 @@ mark.flash{outline:2px solid var(--teal)}
             <input type="date" id="push-date" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:8px 10px;border-radius:7px;font-size:13px;width:auto"/>
             <button class="btn btn-teal" id="btn-schedule">📅 Schedule It</button>
             <button class="btn btn-out btn-sm" id="btn-go-queue">📋 Go to Blog Queue</button>
+            <button class="btn btn-pur btn-sm" id="btn-unlock-edit" title="Take it off the schedule and back to Review so you can tweak it">✏️ Unschedule &amp; Edit</button>
           </div>
         </div>
 
@@ -665,7 +681,7 @@ mark.flash{outline:2px solid var(--teal)}
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
     <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.9</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-13</span></div>
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v4.0</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-13</span></div>
         <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
       </div>
     </div>
@@ -1504,15 +1520,27 @@ G("btn-generate").addEventListener("click",async function(){
   if(mode==="polish"){
     // ✍️ USE MY WORDS: JB wrote it. Proofread + smooth only.
     if(details.split(/\s+/).length<60){alert2("g-alert","'Use my words' needs your draft in the box (at least a few paragraphs). Or switch Mode to 'Write it for me'.","er");setBtn("btn-generate",false," Generate Master Blog");return;}
-    promptA="You are JB's copy editor for TheGloveSOS.com (national glove repair directory). JB wrote the blog draft below himself.\n\n"+
-      "YOUR JOB: fix spelling, grammar and punctuation; smooth awkward sentences so it reads well; split very long paragraphs; add ## and ### section headers where they naturally fit.\n\n"+
-      "STRICT RULES:\n- It must still sound exactly like JB. Keep his words, slang, opinions, stories and order of points.\n"+
-      "- Do NOT add new facts, stats, tips, or claims. Do NOT remove any of his points.\n"+
-      "- Keep the length within about 15% of his draft.\n"+
-      "- Keep signature phrases exactly (for example: \"don't let the glove control you\").\n"+
-      "- Do not add a title line at the top."+linkRule+
-      "\n\nBlog title: "+title+"\nCategory: "+cat+
-      "\n\nReturn EXACTLY this, with the === marker on its own line:\n\n===BLOG_CONTENT===\n[the polished blog in markdown]\n\n"+
+    // v4.0: JB's words + REAL SEO. The draft is his; the AI is his editor AND his SEO guy.
+    promptA="You are JB's editor and SEO specialist for TheGloveSOS.com (national glove repair directory). JB wrote the blog draft below himself. "+
+      "Your job: polish it AND make it rank on Google -- while it still sounds 100% like JB.\n\n"+
+      "STEP 1 -- PICK THE PRIMARY KEYWORD: the ONE phrase (2-5 words, lowercase) that people across the US actually type into Google "+
+      "and that this draft truly answers (examples: \"glove repair near me\", \"how to break in a baseball glove\", \"baseball glove relacing\"). "+
+      "No city or state names.\n\n"+
+      "STEP 2 -- POLISH: fix spelling, grammar and punctuation; smooth awkward sentences; split long paragraphs into 2-4 sentence paragraphs.\n\n"+
+      "STEP 3 -- SEO (do ALL of these):\n"+
+      "- Use the primary keyword word-for-word in the FIRST TWO SENTENCES. You may lightly reword JB's opening, or add ONE short lead-in sentence that sums up his point, so the first lines answer what the reader searched for.\n"+
+      "- Break it into 4-7 ## sections with headings phrased the way people search (often questions). At least ONE ## heading contains the primary keyword. Use ### sub-headings where helpful.\n"+
+      "- Use the primary keyword 3-5 times in total, plus 2-4 closely related phrases, only where they read naturally. Never stuff keywords.\n"+
+      "- **Bold** 2-4 of JB's key takeaways.\n"+
+      "- End with \"## Frequently Asked Questions\": 2-3 ### questions people really search about this topic. Answer each in 2-3 sentences using ONLY points JB already made in his draft (reword them; add nothing new). Skip a question if his draft can't answer it.\n"+
+      "- Finish with a 1-2 sentence call to action in JB's voice: find a trusted glove repair shop on TheGloveSOS.com (and, if it fits, repair shops can list their shop there). If JB already wrote one, polish his.\n\n"+
+      "STRICT RULES -- JB'S WORDS COME FIRST:\n"+
+      "- Keep his voice, slang, opinions, stories and the order of his points. Keep signature phrases exactly (for example: \"don't let the glove control you\").\n"+
+      "- Do NOT invent facts, stats, prices, tips, claims or stories. Do NOT drop any of his points.\n"+
+      "- Apart from the headings, FAQ, call to action and the one optional lead-in sentence, keep the length within about 15% of his draft.\n"+
+      "- Do not add a title line at the top. Markdown only."+linkRule+
+      "\n\nBlog title (JB's working title): "+title+"\nCategory: "+cat+
+      "\n\nReturn EXACTLY this, each === marker on its own line:\n\n===PRIMARY_KEYWORD===\n[the keyword]\n\n===BLOG_CONTENT===\n[the polished, SEO-ready blog in markdown]\n\n"+
       "JB'S DRAFT:\n"+details;
   }else{
     // 🤖 WRITE IT FOR ME: AI writes, but JB's notes are requirements, not suggestions.
@@ -1520,14 +1548,17 @@ G("btn-generate").addEventListener("click",async function(){
       "\n\nBLOG:\nTitle: "+title+"\nCategory: "+cat+"\nWords: "+wc+
       "\n\nJB'S NOTES -- REQUIREMENTS, NOT SUGGESTIONS: Cover every point below. Use any facts, numbers, names, quotes or stories exactly as JB gives them. Do not contradict anything he says.\n"+
       (details||"Write from expert perspective")+linkRule+accuracyRule+sourceRule+
-      "\n\nReturn EXACTLY this, with the === marker on its own line:\n\n===BLOG_CONTENT===\n[Full markdown ~"+wc+" words. ## and ### headers. Real conversational voice. No title line at the top.]";
+      "\n\nReturn EXACTLY this, each === marker on its own line:\n\n===PRIMARY_KEYWORD===\n[the ONE national search phrase this blog targets, 2-5 words, lowercase]\n\n===BLOG_CONTENT===\n[Full markdown ~"+wc+" words. Primary keyword in the first two sentences and in at least one ## heading. ## and ### headers. FAQ section at the end. Real conversational voice. No title line at the top.]";
   }
   // How long may the answer be? Polish = about the draft's length; Write = the word count.
-  var targetWords=mode==="polish"?Math.round(details.split(/\s+/).length*1.2):Number(wc);
+  // v4.0: polish now adds headings + FAQ + call to action, so allow ~300 extra words.
+  var targetWords=mode==="polish"?Math.round(details.split(/\s+/).length*1.2)+300:Number(wc);
   backupForm("gen"); // v3.8: snapshot the form right before the AI call
   try{
     var tA;
-    try{ tA=await AI(promptA,Math.min(Math.round(targetWords*1.7)+400,7000),mode==="polish"?"polish":"blog"); }
+    // v4.0: roomy budget (~2.2 tokens per word + 1,000 spare). You only pay for what's used,
+    // and a cut-off answer is now caught as an error instead of saved half-done.
+    try{ tA=await AI(promptA,Math.min(Math.round(targetWords*2.2)+1000,12000),mode==="polish"?"polish":"blog"); }
     catch(e){
       // v3.8 SAFETY NET: the blog couldn't be written. Save the work first, then explain.
       setBtn("btn-generate",true,"... Saving your work...");
@@ -1536,18 +1567,19 @@ G("btn-generate").addEventListener("click",async function(){
       return;
     }
     // LINK GUARANTEE: check every pasted link made it in; add any the AI dropped.
-    var chk=ensureLinks(extr(tA,"BLOG_CONTENT")||tA,links);
+    var secA=sectionsOf(tA);   // v4.0: tolerant of **bold** or spaced === markers
+    var pkA=cleanPk(secA.PRIMARY_KEYWORD);
+    var chk=ensureLinks(secA.BLOG_CONTENT||tA,links);
     var body=chk.content;
     LINK_REPORT={total:links.length,missing:chk.missing};
     setBtn("btn-generate",true,"... Step 2 of 4: SEO &amp; social pack...");
-    var promptB="You are the SEO editor for TheGloveSOS.com (national glove repair directory).\nBlog title: "+title+"\nCategory: "+cat+"\n\nBLOG (first part):\n"+body.slice(0,3500)+"\n\nReturn EXACTLY these sections with === markers:\n\n===PRIMARY_KEYWORD===\n[the ONE national search phrase this blog targets, 2-5 words, lowercase, and it must already appear in the blog text]\n\n===SEO_TITLE===\n[50-60 chars, primary keyword near the front]\n\n===SLUG===\n[lowercase-hyphenated, includes the primary keyword, max 60 chars]\n\n===META_DESCRIPTION===\n[140-160 chars, includes the primary keyword]\n\n===KEYWORDS===\n[12 national keywords comma-separated, primary keyword first]\n\n===TAGS===\n[10 tags, lowercase-hyphenated, comma-separated]\n\n===EXCERPT===\n[2-3 sentences ~60 words]\n\n===SOCIAL_CAPTION===\n[Caption + hashtags including #TheGloveSOS #GloveRepair]\n\n===HERO_IMAGE_PROMPT===\n[Detailed: baseball/softball glove, moody teal lighting, dark atmosphere, landscape 1200x628]\n\n===SOCIAL_IMAGE_PROMPT===\n[Square 1080x1080, bold, teal/purple palette]\n\n===THUMBNAIL_PROMPT===\n[YouTube 1280x720, high contrast, text overlay space]\n\n===INSERT_IMAGE_PROMPTS===\nInsert 1: [prompt]\nInsert 2: [prompt]\nInsert 3: [prompt]\n\n===INTERNAL_LINKS===\n[3-4 slug suggestions]\n\n===EXTERNAL_LINKS===\n[2-3 source types]";
-    // v3.8: if the SEO pack fails, KEEP the blog that was just written.
-    // It saves as a draft with the SEO boxes blank instead of throwing it away.
-    var tB="",seoFail="";
-    try{ tB=await AI(promptB,1600,"seo"); }
+    // v4.0: the SEO pack reads the WHOLE blog, is checked by code, and
+    // gets one automatic fix-up pass if anything is off (see runSeoPack).
+    var tB="",seoFail="",seoLeft=[];
+    try{ var pack=await runSeoPack(title,cat,body,pkA); tB=pack.text; seoLeft=pack.problems; }
     catch(e){ seoFail=e.message; }
     // Stitch both answers together so parseBlog finds every section.
-    parseBlog("===BLOG_CONTENT===\n"+body+"\n\n"+tB,title,cat);
+    parseBlog("===BLOG_CONTENT===\n"+body+"\n\n"+(tB||("===PRIMARY_KEYWORD===\n"+pkA)),title,cat);
     GEN.mode=mode;
     GEN.notes=details;   // v3.7: the fact check compares the blog to your notes
     runSeoCheck(); // v3.7: grade it right away (free -- no AI call)
@@ -1559,7 +1591,8 @@ G("btn-generate").addEventListener("click",async function(){
         :"&#128279; All "+LINK_REPORT.total+" link(s) from your notes are in the blog.");
     }
     if(src.cut&&mode!=="polish")msgs.push("&#128196; Your source docs are long, so the writer read the first ~4,000 words of them.");
-    if(seoFail)msgs.push("&#9888;&#65039; The blog is written, but the SEO pack (SEO title, slug, keywords, image prompts) didn't finish: "+esc(seoFail)+". The blog is kept and saved as a draft -- fill in the meta description and excerpt with <b>Edit</b> below.");
+    if(seoFail)msgs.push("&#9888;&#65039; The blog is written, but the SEO pack didn't finish: "+esc(seoFail)+". The blog is kept and saved as a draft -- click <b>&#128257; Refresh SEO Pack</b> (under the SEO Score) to try again.");
+    else if(seoLeft.length)msgs.push("&#9888;&#65039; SEO pack is in, but a few things still need a look: "+esc(seoLeft.join("; "))+". Fix them with <b>Edit</b>, or click <b>&#128257; Refresh SEO Pack</b>.");
     if(msgs.length)alert2("g-alert",msgs.join("<br>"),"in");  // "in" = stays on screen (ok auto-hides)
 
     // v3.7 STEP 3: save it right away as a "Review" draft -- nothing gets lost.
@@ -1577,6 +1610,8 @@ G("btn-generate").addEventListener("click",async function(){
   finally{setBtn("btn-generate",false," Generate Master Blog");}
 });
 function parseBlog(t,title,cat){
+  var S=sectionsOf(t); // v4.0: tolerant parser
+  function extr(_t,tag){return S[tag]||"";}
   var con=extr(t,"BLOG_CONTENT"),st=extr(t,"SEO_TITLE"),sl=extr(t,"SLUG"),
       md=extr(t,"META_DESCRIPTION"),kw=extr(t,"KEYWORDS"),tg=extr(t,"TAGS"),
       ex=extr(t,"EXCERPT"),cap=extr(t,"SOCIAL_CAPTION"),
@@ -1599,6 +1634,221 @@ function parseBlog(t,title,cat){
     postId:null,status:"",factCheck:null,factStale:false,factError:"",notes:""};
   fillOutputs();
 }
+
+// ═══════════════════════════════════════════════════════
+// SEO PACK ENGINE (v4.0)
+// ───────────────────────────────────────────────────────
+// The meta description, keywords, tags, excerpt and social caption
+// are WHY we write these blogs. So instead of trusting one AI answer:
+//   1. The AI writes the pack from the WHOLE blog, with strict rules.
+//   2. Code checks every field (lengths, keyword in the right spots,
+//      enough keywords/tags, hashtags...).
+//   3. Anything off goes back to the AI ONCE with the exact problems.
+//   4. Last-resort code fixes (trim, add missing hashtags/tags).
+// ═══════════════════════════════════════════════════════
+
+// Split an AI answer into its ===SECTION=== parts.
+// Tolerant of "**===META===**", "=== META ===" and stray spaces.
+//   sectionsOf("===A===\nhi\n===B===\nyo") -> {A:"hi", B:"yo"}
+function sectionsOf(t){
+  var out={},parts=String(t||"").split(/^[ \t*#]*===[ \t]*([A-Z][A-Z_ ]*?)[ \t]*===[ \t*]*$/m);
+  for(var i=1;i<parts.length;i+=2){
+    var key=parts[i].trim().replace(/\s+/g,"_");
+    if(out[key]===undefined)out[key]=String(parts[i+1]||"").trim();
+  }
+  return out;
+}
+// "  \"Glove Repair Near Me.\" " -> "glove repair near me"
+function cleanPk(s){return String(s||"").split("\n")[0].replace(/^[\s"'\[*]+|[\s"'\].*]+$/g,"").toLowerCase();}
+function wordsIn(s){return String(s||"").split(/\s+/).filter(Boolean).length;}
+
+// Tags TheGloveSOS reuses on every blog, so the site's tag pages fill up
+// (one tag used on 20 blogs beats 20 one-off tags).
+var TAG_LIBRARY=["glove-repair","glove-relacing","glove-care","glove-break-in","baseball-gloves","softball-gloves",
+  "glove-repair-near-me","find-a-glove-repair-shop","diy-glove-repair","glove-repair-tips","youth-baseball",
+  "coaches-and-parents","glove-provider-spotlight","theglovesos"];
+
+// The sections, in order, the SEO pack returns.
+var SEO_KEYS=["PRIMARY_KEYWORD","SEO_TITLE","SLUG","META_DESCRIPTION","KEYWORDS","TAGS","EXCERPT","SOCIAL_CAPTION",
+  "HERO_IMAGE_PROMPT","SOCIAL_IMAGE_PROMPT","THUMBNAIL_PROMPT","INSERT_IMAGE_PROMPTS","INTERNAL_LINKS","EXTERNAL_LINKS"];
+
+function seoPackPrompt(title,cat,body,pk){
+  return "You are the SEO editor for TheGloveSOS.com, a NATIONAL glove repair directory (players, parents and coaches in all 50 states). "+
+    "The blog below is final. Write its SEO + social pack.\n\n"+
+    "Working title: "+title+"\nCategory: "+cat+"\n"+
+    (pk?"PRIMARY KEYWORD (already chosen -- use exactly this): "+pk+"\n":"PRIMARY KEYWORD: pick the ONE phrase (2-5 words, lowercase) people across the US search that this blog answers. It must appear in the blog.\n")+
+    "\nRULES -- follow every one, and COUNT CHARACTERS before you answer:\n"+
+    "- SEO_TITLE: 50-60 characters. Primary keyword in the first half. Clear and specific, Title Case, no clickbait, no site name, no quotes.\n"+
+    "- SLUG: lowercase-hyphenated, built from the primary keyword, 3-7 words, 60 characters max, no dates or filler words.\n"+
+    "- META_DESCRIPTION: 140-160 characters (count them). Primary keyword word-for-word in the first 100 characters. Active voice, says what the reader gets, ends with a reason to click. No quotes.\n"+
+    "- KEYWORDS: 10-12, lowercase, comma-separated, no duplicates. Primary keyword FIRST, then: 3-4 long-tail versions people search (questions/how-to), 2 \"near me\" or find-a-shop versions, and related terms ONLY if the blog covers them (glove parts, positions, brands).\n"+
+    "- TAGS: 6-8, lowercase-hyphenated, comma-separated. Prefer these site tags when they fit: "+TAG_LIBRARY.join(", ")+". Add at most 2 new ones.\n"+
+    "- EXCERPT: exactly 2 sentences, 35-55 words, in JB's straight-shooter voice. Includes the primary keyword. Hook + what the reader will learn. Shown on blog cards, so no \"In this blog\".\n"+
+    "- SOCIAL_CAPTION (Facebook/Instagram): line 1 = a scroll-stopping hook under 120 characters (a question or bold statement from the blog). Then 2-3 short lines with the main takeaway in JB's voice. Then a call to action: read the full blog at TheGloveSOS.com. Then a blank line and 5-8 hashtags that MUST include #TheGloveSOS #GloveRepair plus topic hashtags (like #BaseballGlove #SoftballGlove).\n"+
+    "- Never invent facts, numbers or claims that aren't in the blog.\n\n"+
+    "THE BLOG:\n"+body.slice(0,14000)+"\n\n"+
+    "Return EXACTLY these sections, each === marker on its own line:\n\n"+
+    "===PRIMARY_KEYWORD===\n[keyword]\n\n===SEO_TITLE===\n[title]\n\n===SLUG===\n[slug]\n\n===META_DESCRIPTION===\n[meta]\n\n"+
+    "===KEYWORDS===\n[keywords]\n\n===TAGS===\n[tags]\n\n===EXCERPT===\n[excerpt]\n\n===SOCIAL_CAPTION===\n[caption]\n\n"+
+    "===HERO_IMAGE_PROMPT===\n[Detailed: baseball/softball glove, moody teal lighting, dark atmosphere, landscape 1200x628, no text]\n\n"+
+    "===SOCIAL_IMAGE_PROMPT===\n[Square 1080x1080, bold, teal/purple palette]\n\n===THUMBNAIL_PROMPT===\n[YouTube 1280x720, high contrast, space for text overlay]\n\n"+
+    "===INSERT_IMAGE_PROMPTS===\nInsert 1: [prompt]\nInsert 2: [prompt]\nInsert 3: [prompt]\n\n"+
+    "===INTERNAL_LINKS===\n[3-4 related TheGloveSOS blog topics as slugs]\n\n===EXTERNAL_LINKS===\n[2-3 trustworthy source types]";
+}
+
+// Tidy what the AI sent: lowercase keywords, hyphenated tags, no doubles.
+function normalizeSeo(S){
+  var pk=cleanPk(S.PRIMARY_KEYWORD);S.PRIMARY_KEYWORD=pk;
+  S.SEO_TITLE=String(S.SEO_TITLE||"").split("\n")[0].replace(/^["'\s]+|["'\s]+$/g,"");
+  S.META_DESCRIPTION=String(S.META_DESCRIPTION||"").replace(/\s+/g," ").replace(/^["'\s]+|["'\s]+$/g,"");
+  S.SLUG=String(S.SLUG||"").split("\n")[0].toLowerCase().replace(/[^a-z0-9\s-]/g,"").trim().replace(/[\s-]+/g,"-").slice(0,60).replace(/-+$/,"");
+  var seen={},kws=[];
+  [pk].concat(String(S.KEYWORDS||"").split(/[,\n]/)).forEach(function(k){
+    k=String(k||"").toLowerCase().replace(/^[\s\-*\d.]+|[\s.]+$/g,"").replace(/\s+/g," ");
+    if(k&&!seen[k]){seen[k]=1;kws.push(k);}
+  });
+  S.KEYWORDS=kws.slice(0,12).join(", ");
+  var tseen={},tags=[];
+  String(S.TAGS||"").split(/[,\n]/).forEach(function(t){
+    t=String(t||"").toLowerCase().replace(/^#/,"").trim().replace(/[^a-z0-9\s-]/g,"").replace(/[\s-]+/g,"-").replace(/^-|-$/g,"");
+    if(t&&!tseen[t]){tseen[t]=1;tags.push(t);}
+  });
+  S.TAGS=tags.slice(0,10).join(", ");
+  S.EXCERPT=String(S.EXCERPT||"").replace(/\s+/g," ").trim();
+  S.SOCIAL_CAPTION=String(S.SOCIAL_CAPTION||"").trim();
+  return S;
+}
+
+// What's still wrong? Each problem names its section so the fix-up
+// pass knows exactly what to rewrite.
+function seoProblems(S,body){
+  var p=[],pk=S.PRIMARY_KEYWORD||"",low=String(body||"").toLowerCase();
+  var core=pk.split(/\s+/).filter(function(w){return w.length>2&&["how","the","and","for","your","you","what","why"].indexOf(w)<0;});
+  function hasCore(x){x=String(x||"").toLowerCase();return core.length>0&&core.every(function(w){return x.indexOf(w)>=0;});}
+  if(!pk)p.push({k:"PRIMARY_KEYWORD",m:"PRIMARY_KEYWORD is missing"});
+  else if(low.indexOf(pk)<0&&!hasCore(low))p.push({k:"PRIMARY_KEYWORD",m:"PRIMARY_KEYWORD \""+pk+"\" never appears in the blog -- pick one the blog actually uses"});
+  var tl=S.SEO_TITLE.length;
+  if(tl<45||tl>62)p.push({k:"SEO_TITLE",m:"SEO_TITLE is "+tl+" characters -- must be 50-60"});
+  if(pk&&!hasCore(S.SEO_TITLE))p.push({k:"SEO_TITLE",m:"SEO_TITLE must contain the primary keyword"});
+  var ml=S.META_DESCRIPTION.length;
+  if(ml<135||ml>165)p.push({k:"META_DESCRIPTION",m:"META_DESCRIPTION is "+ml+" characters -- must be 140-160"});
+  if(pk&&S.META_DESCRIPTION.toLowerCase().indexOf(pk)<0)p.push({k:"META_DESCRIPTION",m:"META_DESCRIPTION must include \""+pk+"\" word-for-word"});
+  var kwSlug=pk.replace(/[^a-z0-9\s-]/g,"").trim().replace(/\s+/g,"-");
+  if(!S.SLUG)p.push({k:"SLUG",m:"SLUG is missing"});
+  else if(kwSlug&&S.SLUG.indexOf(kwSlug)<0)p.push({k:"SLUG",m:"SLUG must contain \""+kwSlug+"\""});
+  var kc=S.KEYWORDS?S.KEYWORDS.split(",").length:0;
+  if(kc<8)p.push({k:"KEYWORDS",m:"only "+kc+" KEYWORDS -- need 10-12"});
+  var tc=S.TAGS?S.TAGS.split(",").length:0;
+  if(tc<5)p.push({k:"TAGS",m:"only "+tc+" TAGS -- need 6-8"});
+  var ew=wordsIn(S.EXCERPT);
+  if(ew<25||ew>70)p.push({k:"EXCERPT",m:"EXCERPT is "+ew+" words -- must be 35-55"});
+  if(!/#theglovesos/i.test(S.SOCIAL_CAPTION)||!/#gloverepair/i.test(S.SOCIAL_CAPTION)||wordsIn(S.SOCIAL_CAPTION)<12)
+    p.push({k:"SOCIAL_CAPTION",m:"SOCIAL_CAPTION needs a hook, 2-3 lines, a call to action and hashtags incl. #TheGloveSOS #GloveRepair"});
+  return p;
+}
+
+// Last-resort code fixes, after the AI had its chance.
+function patchSeo(S){
+  // Slug must hold the keyword -- if it still doesn't, build it from the keyword.
+  var kwSlug=String(S.PRIMARY_KEYWORD||"").replace(/[^a-z0-9\s-]/g,"").trim().replace(/\s+/g,"-");
+  if(kwSlug&&String(S.SLUG||"").indexOf(kwSlug)<0)S.SLUG=kwSlug.slice(0,60).replace(/-+$/,"");
+  if(S.META_DESCRIPTION.length>165){ // trim at a word, never mid-word
+    var m=S.META_DESCRIPTION.slice(0,158);m=m.slice(0,m.lastIndexOf(" ")).replace(/[,;:\-\s]+$/,"");
+    S.META_DESCRIPTION=m+"...";
+  }
+  if(S.SOCIAL_CAPTION&&!/#theglovesos/i.test(S.SOCIAL_CAPTION))S.SOCIAL_CAPTION+=" #TheGloveSOS";
+  if(S.SOCIAL_CAPTION&&!/#gloverepair/i.test(S.SOCIAL_CAPTION))S.SOCIAL_CAPTION+=" #GloveRepair";
+  var tags=S.TAGS?S.TAGS.split(", "):[];
+  ["glove-repair","theglovesos","glove-care"].forEach(function(t){if(tags.length<5&&tags.indexOf(t)<0)tags.push(t);});
+  S.TAGS=tags.join(", ");
+  return S;
+}
+
+// Rebuild one clean ===SECTION=== text from the pieces.
+function sectionsText(S){
+  return SEO_KEYS.filter(function(k){return S[k];}).map(function(k){return"==="+k+"===\n"+S[k];}).join("\n\n");
+}
+
+// THE WHOLE SEO PACK: write -> check -> fix once -> patch.
+// Returns {text, fields, problems} ("problems" = anything still off).
+async function runSeoPack(title,cat,body,pk){
+  var raw=await AI(seoPackPrompt(title,cat,body,pk),4000,"seo");
+  var S=normalizeSeo(sectionsOf(raw));
+  if(pk&&!S.PRIMARY_KEYWORD){S.PRIMARY_KEYWORD=pk;normalizeSeo(S);}
+  var probs=seoProblems(S,body);
+  if(probs.length){
+    // ONE fix-up pass with the exact problems -- only the broken sections.
+    var keys=[];probs.forEach(function(x){if(keys.indexOf(x.k)<0)keys.push(x.k);});
+    var fixPrompt="You are fixing an SEO pack for a TheGloveSOS.com blog. Primary keyword: \""+(S.PRIMARY_KEYWORD||pk||"")+"\".\n\n"+
+      "PROBLEMS TO FIX:\n- "+probs.map(function(x){return x.m;}).join("\n- ")+"\n\n"+
+      "CURRENT PACK:\n"+sectionsText(S)+"\n\n"+
+      "BLOG (for reference):\n"+body.slice(0,6000)+"\n\n"+
+      "Return ONLY these corrected sections, each === marker on its own line: "+keys.map(function(k){return"==="+k+"===";}).join(" ")+
+      "\nCount characters carefully. Keep JB's straight-shooter voice. Don't invent facts.";
+    try{
+      var fixed=sectionsOf(await AI(fixPrompt,2500,"seo"));
+      keys.forEach(function(k){if(fixed[k])S[k]=fixed[k];});
+      normalizeSeo(S);
+    }catch(e){ /* keep the first answer; the problems list below says what's off */ }
+  }
+  patchSeo(S);
+  return{text:sectionsText(S),fields:S,problems:seoProblems(S,body).map(function(x){return x.m;})};
+}
+
+// 🔁 REFRESH SEO PACK -- redo the pack for the blog that's open, as it is now.
+G("btn-seo-refresh").addEventListener("click",async function(){
+  if(!GEN||!GEN.markdownContent){alert2("seo-refresh-alert","Generate or open a blog first.","er");return;}
+  var live=!!GEN.isPublished;
+  if(live){alert2("seo-refresh-alert","This blog is live. Unpublish it first (Blogs Posted tab), then refresh its SEO pack.","er");return;}
+  var locked=GEN.status==="Approved"||GEN.status==="Scheduled";
+  if(GEN.postId&&locked&&!confirm("New SEO text means this blog goes back to Review"+(GEN.status==="Scheduled"?" (it comes OFF the schedule)":"")+".\nYou'll re-approve it and pick the upload day again.\n\nRefresh the SEO pack?"))return;
+  G("seo-refresh-alert").innerHTML=""; // clear the last run's message
+  setBtn("btn-seo-refresh",true,"... Writing SEO pack...");
+  try{
+    var r=await runSeoPack(GEN.title,GEN.category,GEN.markdownContent,GEN.primaryKeyword||"");
+    var F=r.fields;
+    var ch={title:F.SEO_TITLE||GEN.title,meta_description:F.META_DESCRIPTION,excerpt:F.EXCERPT,
+      seo_keywords:F.KEYWORDS,tags:F.TAGS,social_caption:F.SOCIAL_CAPTION,
+      hero_image_prompt:F.HERO_IMAGE_PROMPT,social_image_prompt:F.SOCIAL_IMAGE_PROMPT,
+      thumbnail_prompt:F.THUMBNAIL_PROMPT,insert_image_prompts:F.INSERT_IMAGE_PROMPTS,
+      internal_links:F.INTERNAL_LINKS,external_links:F.EXTERNAL_LINKS};
+    if(F.SLUG)ch.slug=F.SLUG;
+    if(GEN.postId){
+      var d=await API("queue.update",{id:GEN.postId,changes:ch});
+      applyPostToGen(d.post);upsertQueueItem(d.post);
+    }else{
+      // not saved yet -- just update what's on screen; Save Draft stores it
+      GEN.title=ch.title;GEN.metaDescription=ch.meta_description;GEN.excerpt=ch.excerpt;GEN.seoKeywords=ch.seo_keywords;
+      GEN.tags=ch.tags;GEN.socialCaption=ch.social_caption;if(ch.slug)GEN.slug=ch.slug;
+    }
+    GEN.primaryKeyword=F.PRIMARY_KEYWORD||GEN.primaryKeyword;
+    GEN.heroImagePrompt=F.HERO_IMAGE_PROMPT||GEN.heroImagePrompt;GEN.socialImagePrompt=F.SOCIAL_IMAGE_PROMPT||GEN.socialImagePrompt;
+    GEN.thumbnailPrompt=F.THUMBNAIL_PROMPT||GEN.thumbnailPrompt;GEN.insertImagePrompts=F.INSERT_IMAGE_PROMPTS||GEN.insertImagePrompts;
+    GEN.internalLinks=F.INTERNAL_LINKS||GEN.internalLinks;GEN.externalLinks=F.EXTERNAL_LINKS||GEN.externalLinks;
+    fillOutputs();runSeoCheck();
+    alert2("seo-refresh-alert",(r.problems.length
+      ?"&#9888;&#65039; New SEO pack saved, but check: "+esc(r.problems.join("; "))
+      :"OK: New SEO pack saved -- title, meta, keywords, tags, excerpt &amp; caption all pass the checks.")+
+      (GEN.postId&&locked?" It's back in <b>Review</b> -- approve it and pick the upload day again.":""),r.problems.length?"in":"ok");
+  }catch(e){alert2("seo-refresh-alert","ERROR: SEO pack not changed -- "+esc(e.message),"er");}
+  finally{setBtn("btn-seo-refresh",false,"&#128257; Refresh SEO Pack");}
+});
+
+// ✏️ UNSCHEDULE & EDIT -- an Approved/Scheduled blog goes back to Review
+// (off the 7 AM schedule), then the editor opens so you can tweak it.
+G("btn-unlock-edit").addEventListener("click",async function(){
+  if(!GEN||!GEN.postId)return;
+  if(!confirm((GEN.status==="Scheduled"?"Take this blog OFF the schedule and back to Review?":"Move this blog back to Review?")+
+    "\n\nYou can edit it, then approve it and pick the upload day again."))return;
+  setBtn("btn-unlock-edit",true,"...");
+  try{
+    var d=await API("queue.update",{id:GEN.postId,changes:{upload_status:"Review"}});
+    applyPostToGen(d.post);upsertQueueItem(d.post);renderReview();
+    G("btn-edit").click(); // open the editor
+    alert2("rv-alert","OK: Back in Review"+(d.post.publish_date?" (it will NOT go live on "+esc(d.post.publish_date)+" unless you schedule it again)":"")+". Make your changes, then Approve Edits.","ok");
+  }catch(e){alert2("rv-alert","ERROR: "+esc(e.message),"er");}
+  finally{setBtn("btn-unlock-edit",false,"&#9999;&#65039; Unschedule &amp; Edit");}
+});
 
 // v3.7: draw every output box from GEN. Used after Generate,
 // after you save edits, and when you open a draft from the Queue.
@@ -1646,7 +1896,7 @@ async function runSeoCheck(){
 // Generator MODE switch: relabel the big box so it's clear what goes in it.
 G("g-mode").addEventListener("change",function(){
   var polish=this.value==="polish";
-  txt("g-det-label",polish?"Your Draft (the AI keeps your words -- just proofreads & smooths)":"Details & Context (the AI must follow these)");
+  txt("g-det-label",polish?"Your Draft (your words stay yours -- the AI proofreads, then adds the SEO: keyword, headings, FAQ from your points, call to action)":"Details & Context (the AI must follow these)");
   G("g-det").rows=polish?14:6;
   // v3.7: in "Use my words" mode the docs never add content -- they only feed the fact check.
   txt("gen-docs-hint",polish
@@ -1693,6 +1943,12 @@ function applyPostToGen(p){
   GEN.title=p.title;GEN.metaDescription=p.meta_description||"";GEN.excerpt=p.excerpt||"";
   GEN.markdownContent=p.content||"";GEN.wordCount=p.word_count||0;GEN.readTime=p.read_time||0;
   GEN.status=p.upload_status;GEN.publishDate=p.publish_date||"";GEN.isPublished=!!p.is_published;
+  // v4.0: the SEO + social fields can change now too (editor, Refresh SEO Pack)
+  if(p.slug){GEN.slug=p.slug;GEN.blogUrl=p.blog_url||GEN.blogUrl;}
+  GEN.seoKeywords=p.seo_keywords||"";
+  GEN.primaryKeyword=String(p.seo_keywords||"").split(",")[0].trim().toLowerCase()||GEN.primaryKeyword;
+  GEN.tags=Array.isArray(p.tags)?p.tags.join(", "):(p.tags||"");
+  GEN.socialCaption=p.social_caption||"";
 }
 
 // STEP 3: save the generated blog as a "Review" draft.
@@ -1876,6 +2132,7 @@ function resetReviewPanel(){
   if(G("fc-summary"))G("fc-summary").innerHTML="";
   if(G("fc-list"))G("fc-list").innerHTML="";
   clearHeroPicker(); // v3.9
+  if(G("seo-refresh-alert"))G("seo-refresh-alert").innerHTML=""; // v4.0
   if(G("rv-hero-alt"))G("rv-hero-alt").value="";
 }
 // The editor's live word count + meta length.
@@ -1887,8 +2144,12 @@ function updateEditCounts(){
   G("rv-meta-count").style.color=m>=140&&m<=165?"var(--green)":"var(--orange)";
 }
 function editorChanges(){
-  return{title:val("rv-title"),meta_description:G("rv-meta").value.trim(),
-    excerpt:G("rv-excerpt").value.trim(),content:G("rv-content").value};
+  var ch={title:val("rv-title"),meta_description:G("rv-meta").value.trim(),
+    excerpt:G("rv-excerpt").value.trim(),content:G("rv-content").value,
+    // v4.0: SEO + social fields
+    seo_keywords:val("rv-keywords"),tags:val("rv-tags"),social_caption:G("rv-caption").value.trim()};
+  if(val("rv-slug")&&val("rv-slug")!==GEN.slug)ch.slug=val("rv-slug"); // only send a NEW web address
+  return ch;
 }
 
 G("btn-save-draft").addEventListener("click",async function(){
@@ -1904,6 +2165,9 @@ G("btn-edit").addEventListener("click",function(){
   if(!GEN||!GEN.postId)return;
   G("rv-title").value=GEN.title;G("rv-meta").value=GEN.metaDescription||"";
   G("rv-excerpt").value=GEN.excerpt||"";G("rv-content").value=GEN.markdownContent;
+  // v4.0: SEO + social fields
+  G("rv-slug").value=GEN.slug||"";G("rv-keywords").value=GEN.seoKeywords||"";
+  G("rv-tags").value=GEN.tags||"";G("rv-caption").value=GEN.socialCaption||"";
   EDITING=true;updateEditCounts();renderReview();
   G("rv-title").scrollIntoView({behavior:"smooth",block:"center"});
 });
@@ -2190,7 +2454,7 @@ var EDIT_IDEA_ID=null; // set when you click Edit on an existing idea
 // Swap the little explanation under the mode picker.
 var MODE_HINTS={
   write:"The AI writes the full blog, and every point, fact, and link in your notes MUST be included.",
-  polish:"Your words stay YOUR words. The AI only fixes spelling/grammar, smooths the flow, and adds section headers. It won't add new facts."
+  polish:"Your words stay YOUR words. The AI fixes spelling/grammar and makes it SEO-ready: one target keyword, search-style headings, an FAQ built from your own points, and a call to action. It won't add new facts."
 };
 G("idea-mode").addEventListener("change",function(){txt("idea-mode-hint",MODE_HINTS[this.value]);});
 G("idea-notes").addEventListener("input",function(){showLinkCount("idea-notes","idea-link-count");});
