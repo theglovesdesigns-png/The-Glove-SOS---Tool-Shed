@@ -1,5 +1,5 @@
 // ============================================================
-// netlify/lib/supabase.mjs  --  Tool Shed v3.4
+// netlify/lib/supabase.mjs  --  Tool Shed v3.9
 // ------------------------------------------------------------
 // WHAT THIS FILE DOES (plain English):
 //   This is the "phone line" from our back office to Supabase.
