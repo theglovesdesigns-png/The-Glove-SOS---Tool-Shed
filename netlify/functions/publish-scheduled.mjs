@@ -1,5 +1,5 @@
 // ============================================================
-// netlify/functions/publish-scheduled.mjs  --  Tool Shed v3.4
+// netlify/functions/publish-scheduled.mjs  --  Tool Shed v3.9
 // ------------------------------------------------------------
 // WHAT THIS FILE DOES (plain English):
 //   An alarm clock. Netlify wakes this up at the top of every
