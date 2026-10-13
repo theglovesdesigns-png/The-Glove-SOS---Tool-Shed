@@ -144,13 +144,13 @@ tr:hover td{background:rgba(0,204,204,.03)}
 ::-webkit-scrollbar-track{background:var(--bg2)}
 ::-webkit-scrollbar-thumb{background:rgba(0,204,204,.2);border-radius:2px}
 .sync-warn{background:rgba(255,140,66,.1);border:1px solid var(--orange);color:var(--orange);border-radius:7px;padding:8px 12px;font-size:12px;margin-bottom:10px;display:none}
-/* v3.7: SOURCE DOCS */
+/* v3.8: SOURCE DOCS */
 .doc-drop{border:1px dashed var(--bdr2);border-radius:8px;padding:10px;background:var(--bg3)}
 .doc-chip{display:flex;align-items:center;gap:8px;background:var(--bg4);border:1px solid var(--bdr);border-radius:7px;padding:6px 10px;margin-top:6px;font-size:12px}
 .doc-chip .doc-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
 .doc-chip .doc-meta{color:var(--t3);font-size:11px;white-space:nowrap}
 .doc-x{background:none;border:none;color:var(--red);cursor:pointer;font-size:13px;padding:0 2px}
-/* v3.7: REVIEW + FACT CHECK */
+/* v3.8: REVIEW + FACT CHECK */
 #review-card{border-color:rgba(240,165,0,.35);margin-top:12px}
 .fc-counts{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 8px}
 .fc-item{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:7px;margin-bottom:6px;font-size:12px;line-height:1.5;cursor:pointer;border:1px solid var(--bdr);background:var(--bg3)}
@@ -172,7 +172,7 @@ mark.flash{outline:2px solid var(--teal)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.7</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v3.8</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -204,7 +204,7 @@ mark.flash{outline:2px solid var(--teal)}
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
     <span class="topbar-badge">TheGloveSOS.com</span>
-    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.7</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v3.8</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -257,7 +257,7 @@ mark.flash{outline:2px solid var(--teal)}
       <div class="fg"><label id="g-det-label">Details &amp; Context</label>
         <textarea id="g-det" rows="6" placeholder="Angle, key points, audience, seasonal tie-ins... Paste links and they'll be in the blog."></textarea>
         <div class="hint" id="g-link-count"></div></div>
-      <!-- v3.7: SOURCE DOCS -- text is pulled out right in the browser -->
+      <!-- v3.8: SOURCE DOCS -- text is pulled out right in the browser -->
       <div class="fg"><label>📎 Source Docs <span style="font-size:10px;color:var(--t3)">(optional -- PDF, Word .docx, .txt, .md)</span></label>
         <div class="doc-drop">
           <input type="file" id="gen-docs-file" multiple accept=".pdf,.docx,.txt,.md,.markdown,.csv,application/pdf,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
@@ -323,7 +323,7 @@ mark.flash{outline:2px solid var(--teal)}
           </div>
         </div>
       </div>
-      <!-- v3.7: SEO Score card -- filled in by runSeoCheck() after every generate -->
+      <!-- v3.8: SEO Score card -- filled in by runSeoCheck() after every generate -->
       <div class="card" id="seo-card" style="display:none;margin-top:12px">
         <div class="card-title" style="justify-content:space-between">
           <span>📈 National SEO Score</span>
@@ -332,7 +332,7 @@ mark.flash{outline:2px solid var(--teal)}
         <div id="seo-checks" style="font-size:13px;line-height:1.7"></div>
         <div class="hint" style="margin-top:6px">Aim for <b>B (80+) or better</b> before queuing. Edit the SEO tab text or regenerate to raise the score.</div>
       </div>
-      <!-- v3.7: REVIEW & APPROVE -- replaces the old "Save to Queue" bar.
+      <!-- v3.8: REVIEW & APPROVE -- replaces the old "Save to Queue" bar.
            Flow: Generate -> draft auto-saves as "Review" -> fact check ->
            Approve as-is, OR Edit -> Approve Edits -> pick upload day. -->
       <div class="card" id="review-card">
@@ -442,7 +442,7 @@ mark.flash{outline:2px solid var(--teal)}
         <div class="hint" id="idea-mode-hint">The AI writes the full blog, and every point, fact, and link in your notes MUST be included.</div></div>
       <div class="fg"><label>Your Draft, Notes &amp; Links</label><textarea id="idea-notes" rows="10" placeholder="Write as much or as little as you want. Paste links right in -- e.g. shout-out to https://example-glove-shop.com -- and they'll be clickable links in the blog."></textarea>
         <div class="hint" id="idea-link-count"></div></div>
-      <!-- v3.7: SOURCE DOCS for this idea -->
+      <!-- v3.8: SOURCE DOCS for this idea -->
       <div class="fg"><label>📎 Source Docs <span style="font-size:10px;color:var(--t3)">(optional -- PDF, Word .docx, .txt, .md)</span></label>
         <div class="doc-drop">
           <input type="file" id="idea-docs-file" multiple accept=".pdf,.docx,.txt,.md,.markdown,.csv,application/pdf,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
@@ -600,7 +600,7 @@ mark.flash{outline:2px solid var(--teal)}
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
     <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.7</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-09</span></div>
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v3.8</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-13</span></div>
         <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
       </div>
     </div>
@@ -715,7 +715,7 @@ var QUEUE=loadLocal("gsos_queue_v34",[]);
 var IDEAS=loadLocal("gsos_ideas_v34",[]);
 var GEN=null,LASTRES="",GEN_IDEA_ID=null,LINK_REPORT={total:0,missing:[]};
 
-// v3.7: source docs waiting on each page.
+// v3.8: source docs waiting on each page.
 //   DOCS.idea = docs on the Blog Ideas form
 //   DOCS.gen  = docs on the Blog Generator
 // Each doc looks like: {name, type, size, chars, text, added_at}
@@ -789,7 +789,7 @@ function showLinkCount(boxId,outId){
 }
 
 // ═══════════════════════════════════════════════════════
-// SOURCE DOCS (v3.7)
+// SOURCE DOCS (v3.8)
 // The TEXT is pulled out of each file right here in your
 // browser -- the file itself never gets uploaded anywhere.
 //   PDF   -> pdf.js (free library, loads the first time you need it)
@@ -886,6 +886,7 @@ function renderDocs(which){
 // On the Generator, if a draft is already saved, keep its docs in sync
 // so the fact check can be re-run later from the Blog Queue.
 async function docsChanged(which){
+  backupSoon(which); // v3.8: autosave the doc list with the rest of the form
   if(which!=="gen"||!GEN||!GEN.postId)return;
   if(GEN.factCheck)GEN.factStale=true;
   renderFactCheck();
@@ -935,6 +936,152 @@ function sourcesBlock(arr,budget){
   });
   return{text:out.trim(),cut:cut};
 }
+
+// ═══════════════════════════════════════════════════════
+// WORK PROTECTION (v3.8)
+// Three safety nets so a title, draft or blog is never lost:
+//  1) AUTOSAVE: every keystroke on the Generator and Blog Ideas
+//     forms is copied into this browser. Refresh, close the tab,
+//     or crash -- it all comes back when you open the Tool Shed.
+//  2) RESCUE: if Generate fails, your title + draft + docs are
+//     saved to Blog Ideas in Supabase automatically (any device).
+//  3) BLOG BACKUP: if the AI wrote the blog but saving the draft
+//     failed, the finished blog is kept in this browser until it saves.
+// ═══════════════════════════════════════════════════════
+var BACKUP_KEYS={gen:"ts_backup_gen_v38",idea:"ts_backup_idea_v38",blog:"ts_backup_blog_v38"};
+var BACKUP_FIELDS={
+  gen:["g-title","g-cat","g-wc","g-mode","g-det"],
+  idea:["idea-title","idea-cat","idea-mode","idea-notes"]
+};
+var BACKUP_PAUSED=false; // true while we're filling the form ourselves (restore)
+var backupTimers={};
+
+// Save one form ("gen" or "idea") into this browser.
+function backupForm(which){
+  if(BACKUP_PAUSED)return;
+  var data={at:new Date().toISOString(),fields:{}};
+  BACKUP_FIELDS[which].forEach(function(id){var e=G(id);if(e)data.fields[id]=e.value;});
+  // Which Supabase idea this work belongs to (so a save updates it instead of making a copy).
+  data.ideaId=which==="gen"?GEN_IDEA_ID:EDIT_IDEA_ID;
+  data.docsReady=which==="gen"?true:IDEA_DOCS_READY; // false = an edited idea's docs hadn't loaded yet
+  var hasWork=!!(data.fields[which==="gen"?"g-title":"idea-title"]||"").trim()||
+              !!(data.fields[which==="gen"?"g-det":"idea-notes"]||"").trim()||DOCS[which].length>0;
+  try{
+    if(!hasWork){localStorage.removeItem(BACKUP_KEYS[which]);return;}
+    data.docs=DOCS[which];
+    try{localStorage.setItem(BACKUP_KEYS[which],JSON.stringify(data));}
+    catch(e){ // browser storage full (very big docs) -- keep the words, skip the docs
+      data.docs=[];data.docsSkipped=true;
+      localStorage.setItem(BACKUP_KEYS[which],JSON.stringify(data));
+    }
+  }catch(e){/* private browsing etc. -- the Supabase rescue still protects you */}
+}
+// Wait until you pause typing for half a second, then save (keeps typing smooth).
+function backupSoon(which){
+  clearTimeout(backupTimers[which]);
+  backupTimers[which]=setTimeout(function(){backupForm(which);},500);
+}
+function clearBackup(which){
+  clearTimeout(backupTimers[which]);
+  try{localStorage.removeItem(BACKUP_KEYS[which]);}catch(e){}
+}
+function readBackup(which){
+  try{return JSON.parse(localStorage.getItem(BACKUP_KEYS[which])||"null");}catch(e){return null;}
+}
+function backupTime(iso){
+  try{return new Date(iso).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});}catch(e){return"earlier";}
+}
+// Put backed-up work back into a form. Runs once when the page opens.
+function restoreForm(which){
+  var b=readBackup(which);if(!b||!b.fields)return false;
+  BACKUP_PAUSED=true;
+  Object.keys(b.fields).forEach(function(id){var e=G(id);if(e&&b.fields[id]!=null)e.value=b.fields[id];});
+  DOCS[which]=Array.isArray(b.docs)?b.docs:[];
+  renderDocs(which);
+  if(which==="gen"){
+    GEN_IDEA_ID=b.ideaId||null;
+    G("g-mode").dispatchEvent(new Event("change"));
+    showLinkCount("g-det","g-link-count");
+  }else{
+    showLinkCount("idea-notes","idea-link-count");
+    txt("idea-mode-hint",MODE_HINTS[val("idea-mode")||"write"]);
+    if(b.ideaId){ // you were editing an existing idea
+      EDIT_IDEA_ID=b.ideaId;
+      // If its docs weren't in the backup, saving must NOT touch the docs in Supabase.
+      IDEA_DOCS_READY=b.docsReady!==false&&!b.docsSkipped;
+      txt("idea-form-title","✏️ Editing Idea");
+      G("btn-save-idea").innerHTML="&#128190; Update Idea";
+    }
+  }
+  BACKUP_PAUSED=false;
+  var note="&#128190; <b>Restored your unsaved work</b> from "+backupTime(b.at)+"."+
+    (b.docsSkipped?" (Your source docs were too big to keep in the browser -- re-attach them.)":"");
+  alert2(which==="gen"?"g-alert":"idea-alert",note,"in");
+  return true;
+}
+// Is there typed work in a form? ("gen" or "idea")
+function formHasWork(which){
+  var t=which==="gen"?val("g-title"):val("idea-title");
+  var n=(G(which==="gen"?"g-det":"idea-notes").value||"").trim();
+  return !!(t||n||DOCS[which].length);
+}
+// Hook the autosave onto every field of both forms.
+function wireBackups(){
+  ["gen","idea"].forEach(function(which){
+    BACKUP_FIELDS[which].forEach(function(id){
+      var e=G(id);if(!e)return;
+      e.addEventListener("input",function(){backupSoon(which);});
+      e.addEventListener("change",function(){backupSoon(which);});
+    });
+  });
+}
+
+// SAFETY NET 2: Generate failed -> save the work to Blog Ideas in Supabase.
+// If it came from an idea (or was rescued before), that idea is UPDATED,
+// so retrying never makes duplicates.
+// Returns a sentence saying where the work is safe.
+async function rescueToIdeas(title,cat,mode,details){
+  var fields={title:title,category:cat,notes:details,write_mode:mode};
+  // Send docs when there are some. An EMPTY list on an existing idea is skipped,
+  // so a rescue can never erase docs already saved on that idea.
+  if(DOCS.gen.length||!GEN_IDEA_ID)fields.source_docs=DOCS.gen;
+  try{
+    var row;
+    if(GEN_IDEA_ID){
+      try{ row=(await API("ideas.update",Object.assign({id:GEN_IDEA_ID},fields))).idea; }
+      catch(e){
+        if(!/not found/i.test(e.message))throw e;
+        GEN_IDEA_ID=null; // that idea was deleted -- make a new one below
+        fields.source_docs=DOCS.gen;
+      }
+    }
+    if(!row){
+      fields.topic_keywords=title;
+      row=(await API("ideas.create",fields)).idea;
+      GEN_IDEA_ID=row.id; // next try updates this same idea
+    }
+    var fresh=ideaFromRow(row),found=false;
+    IDEAS=IDEAS.map(function(x){if(String(x.id)===String(fresh.id)){found=true;return fresh;}return x;});
+    if(!found)IDEAS.unshift(fresh);
+    saveIdeasLocal();renderIdeas();updateCounts();
+    backupForm("gen");
+    return"Your title, draft"+(DOCS.gen.length?" and source docs are":" are")+" safe -- saved to <b>Blog Ideas</b> in Supabase as \""+esc(title)+"\".";
+  }catch(e){
+    backupForm("gen");
+    return"Your title and draft are still on screen and saved in this browser (Supabase backup didn't work either: "+esc(e.message)+").";
+  }
+}
+
+// SAFETY NET 3: keep a finished-but-unsaved blog in this browser.
+function backupBlog(){try{if(GEN)localStorage.setItem(BACKUP_KEYS.blog,JSON.stringify({at:new Date().toISOString(),gen:GEN,ideaId:GEN_IDEA_ID}));}catch(e){}}
+function restoreBlog(){
+  var b;try{b=JSON.parse(localStorage.getItem(BACKUP_KEYS.blog)||"null");}catch(e){b=null;}
+  if(!b||!b.gen||b.gen.postId)return false;
+  GEN=b.gen;GEN_IDEA_ID=b.ideaId||GEN_IDEA_ID;
+  fillOutputs();
+  alert2("rv-alert","&#128190; This blog was written on "+backupTime(b.at)+" but never made it to Supabase. Click <b>Save Draft</b> to save it now.","er");
+  return true;
+}
 function extr(t,tag){var p=t.split("===");for(var i=0;i<p.length;i++){if(p[i].trim()===tag&&p[i+1]!==undefined)return p[i+1].trim();}return"";}
 function alert2(id,msg,type){
   var e=G(id);if(!e)return;
@@ -967,7 +1114,12 @@ async function API(action,data){
     });
   }catch(e){ throw new Error("Can't reach the back office -- check your internet connection."); }
   var d=await r.json().catch(function(){return{};});
-  if(!r.ok||d.error)throw new Error(d.error||("HTTP "+r.status+" -- the back office didn't answer (is it deployed?)"));
+  if(!r.ok||d.error){
+    if(d.error)throw new Error(d.error);
+    // v3.8: no readable answer at all = Netlify cut the back office off (time limit or crash).
+    if(r.status===502||r.status===504)throw new Error("The back office ran out of time or crashed (HTTP "+r.status+"). Usually this is a slow AI answer -- try again, or pick a shorter word count.");
+    throw new Error("HTTP "+r.status+" -- the back office didn't answer (is it deployed?)");
+  }
   return d;
 }
 
@@ -975,7 +1127,7 @@ async function API(action,data){
 // AI CALL -- now goes through the back office, which picks
 // Claude or Gemini based on Settings > AI Provider.
 // ═══════════════════════════════════════════════════════
-// v3.7: "task" tells the back office which SEO rules to wrap around the prompt:
+// v3.8: "task" tells the back office which SEO rules to wrap around the prompt:
 //   "blog" / "polish" / "seo" / "research" = National SEO Playbook applied
 //   (left blank)                            = no SEO rules (proofread, newsletter, images)
 async function AI(prompt,max,task){
@@ -989,7 +1141,7 @@ function postToQueueItem(b){
     uploadStatus:b.upload_status||"Pending",wordCount:b.word_count,publishDate:b.publish_date||"",
     blogUrl:b.blog_url,createdAt:b.created_at,isPublished:!!b.is_published,
     publishedAt:b.published_at,heroUrl:b.featured_image_url||"",
-    approvedAt:b.approved_at||null,ideaId:b.idea_id||null};   // v3.7
+    approvedAt:b.approved_at||null,ideaId:b.idea_id||null};   // v3.8
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1162,7 +1314,7 @@ async function loadSettings(){
     await loadQueueFromSB();await loadIdeasFromSB();updateCounts();
   }catch(e){alert2("s-alert","ERROR: Could not load: "+e.message,"er");}
 }
-// v3.7: show the SEO Playbook currently in force (saved, or built-in default).
+// v3.8: show the SEO Playbook currently in force (saved, or built-in default).
 var SEO_DEFAULT="";
 async function loadSeoPlaybook(){
   try{
@@ -1210,7 +1362,7 @@ G("btn-save-settings").addEventListener("click",async function(){
     notification_email:val("s-email")||"theglovesdesigns@gmail.com",
     auto_generate:String(TOGS.ag),auto_newsletter:String(TOGS.nl),email_notify:String(TOGS.em),
     jb_voice:val("s-voice"),brand_dna:val("s-dna"),
-    // v3.7: if the box matches the built-in default, store blank so future
+    // v3.8: if the box matches the built-in default, store blank so future
     // default improvements flow through automatically.
     seo_playbook:(val("s-seo")===SEO_DEFAULT.trim()?"":G("s-seo").value)
   };
@@ -1256,7 +1408,7 @@ G("btn-generate").addEventListener("click",async function(){
   var wc=val("g-wc")||"1500";
   setBtn("btn-generate",true,"... Step 1 of 4: writing the blog...");hide("g-output");
   if(G("g-alert"))G("g-alert").innerHTML="";
-  resetReviewPanel(); // v3.7: fresh blog = fresh review (old draft stays safe in the queue)
+  resetReviewPanel(); // v3.8: fresh blog = fresh review (old draft stays safe in the queue)
   // v3.4: the blog is written in TWO smaller AI calls instead of one
   // giant one, so each finishes well inside Netlify's 60-second limit.
   //   Call 1 = the blog itself.   Call 2 = SEO + social + image prompts.
@@ -1267,7 +1419,7 @@ G("btn-generate").addEventListener("click",async function(){
   var linkRule=links.length
     ?"\n\nLINKS -- REQUIRED: Include EVERY one of these links in the blog as a markdown link [natural anchor text](url), placed where it fits naturally (credit, shout-out, or reference). Copy each URL exactly:\n"+links.map(function(u){return"- "+u;}).join("\n")
     :"";
-  // v3.7: accuracy rules on EVERY write, plus JB's source docs (if any).
+  // v3.8: accuracy rules on EVERY write, plus JB's source docs (if any).
   var accuracyRule="\n\nACCURACY RULES -- VERY IMPORTANT:\n"+
     "- Never invent statistics, studies, surveys, quotes, prices, dates, or product specs.\n"+
     "- Only use a specific number or fact if it is in JB's notes or the source documents below, or it is widely known and undisputed.\n"+
@@ -1300,20 +1452,33 @@ G("btn-generate").addEventListener("click",async function(){
   }
   // How long may the answer be? Polish = about the draft's length; Write = the word count.
   var targetWords=mode==="polish"?Math.round(details.split(/\s+/).length*1.2):Number(wc);
+  backupForm("gen"); // v3.8: snapshot the form right before the AI call
   try{
-    var tA=await AI(promptA,Math.min(Math.round(targetWords*1.7)+400,7000),mode==="polish"?"polish":"blog");
+    var tA;
+    try{ tA=await AI(promptA,Math.min(Math.round(targetWords*1.7)+400,7000),mode==="polish"?"polish":"blog"); }
+    catch(e){
+      // v3.8 SAFETY NET: the blog couldn't be written. Save the work first, then explain.
+      setBtn("btn-generate",true,"... Saving your work...");
+      var safe=await rescueToIdeas(title,cat,mode,details);
+      alert2("g-alert","<b>Couldn't write the blog:</b> "+esc(e.message)+"<br><br>&#9989; "+safe+"<br>Nothing was lost -- click <b>Generate Master Blog</b> to try again.","er");
+      return;
+    }
     // LINK GUARANTEE: check every pasted link made it in; add any the AI dropped.
     var chk=ensureLinks(extr(tA,"BLOG_CONTENT")||tA,links);
     var body=chk.content;
     LINK_REPORT={total:links.length,missing:chk.missing};
     setBtn("btn-generate",true,"... Step 2 of 4: SEO &amp; social pack...");
     var promptB="You are the SEO editor for TheGloveSOS.com (national glove repair directory).\nBlog title: "+title+"\nCategory: "+cat+"\n\nBLOG (first part):\n"+body.slice(0,3500)+"\n\nReturn EXACTLY these sections with === markers:\n\n===PRIMARY_KEYWORD===\n[the ONE national search phrase this blog targets, 2-5 words, lowercase, and it must already appear in the blog text]\n\n===SEO_TITLE===\n[50-60 chars, primary keyword near the front]\n\n===SLUG===\n[lowercase-hyphenated, includes the primary keyword, max 60 chars]\n\n===META_DESCRIPTION===\n[140-160 chars, includes the primary keyword]\n\n===KEYWORDS===\n[12 national keywords comma-separated, primary keyword first]\n\n===TAGS===\n[10 tags, lowercase-hyphenated, comma-separated]\n\n===EXCERPT===\n[2-3 sentences ~60 words]\n\n===SOCIAL_CAPTION===\n[Caption + hashtags including #TheGloveSOS #GloveRepair]\n\n===HERO_IMAGE_PROMPT===\n[Detailed: baseball/softball glove, moody teal lighting, dark atmosphere, landscape 1200x628]\n\n===SOCIAL_IMAGE_PROMPT===\n[Square 1080x1080, bold, teal/purple palette]\n\n===THUMBNAIL_PROMPT===\n[YouTube 1280x720, high contrast, text overlay space]\n\n===INSERT_IMAGE_PROMPTS===\nInsert 1: [prompt]\nInsert 2: [prompt]\nInsert 3: [prompt]\n\n===INTERNAL_LINKS===\n[3-4 slug suggestions]\n\n===EXTERNAL_LINKS===\n[2-3 source types]";
-    var tB=await AI(promptB,1600,"seo");
+    // v3.8: if the SEO pack fails, KEEP the blog that was just written.
+    // It saves as a draft with the SEO boxes blank instead of throwing it away.
+    var tB="",seoFail="";
+    try{ tB=await AI(promptB,1600,"seo"); }
+    catch(e){ seoFail=e.message; }
     // Stitch both answers together so parseBlog finds every section.
     parseBlog("===BLOG_CONTENT===\n"+body+"\n\n"+tB,title,cat);
     GEN.mode=mode;
-    GEN.notes=details;   // v3.7: the fact check compares the blog to your notes
-    runSeoCheck(); // v3.7: grade it right away (free -- no AI call)
+    GEN.notes=details;   // v3.88: the fact check compares the blog to your notes
+    runSeoCheck(); // v3.8: grade it right away (free -- no AI call)
     // Tell JB how his links came through (plus a heads-up if long docs got trimmed).
     var msgs=[];
     if(LINK_REPORT.total){
@@ -1322,14 +1487,18 @@ G("btn-generate").addEventListener("click",async function(){
         :"&#128279; All "+LINK_REPORT.total+" link(s) from your notes are in the blog.");
     }
     if(src.cut&&mode!=="polish")msgs.push("&#128196; Your source docs are long, so the writer read the first ~4,000 words of them.");
+    if(seoFail)msgs.push("&#9888;&#65039; The blog is written, but the SEO pack (SEO title, slug, keywords, image prompts) didn't finish: "+esc(seoFail)+". The blog is kept and saved as a draft -- fill in the meta description and excerpt with <b>Edit</b> below.");
     if(msgs.length)alert2("g-alert",msgs.join("<br>"),"in");  // "in" = stays on screen (ok auto-hides)
 
-    // v3.7 STEP 3: save it right away as a "Review" draft -- nothing gets lost.
+    // v3.8 STEP 3: save it right away as a "Review" draft -- nothing gets lost.
     setBtn("btn-generate",true,"... Step 3 of 4: saving your draft...");
     try{ await saveDraft(); }
-    catch(e){ alert2("rv-alert","ERROR: The draft didn't save -- your blog is still on screen. Click <b>Save Draft</b> to try again. ("+esc(e.message)+")","er"); }
+    catch(e){
+      backupBlog(); // v3.8: keep the finished blog in this browser until it saves
+      alert2("rv-alert","ERROR: The draft didn't save to Supabase -- but your blog is still on screen AND kept in this browser. Click <b>Save Draft</b> to try again. ("+esc(e.message)+")","er");
+    }
 
-    // v3.7 STEP 4: fact check (its own AI call, so it gets its own time limit).
+    // v3.8 STEP 4: fact check (its own AI call, so it gets its own time limit).
     setBtn("btn-generate",true,"... Step 4 of 4: fact-checking...");
     await runFactCheck();
   }catch(e){alert2("g-alert","ERROR: "+e.message,"er");}
@@ -1342,7 +1511,7 @@ function parseBlog(t,title,cat){
       hero=extr(t,"HERO_IMAGE_PROMPT"),soc=extr(t,"SOCIAL_IMAGE_PROMPT"),
       thu=extr(t,"THUMBNAIL_PROMPT"),ins=extr(t,"INSERT_IMAGE_PROMPTS"),
       intl=extr(t,"INTERNAL_LINKS"),extl=extr(t,"EXTERNAL_LINKS"),
-      pk=extr(t,"PRIMARY_KEYWORD").replace(/^["'\[]+|["'\].]+$/g,"").toLowerCase(); // v3.7
+      pk=extr(t,"PRIMARY_KEYWORD").replace(/^["'\[]+|["'\].]+$/g,"").toLowerCase(); // v3.8
   // Make sure the primary keyword leads the keyword list (saved to seo_keywords).
   if(pk&&kw.toLowerCase().indexOf(pk)!==0)kw=pk+(kw?", "+kw:"");
   var wc=(con||t).split(/\s+/).filter(Boolean).length,rt=Math.ceil(wc/225);
@@ -1354,12 +1523,12 @@ function parseBlog(t,title,cat){
     heroImageURL:"",heroImagePrompt:hero,socialImagePrompt:soc,thumbnailPrompt:thu,
     insertImagePrompts:ins,socialCaption:cap,internalLinks:intl,externalLinks:extl,
     publishDate:"",source:"AI",createdAt:new Date().toISOString(),primaryKeyword:pk,
-    // v3.7 review fields
+    // v3.8 review fields
     postId:null,status:"",factCheck:null,factStale:false,factError:"",notes:""};
   fillOutputs();
 }
 
-// v3.7: draw every output box from GEN. Used after Generate,
+// v3.8: draw every output box from GEN. Used after Generate,
 // after you save edits, and when you open a draft from the Queue.
 function fillOutputs(){
   if(!GEN)return;
@@ -1381,7 +1550,7 @@ function fillOutputs(){
   renderFactCheck();
 }
 // ───────────────────────────────────────────────────────
-// SEO SCORE (v3.7) -- asks the back office to grade the blog
+// SEO SCORE (v3.8) -- asks the back office to grade the blog
 // against the National SEO Playbook. Pure code, no AI cost.
 // Shows a letter grade + a checklist with how to fix each miss.
 // ───────────────────────────────────────────────────────
@@ -1407,16 +1576,21 @@ G("g-mode").addEventListener("change",function(){
   var polish=this.value==="polish";
   txt("g-det-label",polish?"Your Draft (the AI keeps your words -- just proofreads & smooths)":"Details & Context (the AI must follow these)");
   G("g-det").rows=polish?14:6;
-  // v3.7: in "Use my words" mode the docs never add content -- they only feed the fact check.
+  // v3.8: in "Use my words" mode the docs never add content -- they only feed the fact check.
   txt("gen-docs-hint",polish
     ?"Your words stay yours: these docs are used ONLY by the fact check, to double-check what you wrote."
     :"The AI pulls facts from these docs, and the fact check uses them to double-check the blog.");
 });
 G("g-det").addEventListener("input",function(){showLinkCount("g-det","g-link-count");});
 G("btn-clear-gen").addEventListener("click",function(){
+  // v3.8: one stray click used to wipe everything. Ask first if there's work in the boxes.
+  var unsavedBlog=GEN&&!GEN.postId;
+  if((val("g-title")||G("g-det").value.trim()||unsavedBlog)&&
+     !confirm("Clear the Generator?"+(unsavedBlog?"\n\nThe blog on screen was NOT saved to Supabase and will be lost.":"\n\n(Anything already saved stays safe in Blog Ideas / the Blog Queue.)")))return;
+  clearBackup("gen");clearBackup("blog");
   ["g-title","g-det","g-exp","g-dna"].forEach(function(id){var e=G(id);if(e)e.value="";});
   G("g-cat").selectedIndex=0;hide("g-output");hide("seo-card");if(G("g-alert"))G("g-alert").innerHTML="";GEN=null;GEN_IDEA_ID=null;
-  // v3.7: clear docs + review panel too. (A saved draft stays safe in the Blog Queue.)
+  // v3.8: clear docs + review panel too. (A saved draft stays safe in the Blog Queue.)
   DOCS.gen=[];renderDocs("gen");txt("gen-docs-status","");resetReviewPanel();
 });
 G("btn-copy-md").addEventListener("click",function(){
@@ -1425,7 +1599,7 @@ G("btn-copy-md").addEventListener("click",function(){
 });
 
 // ═══════════════════════════════════════════════════════
-// REVIEW & APPROVE (v3.7)
+// REVIEW & APPROVE (v3.8)
 // Replaces the old "Save to Queue" bar. The flow is ONE way:
 //   Generate -> draft saves as "Review" (automatic)
 //            -> fact check (automatic)
@@ -1464,6 +1638,8 @@ async function saveDraft(){
     external_links:GEN.externalLinks
   }});
   GEN.postId=d.post.id;GEN.slug=d.post.slug;GEN.status=d.post.upload_status;
+  // v3.8: it's safe in Supabase now, so the browser backups aren't needed.
+  clearBackup("blog");clearBackup("gen");
   upsertQueueItem(d.post);
   // The idea stays on your Ideas list as "In Review" until you approve.
   if(GEN_IDEA_ID){
@@ -1764,7 +1940,7 @@ G("btn-save-as-idea").addEventListener("click", async function(){
   try{
     var d=await API("ideas.create",{title:GEN.title,category:GEN.category,
       notes:"Banked from a generated blog. Slug: "+GEN.slug,topic_keywords:GEN.seoKeywords||GEN.title,
-      source_docs:DOCS.gen}); // v3.7: the docs come along
+      source_docs:DOCS.gen}); // v3.8: the docs come along
     IDEAS.unshift(ideaFromRow(d.idea));
     saveIdeasLocal(); updateCounts();
     alert2("g-alert","OK: Saved to Ideas and confirmed in Supabase!","ok");
@@ -1816,7 +1992,7 @@ function renderQueue(){
       "<select class='q-stat-sel' data-id='"+b.id+"' style='"+ctl+"'>"+
       ["Pending","Review","Approved","Scheduled","Published to Site"].map(function(s){return"<option"+(b.uploadStatus===s?" selected":"")+">"+s+"</option>";}).join("")+
       "</select>"+
-      // v3.7: Review opens the blog to read / edit / approve.
+      // v3.8: Review opens the blog to read / edit / approve.
       // Publish Now only shows once a blog is approved.
       (b.isPublished
         ?"<button class='q-unpub-btn btn btn-xs btn-out' data-id='"+b.id+"' title='Take it off the website'>Unpublish</button>"
@@ -1855,7 +2031,7 @@ function renderQueue(){
       catch(e){ alert("Couldn't save the upload day: "+e.message); renderQueue(); }
     });
   });
-  // v3.7: REVIEW -- open this blog in the Review & Approve panel.
+  // v3.8 REVIEW -- open this blog in the Review & Approve panel.
   document.querySelectorAll(".q-rev-btn").forEach(function(btn){
     btn.addEventListener("click",function(){
       this.disabled=true;this.textContent="...";
@@ -1947,14 +2123,15 @@ function resetIdeaForm(){
   txt("idea-form-title","💡 Add New Idea");
   G("btn-save-idea").innerHTML="&#128190; Save Idea to Supabase";
   hide("idea-proof-out");showLinkCount("idea-notes","idea-link-count");
-  DOCS.idea=[];IDEA_DOCS_READY=true;renderDocs("idea");txt("idea-docs-status",""); // v3.7
+  DOCS.idea=[];IDEA_DOCS_READY=true;renderDocs("idea");txt("idea-docs-status",""); // v3.8
+  clearBackup("idea"); // v3.8: form is empty (saved or cleared) -- drop the browser backup
 }
 function ideaFromRow(i){
   return{id:i.id,supabaseId:i.id,title:i.title,category:i.category||"General Tips",
     notes:i.notes||"",status:i.status||"New",mode:i.write_mode==="polish"?"polish":"write",
-    sourceDocCount:i.source_doc_count||0};   // v3.7
+    sourceDocCount:i.source_doc_count||0};   // v3.8
 }
-// v3.7: the Ideas list only knows HOW MANY docs an idea has.
+// v3.8: the Ideas list only knows HOW MANY docs an idea has.
 // This fetches the docs themselves (for Edit / Send to Generator).
 async function loadIdeaDocs(id){
   var d=await API("ideas.get",{id:id});
@@ -1966,7 +2143,7 @@ G("btn-save-idea").addEventListener("click",async function(){
   if(!title){alert2("idea-alert","Please enter an idea title.","er");return;}
   setBtn("btn-save-idea",true,"... Saving...");
   var payload={title:title,category:val("idea-cat"),notes:G("idea-notes").value,write_mode:val("idea-mode")};
-  // v3.7: only send docs once they've fully loaded, so a slow load can never wipe them.
+  // v3.8: only send docs once they've fully loaded, so a slow load can never wipe them.
   if(IDEA_DOCS_READY)payload.source_docs=DOCS.idea;
   try{
     // Goes to Supabase FIRST. Only shows in your list once confirmed.
@@ -1992,7 +2169,10 @@ G("btn-save-idea").addEventListener("click",async function(){
   }
   setBtn("btn-save-idea",false,"&#128190; Save Idea to Supabase");
 });
-G("btn-clear-idea").addEventListener("click",function(){resetIdeaForm();if(G("idea-alert"))G("idea-alert").innerHTML="";});
+G("btn-clear-idea").addEventListener("click",function(){
+  // v3.8: ask before wiping typed work.
+  if(formHasWork("idea")&&!confirm("Clear the idea form? Anything you haven't saved will be lost."))return;
+  resetIdeaForm();if(G("idea-alert"))G("idea-alert").innerHTML="";});
 
 // ───────────────────────────────────────────────────────
 // PROOFREAD (v3.5) -- checks spelling, grammar & flow of what
@@ -2061,7 +2241,10 @@ function renderIdeas(){
       var id=this.getAttribute("data-id");
       var idea=IDEAS.find(function(x){return String(x.id)===id;});
       if(!idea)return;
-      // v3.7: bring the idea's source docs along to the Generator.
+      // v3.8: don't silently overwrite different work sitting in the Generator.
+      if(formHasWork("gen")&&String(GEN_IDEA_ID)!==String(idea.id)&&
+         !confirm("The Generator already has a title/draft in it. Replace it with \""+idea.title+"\"?\n\n(If that work isn't saved anywhere, it will be lost.)"))return;
+      // v3.8: bring the idea's source docs along to the Generator.
       var docs=[];
       if(idea.sourceDocCount){
         this.disabled=true;this.innerHTML="... Loading docs";
@@ -2075,6 +2258,7 @@ function renderIdeas(){
       showLinkCount("g-det","g-link-count");
       DOCS.gen=docs;renderDocs("gen");
       txt("gen-docs-status",docs.length?docs.length+" source doc(s) came over from the idea.":"");
+      backupForm("gen"); // v3.8
       navTo("generator");
       renderIdeas();
     });
@@ -2085,6 +2269,9 @@ function renderIdeas(){
       var id=this.getAttribute("data-id");
       var idea=IDEAS.find(function(x){return String(x.id)===id;});
       if(!idea)return;
+      // v3.8: don't silently overwrite unsaved typing in the idea form.
+      if(formHasWork("idea")&&String(EDIT_IDEA_ID)!==String(idea.id)&&
+         !confirm("The idea form has unsaved work in it. Replace it with \""+idea.title+"\"?"))return;
       EDIT_IDEA_ID=idea.id;
       G("idea-title").value=idea.title;G("idea-notes").value=idea.notes||"";
       G("idea-cat").value=idea.category;G("idea-mode").value=idea.mode||"write";
@@ -2093,14 +2280,15 @@ function renderIdeas(){
       G("btn-save-idea").innerHTML="&#128190; Update Idea";
       showLinkCount("idea-notes","idea-link-count");hide("idea-proof-out");
       G("idea-title").scrollIntoView({behavior:"smooth",block:"center"});
-      // v3.7: load this idea's docs. Until they arrive, saving won't touch them.
+      // v3.8: load this idea's docs. Until they arrive, saving won't touch them.
       DOCS.idea=[];renderDocs("idea");
-      if(!idea.sourceDocCount){IDEA_DOCS_READY=true;txt("idea-docs-status","");return;}
+      if(!idea.sourceDocCount){IDEA_DOCS_READY=true;txt("idea-docs-status","");backupForm("idea");return;}
       IDEA_DOCS_READY=false;txt("idea-docs-status","Loading "+idea.sourceDocCount+" source doc(s)...");
       try{
         var docs=await loadIdeaDocs(idea.id);
         if(EDIT_IDEA_ID!==idea.id)return; // you clicked a different idea meanwhile
         DOCS.idea=docs;IDEA_DOCS_READY=true;renderDocs("idea");txt("idea-docs-status","");
+        backupForm("idea"); // v3.8
       }catch(e){
         if(EDIT_IDEA_ID!==idea.id)return;
         G("idea-docs-status").innerHTML="<span style='color:var(--orange)'>Couldn't load this idea's docs ("+esc(e.message)+"). Saving now will keep them as they are. Click Edit again to retry.</span>";
@@ -2152,7 +2340,7 @@ G("btn-research").addEventListener("click",async function(){
   setBtn("btn-research",true," Researching...");
   var prompt="Research for TheGloveSOS.com.\nTopic: "+topic+"\nFocus: "+val("res-focus")+"\n\nFind NATIONAL search demand (players, parents and coaches across the US) -- not local. Each idea must target one national search phrase people actually type.\nCategory must be one of: Glove Care, Glove Repair, Glove Provider Spotlight, Behind the Scenes, Customer Stories, General Tips.\n\nReturn:\n===SUMMARY===\n[Why this matters for glove repair audience nationally]\n\n===BLOG_IDEAS===\n1. [Title] | Category: [cat] | Angle: [angle]\n2. [Title] | Category: [cat] | Angle: [angle]\n3. [Title] | Category: [cat] | Angle: [angle]\n4. [Title] | Category: [cat] | Angle: [angle]\n5. [Title] | Category: [cat] | Angle: [angle + target keyword]\n\n===KEYWORDS===\n[12 national SEO keywords, highest search intent first]\n\n===SOURCES===\n[3-4 source types]";
   try{
-    var t=await AI(prompt,1600,"research");  // v3.7: National SEO Playbook applied
+    var t=await AI(prompt,1600,"research");  // v3.8: National SEO Playbook applied
     txt("res-results",t);show("res-output");LASTRES=t;
   }catch(e){alert("ERROR: "+e.message);}
   finally{setBtn("btn-research",false," Research Now");}
@@ -2324,10 +2512,14 @@ document.addEventListener("DOMContentLoaded",function(){
   G("nl-month").value=months[new Date().getMonth()];
   G("nl-year").value=new Date().getFullYear();
   G("push-date").value=localToday();
-  wireDocInput("idea");wireDocInput("gen"); // v3.7: source doc pickers
+  wireDocInput("idea");wireDocInput("gen"); // v3.8: source doc pickers
+  // v3.8: bring back any unsaved work from last time, then keep autosaving.
+  var gotGen=restoreForm("gen"),gotIdea=restoreForm("idea"),gotBlog=restoreBlog();
+  wireBackups();
   renderToggles();updateCounts();
   if(ST.pass){
     loadSettings(); // pulls settings, queue and ideas fresh from Supabase
+    if(gotGen||gotBlog)navTo("generator");else if(gotIdea)navTo("ideas");
   } else {
     alert2("s-alert"," First time on this device? Enter your Tool Shed passcode above, click Test Connection, then Save All Settings.","in");
     navTo("settings");
