@@ -1,7 +1,7 @@
 // ============================================================
-// netlify/functions/toolshed.mjs  --  Tool Shed v3.8 BACK OFFICE
+// netlify/functions/toolshed.mjs  --  Tool Shed v3.81 BACK OFFICE
 // ------------------------------------------------------------
-// v3.8 ADDED:
+// v3.81 ADDED:
 //   - Source docs on ideas (ideas.get, source_docs on create/update)
 //   - Review & Approve flow: a new blog saves as a "Review" draft,
 //     then queue.approve marks it Approved. queue.get / queue.review
@@ -36,7 +36,7 @@ import { timingSafeEqual, createHash } from "node:crypto";
 import * as db from "../lib/supabase.mjs";
 import { askAI, DEFAULT_MODELS } from "../lib/ai.mjs";
 import { publishPost, unpublishPost, nowInShopTZ, PUBLISH_HOUR } from "../lib/publish.mjs";
-import { withPlaybook, activePlaybook, DEFAULT_PLAYBOOK, checkSeo } from "../lib/seo.mjs"; // v3.8
+import { withPlaybook, activePlaybook, DEFAULT_PLAYBOOK, checkSeo } from "../lib/seo.mjs"; // v3.81
 
 // ------------------------------------------------------------
 // RULES THE DATABASE ENFORCES (copied from Supabase so we can
@@ -57,13 +57,13 @@ const SETTING_KEYS = [
   "default_author", "min_word_count", "max_word_count",
   "site_url", "notification_email", "sheet_id", "sheet_tab",
   "auto_generate", "auto_newsletter", "email_notify",
-  "seo_playbook", // v3.8: JB's edited National SEO Playbook (blank = default)
+  "seo_playbook", // v3.81: JB's edited National SEO Playbook (blank = default)
 ];
 
 const BUCKET = "blog-images";
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // 4 MB (Netlify caps requests at ~6 MB)
 
-// ---------- v3.8: SOURCE DOCS ----------
+// ---------- v3.81: SOURCE DOCS ----------
 // The browser pulls the TEXT out of a PDF / Word / text file and
 // sends us that text. We keep the text (not the original file),
 // because the text is what the AI reads.
@@ -76,7 +76,7 @@ const NOT_APPROVED_MSG =
   "Approve this blog first. In the Blog Queue click Review, read it over, then click Approve.";
 
 // ------------------------------------------------------------
-// v3.8 HELPERS
+// v3.81 HELPERS
 // ------------------------------------------------------------
 
 // Tidy a list of docs from the browser. Drops empty ones, trims
@@ -303,7 +303,7 @@ const actions = {
   async "ideas.list"() {
     const ideas = await db.select(
       "blog_ideas",
-      // v3.8: source_doc_count (just the NUMBER of docs) keeps this list
+      // v3.81: source_doc_count (just the NUMBER of docs) keeps this list
       // small and fast. The doc text itself loads with ideas.get.
       "select=id,title,category,notes,status,topic_keywords,write_mode,created_at,source_doc_count" +
         // Hide ideas already turned into blogs ("Used") or shelved ("Archived").
@@ -312,7 +312,7 @@ const actions = {
     return { ideas };
   },
 
-  // v3.8: ONE idea, including the full text of its source docs.
+  // v3.81: ONE idea, including the full text of its source docs.
   // Used when you click Edit or Send to Generator.
   async "ideas.get"(data) {
     const id = needId(data && data.id);
@@ -333,7 +333,7 @@ const actions = {
       notes: data.notes || "",
       topic_keywords: data.topic_keywords || title,
       write_mode: fixMode(data.write_mode),
-      source_docs: cleanDocs(data.source_docs), // v3.8
+      source_docs: cleanDocs(data.source_docs), // v3.81
       status: "New",
       date_found: new Date().toISOString(),
     });
@@ -353,7 +353,7 @@ const actions = {
     if (data.notes !== undefined) changes.notes = String(data.notes);
     if (data.category !== undefined) changes.category = fixCategory(data.category);
     if (data.write_mode !== undefined) changes.write_mode = fixMode(data.write_mode);
-    if (data.source_docs !== undefined) changes.source_docs = cleanDocs(data.source_docs); // v3.8
+    if (data.source_docs !== undefined) changes.source_docs = cleanDocs(data.source_docs); // v3.81
     if (data.title !== undefined && !changes.title) throw new Error("An idea needs a title.");
     if (!Object.keys(changes).length) throw new Error("Nothing to change.");
     const rows = await db.update("blog_ideas", "id=eq." + id, changes);
@@ -380,7 +380,7 @@ const actions = {
   },
 
   // Save a freshly generated blog into the queue.
-  // v3.8: a new blog is ALWAYS a draft ("Review" or "Pending").
+  // v3.81: a new blog is ALWAYS a draft ("Review" or "Pending").
   // It only becomes Approved through queue.approve -- so nothing
   // can skip JB's review.
   async "queue.create"(data) {
@@ -420,8 +420,8 @@ const actions = {
       internal_links: p.internal_links || null,
       external_links: p.external_links || null,
       source: "AI",
-      idea_id: ideaId,   // v3.8: remember which idea this came from
-      approved_at: null, // v3.8: not approved until JB says so
+      idea_id: ideaId,   // v3.81: remember which idea this came from
+      approved_at: null, // v3.81: not approved until JB says so
     };
 
     // Slugs must be unique. If "glove-care-101" is taken, try
@@ -438,14 +438,14 @@ const actions = {
       }
     }
 
-    // v3.8: the idea is now "In Progress" (still on your Ideas list,
+    // v3.81: the idea is now "In Progress" (still on your Ideas list,
     // marked as being worked on). It becomes "Used" when you approve.
     if (ideaId) {
       try { await db.update("blog_ideas", "id=eq." + ideaId, { status: "In Progress" }); }
       catch (e) { /* not worth failing the save over */ }
     }
 
-    // v3.8: save the private review data (source docs + fact check).
+    // v3.81: save the private review data (source docs + fact check).
     // The blog itself is already safe, so a problem here is a warning.
     let warning = "";
     const docs = cleanDocs(data.source_docs);
@@ -457,7 +457,7 @@ const actions = {
     return { post, warning };
   },
 
-  // v3.8: ONE blog with EVERYTHING -- the full text plus its private
+  // v3.81: ONE blog with EVERYTHING -- the full text plus its private
   // review data. Used by the Review button in the Blog Queue.
   async "queue.get"(data) {
     const id = needId(data && data.id);
@@ -470,7 +470,7 @@ const actions = {
     return { post: rows[0], review: rev[0] || { source_docs: [], fact_check: null, review_notes: "" } };
   },
 
-  // v3.8: save fact-check results, review notes and/or source docs.
+  // v3.81: save fact-check results, review notes and/or source docs.
   async "queue.review"(data) {
     const id = needId(data && data.id);
     const fields = {};
@@ -484,7 +484,7 @@ const actions = {
     return { review: { fact_check: review.fact_check, review_notes: review.review_notes } };
   },
 
-  // v3.8: APPROVE a blog -- "as-is", or with the edits JB just made.
+  // v3.81: APPROVE a blog -- "as-is", or with the edits JB just made.
   //   data = { id, changes: {title, content, excerpt, meta_description}, review_notes }
   async "queue.approve"(data) {
     const id = needId(data && data.id);
@@ -521,7 +521,7 @@ const actions = {
       changes.hero_image_url = c.featured_image_url || null;
     }
 
-    // v3.8: wording edits (title / content / excerpt / meta).
+    // v3.81: wording edits (title / content / excerpt / meta).
     const edits = editChanges(c);
     const editing = Object.keys(edits).length > 0;
 
@@ -571,7 +571,7 @@ const actions = {
 
   async "queue.publish"(data) {
     const id = needId(data && data.id);
-    // v3.8 approval gate
+    // v3.81 approval gate
     const found = await db.select("blog_posts", "select=approved_at&id=eq." + id);
     if (!found.length) throw new Error("Blog not found (it may have been deleted).");
     if (!found[0].approved_at) throw new Error(NOT_APPROVED_MSG);
@@ -581,7 +581,7 @@ const actions = {
   async "queue.unpublish"(data) {
     const id = needId(data && data.id);
     await unpublishPost(id, "Review");
-    // v3.8: back in Review = needs a fresh approval before it goes live again.
+    // v3.81: back in Review = needs a fresh approval before it goes live again.
     const rows = await db.update("blog_posts", "id=eq." + id, { approved_at: null });
     return { post: rows[0] };
   },
@@ -598,14 +598,14 @@ const actions = {
     if (!prompt) throw new Error("Empty prompt.");
     const s = await loadSettings().catch(() => ({}));
     const provider = s.ai_provider === "gemini" ? "gemini" : "claude";
-    // v3.8: wrap SEO-related tasks ("blog", "polish", "seo", "research")
+    // v3.81: wrap SEO-related tasks ("blog", "polish", "seo", "research")
     // with the National SEO Playbook. Other tasks pass through unchanged.
     const fullPrompt = withPlaybook(data.task, prompt, s.seo_playbook);
     const text = await askAI({ provider, model: s.ai_model, prompt: fullPrompt, maxTokens: data.maxTokens });
     return { text, provider };
   },
 
-  // ---------- SEO (v3.8) ----------
+  // ---------- SEO (v3.81) ----------
   // The playbook currently in force (saved version, or the default).
   async "seo.playbook"() {
     const s = await loadSettings().catch(() => ({}));
