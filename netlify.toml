@@ -10,7 +10,7 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# v3.4: where the back office lives. Netlify builds every file in
+# v3.9: where the back office lives. Netlify builds every file in
 # this folder into a serverless function automatically.
 [functions]
   directory = "netlify/functions"
