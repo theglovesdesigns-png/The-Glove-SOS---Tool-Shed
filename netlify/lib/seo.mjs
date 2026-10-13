@@ -1,5 +1,5 @@
 // ============================================================
-// netlify/lib/seo.mjs  --  Tool Shed v3.6  (NEW FILE)
+// netlify/lib/seo.mjs  --  Tool Shed v8  (NEW FILE)
 // ------------------------------------------------------------
 // WHAT THIS FILE DOES (plain English):
 //   1) Holds the NATIONAL SEO PLAYBOOK -- the rules every AI call
@@ -39,7 +39,7 @@ WHO WE ARE: TheGloveSOS.com is a NATIONAL directory that connects baseball and s
 - Use 3-6 secondary/related keywords naturally (brands like Rawlings, Wilson, Mizuno, 44 Pro; positions; glove parts like palm, web, laces, pocket).
 - NO keyword stuffing. Write for humans first. If it sounds forced, rewrite it.
 
-3. SEARCH INTENT FIRST
+ SEARCH INTENT FIRST
 - Answer the reader's question in the first 2-3 sentences. No long warm-ups.
 - Use ## headings phrased the way people search (questions like "How long does a glove relace take?").
 - Short paragraphs (2-4 sentences). Use bullet or numbered lists for steps.
