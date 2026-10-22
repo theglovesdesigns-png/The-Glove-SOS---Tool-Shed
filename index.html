@@ -165,6 +165,9 @@ mark.flash{outline:2px solid var(--teal)}
 .rv-section{border-top:1px solid var(--bdr);padding-top:12px;margin-top:12px}
 /* v3.9: hero image pictures (Review panel + Blogs Posted) */
 .hero-box{width:100%;max-width:480px;aspect-ratio:1200/628;object-fit:cover;border-radius:7px;border:1px solid var(--bdr);display:block;background:var(--bg3)}
+/* v4.1: proofread changes -- green = added, red = removed */
+.pf-ins{background:rgba(0,204,136,.18);color:var(--green);border-radius:3px;padding:0 1px}
+.pf-del{background:rgba(204,51,68,.15);color:var(--red);text-decoration:line-through;border-radius:3px;padding:0 1px}
 .hero-thumb{width:76px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--bdr);display:block}
 .hero-missing{width:76px;height:40px;border-radius:4px;border:1px dashed var(--orange);color:var(--orange);font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:none}
 </style>
@@ -176,7 +179,7 @@ mark.flash{outline:2px solid var(--teal)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v4.0</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v4.1</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -200,7 +203,7 @@ mark.flash{outline:2px solid var(--teal)}
     <div class="slbl">System</div>
     <div class="sitem" data-page="settings"><span class="sico">⚙️</span><span class="stxt">Settings</span></div>
   </div>
-  <div class="sfoot"><span>Queue: <b id="sf-q">0</b><br/>Posted: <b id="sf-p">0</b><br/>Ideas: <b id="sf-i">0</b></span></div>
+  <div class="sfoot"><span>Queue: <b id="sf-q">0</b><br/>Posted: <b id="sf-p">0</b><br/>Ideas: <b id="sf-i">0</b><br/><span title="AI spend this month (estimate)">AI this month: <b id="sf-ai">--</b></span></span></div>
 </div>
 
 <!-- MAIN -->
@@ -209,7 +212,7 @@ mark.flash{outline:2px solid var(--teal)}
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
     <span class="topbar-badge">TheGloveSOS.com</span>
-    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v4.0</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v4.1</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -261,12 +264,27 @@ mark.flash{outline:2px solid var(--teal)}
         </select></div>
       <div class="fg"><label id="g-det-label">Details &amp; Context</label>
         <textarea id="g-det" rows="6" placeholder="Angle, key points, audience, seasonal tie-ins... Paste links and they'll be in the blog."></textarea>
-        <div class="hint" id="g-link-count"></div></div>
+        <div class="hint" id="g-link-count"></div>
+        <!-- v4.1: proofread the draft right here, before generating -->
+        <div class="bgroup" style="margin-top:6px"><button class="btn btn-gold btn-sm" id="btn-proof-gen">🔎 Proofread My Draft</button>
+          <span class="hint" style="margin:0">Fixes grammar &amp; spelling, keeps it sounding like you. You see every change before it's used.</span></div>
+        <div id="gen-proof-out" style="display:none;margin-top:10px">
+          <div class="card-title" style="font-size:13px">✅ Proofread Version <span class="hint" style="margin:0 0 0 8px"><span class="pf-ins">green</span> = added, <span class="pf-del">red</span> = removed</span></div>
+          <div id="gen-proof-text" class="outbox" style="max-height:320px;white-space:pre-wrap"></div>
+          <div id="gen-proof-changes" style="font-size:12px;color:var(--t2);margin:8px 0"></div>
+          <div class="bgroup">
+            <button class="btn btn-teal btn-sm" id="btn-gproof-use">Use This Version</button>
+            <button class="btn btn-out btn-sm" id="btn-gproof-keep">Keep Mine</button>
+          </div>
+        </div></div>
       <!-- v3.7: SOURCE DOCS -- text is pulled out right in the browser -->
       <div class="fg"><label>📎 Source Docs <span style="font-size:10px;color:var(--t3)">(optional -- PDF, Word .docx, .txt, .md)</span></label>
         <div class="doc-drop">
           <input type="file" id="gen-docs-file" multiple accept=".pdf,.docx,.txt,.md,.markdown,.csv,application/pdf,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
           <div class="hint" id="gen-docs-hint">The AI pulls facts from these docs, and the fact check uses them to double-check the blog.</div>
+          <!-- v4.1: read a web article straight from its link -->
+          <div class="bgroup" style="margin-top:6px"><input type="url" id="gen-docs-url" placeholder="...or paste an article link (https://...)" style="flex:1;min-width:180px"/>
+            <button class="btn btn-out btn-sm" id="gen-docs-url-btn">🔗 Read Article</button></div>
           <div class="hint" id="gen-docs-status"></div>
           <div id="gen-docs-list"></div>
         </div></div>
@@ -336,7 +354,7 @@ mark.flash{outline:2px solid var(--teal)}
         </div>
         <div id="seo-checks" style="font-size:13px;line-height:1.7"></div>
         <div class="hint" style="margin-top:6px">Aim for <b>B (80+) or better</b> before queuing. Edit the SEO tab text or regenerate to raise the score.</div>
-        <!-- v4.0: re-do the meta / keywords / tags / excerpt / caption for this blog -->
+        <!-- v4.1: re-do the meta / keywords / tags / excerpt / caption for this blog -->
         <div class="bgroup" style="margin-top:8px">
           <button class="btn btn-pur btn-sm" id="btn-seo-refresh">🔁 Refresh SEO Pack</button>
           <span class="hint" style="margin:0">Rewrites the SEO title, meta, keywords, tags, excerpt &amp; social caption from the blog as it is now. Your blog text isn't touched.</span>
@@ -372,7 +390,7 @@ mark.flash{outline:2px solid var(--teal)}
           <div class="fg"><label>Blog Content (Markdown)</label>
             <textarea id="rv-content" rows="22" style="font-family:monospace;font-size:12px"></textarea>
             <div class="hint" id="rv-wc"></div></div>
-          <!-- v4.0: the SEO + social fields are editable too -->
+          <!-- v4.1: the SEO + social fields are editable too -->
           <div class="r2">
             <div class="fg"><label>Slug <span style="font-size:10px;color:var(--t3)">(web address: /blog/...)</span></label><input type="text" id="rv-slug"/></div>
             <div class="fg"><label>Keywords <span style="font-size:10px;color:var(--t3)">(comma-separated, primary keyword FIRST)</span></label><input type="text" id="rv-keywords"/></div>
@@ -528,11 +546,14 @@ mark.flash{outline:2px solid var(--teal)}
         <div class="doc-drop">
           <input type="file" id="idea-docs-file" multiple accept=".pdf,.docx,.txt,.md,.markdown,.csv,application/pdf,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
           <div class="hint">Attach research, supplier sheets, your own notes -- anything with facts. They go with this idea to the Generator, the AI uses them, and the fact check checks the blog against them.</div>
+          <!-- v4.1: read a web article straight from its link -->
+          <div class="bgroup" style="margin-top:6px"><input type="url" id="idea-docs-url" placeholder="...or paste an article link (https://...)" style="flex:1;min-width:180px"/>
+            <button class="btn btn-out btn-sm" id="idea-docs-url-btn">🔗 Read Article</button></div>
           <div class="hint" id="idea-docs-status"></div>
           <div id="idea-docs-list"></div>
         </div></div>
       <div id="idea-proof-out" style="display:none;margin-bottom:12px">
-        <div class="card-title" style="font-size:13px">✅ Proofread Version</div>
+        <div class="card-title" style="font-size:13px">✅ Proofread Version <span class="hint" style="margin:0 0 0 8px"><span class="pf-ins">green</span> = added, <span class="pf-del">red</span> = removed</span></div>
         <div id="idea-proof-text" class="outbox" style="max-height:320px;white-space:pre-wrap"></div>
         <div id="idea-proof-changes" style="font-size:12px;color:var(--t2);margin:8px 0"></div>
         <div class="bgroup">
@@ -597,14 +618,27 @@ mark.flash{outline:2px solid var(--teal)}
         <div class="fg"><label>Focus Area</label>
           <select id="res-focus"><option>Glove Repair Techniques</option><option>Glove Care &amp; Maintenance</option><option>Provider Spotlights</option><option>Baseball / Softball News</option><option>Youth &amp; Coaching</option></select></div>
       </div>
-      <div class="bgroup"><button class="btn btn-teal" id="btn-research">🔍 Research Now</button></div>
+      <!-- v4.1: optional web search for REAL articles (costs a little more) -->
+      <div class="fg"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text)">
+        <input type="checkbox" id="res-web" style="width:auto"/> 🌐 Search the web for real articles &amp; links
+        <span class="hint" style="margin:0">(up to 3 searches, about 3-6&cent; a run)</span></label>
+        <div class="hint">Off = quick brainstorm from what the AI already knows (about 1&cent;). On = it searches the web, gives you the actual articles it found, and attaches them to the ideas you save.</div></div>
+      <div class="bgroup"><button class="btn btn-teal" id="btn-research">🔍 Research Now</button>
+        <span id="res-cost" class="hint" style="margin:0"></span></div>
     </div>
     <div id="res-output" style="display:none">
       <div class="card">
         <div class="card-title">Results &amp; Blog Ideas Found</div>
         <div id="res-results" class="outbox" style="max-height:400px"></div>
+        <!-- v4.1: the real web pages the research used -->
+        <div id="res-sources-wrap" style="display:none;margin-top:12px">
+          <div style="font-family:Oswald,sans-serif;font-size:14px;color:var(--gold);margin-bottom:6px">📰 Articles Found</div>
+          <div id="res-sources" style="font-size:13px;line-height:1.7"></div>
+          <div class="hint">When you save the ideas, each idea's articles are read and attached as Source Docs, so the writer and the fact check can use them.</div>
+        </div>
         <div class="bgroup" style="margin-top:10px">
           <button class="btn btn-gold btn-sm" id="btn-save-res">💡 Save All as Ideas</button>
+          <span id="res-save-status" class="hint" style="margin:0"></span>
         </div>
       </div>
     </div>
@@ -681,7 +715,7 @@ mark.flash{outline:2px solid var(--teal)}
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
     <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v4.0</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-13</span></div>
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v4.1</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-20</span></div>
         <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
       </div>
     </div>
@@ -701,6 +735,23 @@ mark.flash{outline:2px solid var(--teal)}
           <div class="hint">Defaults: claude-sonnet-5-5 / gemini-3.8-flash</div></div>
       </div>
       <div class="hint">Switch anytime. Each provider's key goes in Netlify: ANTHROPIC_API_KEY or GEMINI_API_KEY. Click Test Connection to confirm.</div>
+    </div>
+    <!-- v4.1: AI SPEND -- what the AI costs, and a hard monthly limit -->
+    <div class="card">
+      <div class="card-title" style="justify-content:space-between"><span>💵 AI Spend &amp; Limits</span>
+        <button class="btn btn-out btn-xs" id="btn-spend-refresh">&#8635; Refresh</button></div>
+      <div id="spend-box" style="font-size:13px;color:var(--t2)">Loading...</div>
+      <div class="r2" style="margin-top:10px">
+        <div class="fg"><label>Monthly AI budget (US $)</label><input type="number" id="s-budget" min="0" step="1" placeholder="e.g. 10  (blank = no limit)"/>
+          <div class="hint">When this month's AI spend reaches it, AI buttons stop and tell you. Resets on the 1st.</div></div>
+        <div class="fg"><label>Research Hub model</label>
+          <select id="s-research-model">
+            <option value="">Claude Haiku 5.5 -- cheapest, fast (recommended)</option>
+            <option value="claude-sonnet-5-5">Claude Sonnet 5.5 -- smarter, about 20x the cost</option>
+          </select>
+          <div class="hint">Blogs, SEO and proofreading always use your main model (above), because they need your voice.</div></div>
+      </div>
+      <div class="hint">Costs are estimates from Claude's published prices (Sonnet 5.5: $2 in / $10 out per million tokens; Haiku 5.5: $0.10 / $0.50; web search 1&cent; each). Your real bill is at console.anthropic.com &gt; Billing.</div>
     </div>
     <div class="card">
       <div class="card-title">🎙️ JB Voice Profile — Pre-fills Every Blog</div>
@@ -1213,8 +1264,20 @@ async function API(action,data){
 // v3.7: "task" tells the back office which SEO rules to wrap around the prompt:
 //   "blog" / "polish" / "seo" / "research" = National SEO Playbook applied
 //   (left blank)                            = no SEO rules (proofread, newsletter, images)
-async function AI(prompt,max,task){
-  var d=await API("ai.generate",{prompt:prompt,maxTokens:max||3000,task:task||""});
+// v4.1: every answer comes back with a receipt (tokens + estimated cost).
+//   RUN_COST adds up the cost of everything since the last startRun(),
+//   so a button can say "this blog cost about 7 cents".
+//   opts.webSearch = how many web searches research may use (0 = none).
+var RUN_COST=0,LAST_AI=null;
+function startRun(){RUN_COST=0;}
+function centsText(dollars){
+  var c=(Number(dollars)||0)*100;
+  return c<0.1?"less than 0.1&cent;":c<10?c.toFixed(1)+"&cent;":"$"+(c/100).toFixed(2);
+}
+async function AI(prompt,max,task,opts){
+  var d=await API("ai.generate",{prompt:prompt,maxTokens:max||3000,task:task||"other",webSearch:(opts&&opts.webSearch)||0});
+  LAST_AI=d;
+  if(d.usage&&d.usage.cost_usd)RUN_COST+=d.usage.cost_usd;
   return d.text||"";
 }
 
@@ -1288,6 +1351,7 @@ function navTo(page){
   if(page==="posted")renderPosted(); // v3.9
   if(page==="ideas")renderIdeas();
   if(page==="images")fillAttachList();
+  if(page==="settings")loadSpend(); // v4.1
   if(page==="generator"){
     var ge=G("g-exp");if(ge&&ST.voice&&!ge.value)ge.value=ST.voice;
     var gd=G("g-dna");if(gd&&ST.dna&&!gd.value)gd.value=ST.dna;
@@ -1386,6 +1450,9 @@ async function loadSettings(){
     if(m.notification_email)ST.email=m.notification_email;
     ST.voice=m.jb_voice||"";
     ST.dna=m.brand_dna||"";
+    // v4.1: AI spend settings
+    if(G("s-budget"))G("s-budget").value=m.ai_monthly_budget||"";
+    if(G("s-research-model"))G("s-research-model").value=m.ai_model_research||"";
     if(m.logo_url)setLogo(m.logo_url);
     TOGS.ag=m.auto_generate==="true";
     TOGS.nl=m.auto_newsletter!=="false";TOGS.em=m.email_notify!=="false";
@@ -1400,6 +1467,7 @@ async function loadSettings(){
     if(G("s-alert"))G("s-alert").innerHTML="";
     await loadSeoPlaybook();
     await loadQueueFromSB();await loadIdeasFromSB();updateCounts();
+    loadSpend(); // v4.1
   }catch(e){alert2("s-alert","ERROR: Could not load: "+e.message,"er");}
 }
 // v3.7: show the SEO Playbook currently in force (saved, or built-in default).
@@ -1452,7 +1520,9 @@ G("btn-save-settings").addEventListener("click",async function(){
     jb_voice:val("s-voice"),brand_dna:val("s-dna"),
     // v3.7: if the box matches the built-in default, store blank so future
     // default improvements flow through automatically.
-    seo_playbook:(val("s-seo")===SEO_DEFAULT.trim()?"":G("s-seo").value)
+    seo_playbook:(val("s-seo")===SEO_DEFAULT.trim()?"":G("s-seo").value),
+    // v4.1: AI spend settings
+    ai_monthly_budget:val("s-budget"),ai_model_research:val("s-research-model")
   };
   try{
     await API("settings.save",{settings:s});
@@ -1495,6 +1565,7 @@ G("btn-generate").addEventListener("click",async function(){
   if(!cat){alert2("g-alert","Please select a category.","er");return;}
   var wc=val("g-wc")||"1500";
   setBtn("btn-generate",true,"... Step 1 of 4: writing the blog...");hide("g-output");
+  startRun(); // v4.1: add up what this blog costs
   if(G("g-alert"))G("g-alert").innerHTML="";
   resetReviewPanel(); // v3.7: fresh blog = fresh review (old draft stays safe in the queue)
   // v3.4: the blog is written in TWO smaller AI calls instead of one
@@ -1520,13 +1591,13 @@ G("btn-generate").addEventListener("click",async function(){
   if(mode==="polish"){
     // ✍️ USE MY WORDS: JB wrote it. Proofread + smooth only.
     if(details.split(/\s+/).length<60){alert2("g-alert","'Use my words' needs your draft in the box (at least a few paragraphs). Or switch Mode to 'Write it for me'.","er");setBtn("btn-generate",false," Generate Master Blog");return;}
-    // v4.0: JB's words + REAL SEO. The draft is his; the AI is his editor AND his SEO guy.
+    // v4.1: JB's words + REAL SEO. The draft is his; the AI is his editor AND his SEO guy.
     promptA="You are JB's editor and SEO specialist for TheGloveSOS.com (national glove repair directory). JB wrote the blog draft below himself. "+
       "Your job: polish it AND make it rank on Google -- while it still sounds 100% like JB.\n\n"+
       "STEP 1 -- PICK THE PRIMARY KEYWORD: the ONE phrase (2-5 words, lowercase) that people across the US actually type into Google "+
       "and that this draft truly answers (examples: \"glove repair near me\", \"how to break in a baseball glove\", \"baseball glove relacing\"). "+
       "No city or state names.\n\n"+
-      "STEP 2 -- POLISH: fix spelling, grammar and punctuation; smooth awkward sentences; split long paragraphs into 2-4 sentence paragraphs.\n\n"+
+      "STEP 2 -- POLISH: fix spelling, grammar and punctuation so every sentence is correct (capital I and sentence starts, run-on sentences and comma splices, there/their/they're, your/you're, its/it's, then/than, to/too); smooth awkward sentences; split long paragraphs into 2-4 sentence paragraphs. Correct, but still casual -- not formal or corporate.\n\n"+
       "STEP 3 -- SEO (do ALL of these):\n"+
       "- Use the primary keyword word-for-word in the FIRST TWO SENTENCES. You may lightly reword JB's opening, or add ONE short lead-in sentence that sums up his point, so the first lines answer what the reader searched for.\n"+
       "- Break it into 4-7 ## sections with headings phrased the way people search (often questions). At least ONE ## heading contains the primary keyword. Use ### sub-headings where helpful.\n"+
@@ -1551,12 +1622,12 @@ G("btn-generate").addEventListener("click",async function(){
       "\n\nReturn EXACTLY this, each === marker on its own line:\n\n===PRIMARY_KEYWORD===\n[the ONE national search phrase this blog targets, 2-5 words, lowercase]\n\n===BLOG_CONTENT===\n[Full markdown ~"+wc+" words. Primary keyword in the first two sentences and in at least one ## heading. ## and ### headers. FAQ section at the end. Real conversational voice. No title line at the top.]";
   }
   // How long may the answer be? Polish = about the draft's length; Write = the word count.
-  // v4.0: polish now adds headings + FAQ + call to action, so allow ~300 extra words.
+  // v4.1: polish now adds headings + FAQ + call to action, so allow ~300 extra words.
   var targetWords=mode==="polish"?Math.round(details.split(/\s+/).length*1.2)+300:Number(wc);
   backupForm("gen"); // v3.8: snapshot the form right before the AI call
   try{
     var tA;
-    // v4.0: roomy budget (~2.2 tokens per word + 1,000 spare). You only pay for what's used,
+    // v4.1: roomy budget (~2.2 tokens per word + 1,000 spare). You only pay for what's used,
     // and a cut-off answer is now caught as an error instead of saved half-done.
     try{ tA=await AI(promptA,Math.min(Math.round(targetWords*2.2)+1000,12000),mode==="polish"?"polish":"blog"); }
     catch(e){
@@ -1567,13 +1638,13 @@ G("btn-generate").addEventListener("click",async function(){
       return;
     }
     // LINK GUARANTEE: check every pasted link made it in; add any the AI dropped.
-    var secA=sectionsOf(tA);   // v4.0: tolerant of **bold** or spaced === markers
+    var secA=sectionsOf(tA);   // v4.1: tolerant of **bold** or spaced === markers
     var pkA=cleanPk(secA.PRIMARY_KEYWORD);
     var chk=ensureLinks(secA.BLOG_CONTENT||tA,links);
     var body=chk.content;
     LINK_REPORT={total:links.length,missing:chk.missing};
     setBtn("btn-generate",true,"... Step 2 of 4: SEO &amp; social pack...");
-    // v4.0: the SEO pack reads the WHOLE blog, is checked by code, and
+    // v4.1: the SEO pack reads the WHOLE blog, is checked by code, and
     // gets one automatic fix-up pass if anything is off (see runSeoPack).
     var tB="",seoFail="",seoLeft=[];
     try{ var pack=await runSeoPack(title,cat,body,pkA); tB=pack.text; seoLeft=pack.problems; }
@@ -1606,11 +1677,15 @@ G("btn-generate").addEventListener("click",async function(){
     // v3.7 STEP 4: fact check (its own AI call, so it gets its own time limit).
     setBtn("btn-generate",true,"... Step 4 of 4: fact-checking...");
     await runFactCheck();
+    // v4.1: the receipt for this whole blog (write + SEO + fact check)
+    var gA=G("g-alert");
+    if(gA)gA.insertAdjacentHTML("beforeend","<div class='hint' style='margin:4px 0 8px'>&#128181; This blog cost about "+centsText(RUN_COST)+" in AI.</div>");
+    loadSpend();
   }catch(e){alert2("g-alert","ERROR: "+e.message,"er");}
   finally{setBtn("btn-generate",false," Generate Master Blog");}
 });
 function parseBlog(t,title,cat){
-  var S=sectionsOf(t); // v4.0: tolerant parser
+  var S=sectionsOf(t); // v4.1: tolerant parser
   function extr(_t,tag){return S[tag]||"";}
   var con=extr(t,"BLOG_CONTENT"),st=extr(t,"SEO_TITLE"),sl=extr(t,"SLUG"),
       md=extr(t,"META_DESCRIPTION"),kw=extr(t,"KEYWORDS"),tg=extr(t,"TAGS"),
@@ -1636,7 +1711,7 @@ function parseBlog(t,title,cat){
 }
 
 // ═══════════════════════════════════════════════════════
-// SEO PACK ENGINE (v4.0)
+// SEO PACK ENGINE (v4.1)
 // ───────────────────────────────────────────────────────
 // The meta description, keywords, tags, excerpt and social caption
 // are WHY we write these blogs. So instead of trusting one AI answer:
@@ -1943,7 +2018,7 @@ function applyPostToGen(p){
   GEN.title=p.title;GEN.metaDescription=p.meta_description||"";GEN.excerpt=p.excerpt||"";
   GEN.markdownContent=p.content||"";GEN.wordCount=p.word_count||0;GEN.readTime=p.read_time||0;
   GEN.status=p.upload_status;GEN.publishDate=p.publish_date||"";GEN.isPublished=!!p.is_published;
-  // v4.0: the SEO + social fields can change now too (editor, Refresh SEO Pack)
+  // v4.1: the SEO + social fields can change now too (editor, Refresh SEO Pack)
   if(p.slug){GEN.slug=p.slug;GEN.blogUrl=p.blog_url||GEN.blogUrl;}
   GEN.seoKeywords=p.seo_keywords||"";
   GEN.primaryKeyword=String(p.seo_keywords||"").split(",")[0].trim().toLowerCase()||GEN.primaryKeyword;
@@ -2008,7 +2083,7 @@ async function runFactCheck(){
     "BLOG:\n"+GEN.markdownContent.slice(0,16000);
   var g=GEN; // remember WHICH blog we're checking, in case you open another one meanwhile
   try{
-    var t=await AI(prompt,1800);
+    var t=await AI(prompt,3500,"factcheck"); // v4.1: more room -- long blogs were close to the limit
     var fc=parseFactCheck(t);
     if(src.cut)fc.summary+=" (Your docs are long -- the checker read the first ~5,000 words of them.)";
     g.factCheck=fc;g.factStale=false;
@@ -2132,7 +2207,7 @@ function resetReviewPanel(){
   if(G("fc-summary"))G("fc-summary").innerHTML="";
   if(G("fc-list"))G("fc-list").innerHTML="";
   clearHeroPicker(); // v3.9
-  if(G("seo-refresh-alert"))G("seo-refresh-alert").innerHTML=""; // v4.0
+  if(G("seo-refresh-alert"))G("seo-refresh-alert").innerHTML=""; // v4.1
   if(G("rv-hero-alt"))G("rv-hero-alt").value="";
 }
 // The editor's live word count + meta length.
@@ -2146,7 +2221,7 @@ function updateEditCounts(){
 function editorChanges(){
   var ch={title:val("rv-title"),meta_description:G("rv-meta").value.trim(),
     excerpt:G("rv-excerpt").value.trim(),content:G("rv-content").value,
-    // v4.0: SEO + social fields
+    // v4.1: SEO + social fields
     seo_keywords:val("rv-keywords"),tags:val("rv-tags"),social_caption:G("rv-caption").value.trim()};
   if(val("rv-slug")&&val("rv-slug")!==GEN.slug)ch.slug=val("rv-slug"); // only send a NEW web address
   return ch;
@@ -2165,7 +2240,7 @@ G("btn-edit").addEventListener("click",function(){
   if(!GEN||!GEN.postId)return;
   G("rv-title").value=GEN.title;G("rv-meta").value=GEN.metaDescription||"";
   G("rv-excerpt").value=GEN.excerpt||"";G("rv-content").value=GEN.markdownContent;
-  // v4.0: SEO + social fields
+  // v4.1: SEO + social fields
   G("rv-slug").value=GEN.slug||"";G("rv-keywords").value=GEN.seoKeywords||"";
   G("rv-tags").value=GEN.tags||"";G("rv-caption").value=GEN.socialCaption||"";
   EDITING=true;updateEditCounts();renderReview();
@@ -2523,40 +2598,98 @@ G("btn-clear-idea").addEventListener("click",function(){
 // you typed, WITHOUT changing your meaning or dropping links.
 // You see the fixed version and choose: use it, or keep yours.
 // ───────────────────────────────────────────────────────
-var PROOF_TEXT="";
+// v4.1: ONE proofreader for the Ideas page AND the Generator.
+//   Goal: grammatically correct, still 100% JB. You see every change
+//   highlighted (green = added, red = removed) before you use it.
+function proofreadPrompt(text){
+  var voice=val("g-exp")||ST.voice||"";
+  return "You are JB's proofreader. JB is a glove repair pro (since 2009) who writes for TheGloveSOS.com. "+
+    "He talks like a straight shooter -- a regular guy, never talking down to anyone.\n"+
+    (voice?"JB's own description of his voice: "+voice+"\n":"")+
+    "\nGOAL: make it grammatically correct and easy to read, while it still sounds exactly like JB talking.\n\n"+
+    "FIX:\n"+
+    "- Spelling and typos.\n"+
+    "- Capitals: \"I\", the start of every sentence, names (TheGloveSOS.com, Rawlings, Wilson, Mizuno, 44 Pro, Nokona, A2000, Facebook, Instagram).\n"+
+    "- Punctuation: run-on sentences, comma splices, missing periods, no space before ? or !, doubled punctuation.\n"+
+    "- Mixed-up words: there/their/they're, your/you're, its/it's, then/than, to/too, lose/loose, weather/whether, where/were.\n"+
+    "- Subject-verb agreement and switching tenses mid-thought.\n"+
+    "- Sentences that run on too long: split them.\n\n"+
+    "KEEP:\n"+
+    "- His words, slang and casual expressions (like \"lol\", \"good ole\", \"BUT\" in capitals for emphasis), his opinions, his stories, and the order of his points.\n"+
+    "- Signature phrases exactly: \"don't let the glove control you\", \"that guy\", \"look at that guy\".\n"+
+    "- His paragraph breaks (only split a paragraph that's very long).\n"+
+    "- Every web link EXACTLY as written, character for character.\n\n"+
+    "DON'T:\n- Add facts, tips or points. Remove any of his points.\n- Make it formal, corporate or fancy. Swap his plain words for bigger ones.\n- Use em dashes.\n\n"+
+    "Return EXACTLY:\n===CORRECTED===\n[the full corrected text]\n\n===CHANGES===\n[up to 10 short bullets of the most important fixes, like - \"recieve\" -> \"receive\"]\n\n"+
+    "JB'S TEXT:\n"+text;
+}
+
+// Word-by-word "what changed" view. Classic LCS diff: finds the longest
+// run of words both versions share, everything else is added or removed.
+function wordDiffHtml(a,b){
+  var A=String(a).split(/(\s+)/),B=String(b).split(/(\s+)/);
+  if(A.length*B.length>4000000)return esc(b); // huge text: just show the new version
+  var n=A.length,m=B.length,L=[];
+  for(var i=0;i<=n;i++){L.push(new Uint16Array(m+1));}
+  for(i=n-1;i>=0;i--)for(var j=m-1;j>=0;j--)L[i][j]=A[i]===B[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  var out="";i=0;j=0;
+  while(i<n&&j<m){
+    if(A[i]===B[j]){out+=esc(A[i]);i++;j++;}
+    else if(L[i+1][j]>=L[i][j+1]){if(A[i].trim())out+="<span class='pf-del'>"+esc(A[i])+"</span>";else out+=esc(A[i]);i++;}
+    else{if(B[j].trim())out+="<span class='pf-ins'>"+esc(B[j])+"</span>";else out+=esc(B[j]);j++;}
+  }
+  while(i<n){if(A[i].trim())out+="<span class='pf-del'>"+esc(A[i])+"</span>";i++;}
+  while(j<m){out+=B[j].trim()?"<span class='pf-ins'>"+esc(B[j])+"</span>":esc(B[j]);j++;}
+  return out;
+}
+
+// Run the proofreader. Returns {text, changes, missingLinks, cost}.
+async function runProofread(mine){
+  var links=findLinks(mine),words=mine.split(/\s+/).length;
+  startRun();
+  var t=await AI(proofreadPrompt(mine),Math.min(Math.round(words*2.2)+800,8000),"proofread");
+  var S=sectionsOf(t);
+  var fixed=S.CORRECTED;
+  if(!fixed)throw new Error("The proofreader's answer came back in the wrong shape -- try again.");
+  var chk=ensureLinks(fixed,links); // safety net: put back any link it lost
+  return{text:chk.content,changes:S.CHANGES||"",missingLinks:chk.missing.length,cost:RUN_COST};
+}
+// Show a result in one of the two proofread panels ("idea" or "gen").
+function showProof(which,mine,r){
+  G(which+"-proof-text").innerHTML=wordDiffHtml(mine,r.text);
+  G(which+"-proof-changes").innerHTML="<b>What changed:</b><br>"+esc(r.changes||"Only small fixes.").replace(/\n/g,"<br>")+
+    (r.missingLinks?"<br><span style='color:var(--orange)'>Note: "+r.missingLinks+" link(s) were re-added at the bottom.</span>":"")+
+    "<br><span class='hint'>&#128181; Proofread cost about "+centsText(r.cost)+".</span>";
+  show(which+"-proof-out");
+}
+var PROOF_TEXT="",GPROOF_TEXT="";
 G("btn-proof-idea").addEventListener("click",async function(){
   var mine=G("idea-notes").value;
   if(mine.trim().split(/\s+/).length<5){alert2("idea-alert","Type a few sentences first, then Proofread.","er");return;}
-  var links=findLinks(mine);
   setBtn("btn-proof-idea",true,"... Proofreading...");hide("idea-proof-out");
-  var prompt="You are a careful copy editor for JB, a glove repair expert who writes for TheGloveSOS.com.\n"+
-    "Proofread JB's text below. Fix spelling, grammar, punctuation, and awkward sentences so it reads smoothly.\n"+
-    "RULES:\n- Keep JB's voice, slang, opinions and meaning. Do NOT add new facts or points. Do NOT remove any of his points.\n"+
-    "- Keep every web link EXACTLY as written, character for character.\n"+
-    "- Keep his signature phrases exactly (for example: \"don't let the glove control you\").\n"+
-    "- Keep his paragraph breaks unless a paragraph is very long.\n\n"+
-    "Return EXACTLY:\n===CORRECTED===\n[the full corrected text]\n\n===CHANGES===\n[up to 8 short bullets of the most important fixes, e.g. - \"recieve\" -> \"receive\"]\n\n"+
-    "JB'S TEXT:\n"+mine;
-  try{
-    var words=mine.split(/\s+/).length;
-    var t=await AI(prompt,Math.min(Math.round(words*1.8)+600,6000));
-    var fixed=extr(t,"CORRECTED");
-    if(!fixed)throw new Error("The proofreader's answer came back in the wrong shape -- try again.");
-    // Safety net: if the proofreader lost any link, put it back.
-    var chk=ensureLinks(fixed,links);
-    PROOF_TEXT=chk.content;
-    txt("idea-proof-text",PROOF_TEXT);
-    G("idea-proof-changes").innerHTML="<b>What changed:</b><br>"+esc(extr(t,"CHANGES")||"Only small fixes.").replace(/\n/g,"<br>")+
-      (chk.missing.length?"<br><span style='color:var(--orange)'>Note: "+chk.missing.length+" link(s) were re-added at the bottom.</span>":"");
-    show("idea-proof-out");
-  }catch(e){alert2("idea-alert","ERROR: "+e.message,"er");}
+  try{var r=await runProofread(mine);PROOF_TEXT=r.text;showProof("idea",mine,r);loadSpend();}
+  catch(e){alert2("idea-alert","ERROR: "+esc(e.message),"er");}
   finally{setBtn("btn-proof-idea",false,"&#128270; Proofread My Words");}
 });
 G("btn-proof-use").addEventListener("click",function(){
-  G("idea-notes").value=PROOF_TEXT;hide("idea-proof-out");showLinkCount("idea-notes","idea-link-count");
+  G("idea-notes").value=PROOF_TEXT;hide("idea-proof-out");showLinkCount("idea-notes","idea-link-count");backupSoon("idea");
   alert2("idea-alert","OK: Proofread version is in the box. Click Save to keep it.","ok");
 });
 G("btn-proof-keep").addEventListener("click",function(){hide("idea-proof-out");});
+// v4.1: the same proofreader for the Generator's draft box
+G("btn-proof-gen").addEventListener("click",async function(){
+  var mine=G("g-det").value;
+  if(mine.trim().split(/\s+/).length<5){alert2("g-alert","Type a few sentences first, then Proofread.","er");return;}
+  setBtn("btn-proof-gen",true,"... Proofreading...");hide("gen-proof-out");
+  try{var r=await runProofread(mine);GPROOF_TEXT=r.text;showProof("gen",mine,r);loadSpend();}
+  catch(e){alert2("g-alert","ERROR: "+esc(e.message),"er");}
+  finally{setBtn("btn-proof-gen",false,"&#128270; Proofread My Draft");}
+});
+G("btn-gproof-use").addEventListener("click",function(){
+  G("g-det").value=GPROOF_TEXT;hide("gen-proof-out");showLinkCount("g-det","g-link-count");backupSoon("gen");
+  alert2("g-alert","OK: Proofread version is in the box. Generate when you're ready.","ok");
+});
+G("btn-gproof-keep").addEventListener("click",function(){hide("gen-proof-out");});
 
 function renderIdeas(){
   var list=G("ideas-list");
@@ -2662,7 +2795,7 @@ G("btn-gen-nl").addEventListener("click",async function(){
   setBtn("btn-gen-nl",true,"... Generating...");
   var prompt="Monthly newsletter for TheGloveSOS.com.\nMonth: "+mo+" "+yr+"\nTOP BLOGS:\n"+bl+"\nEVENTS: "+(ev||"2-3 relevant baseball/softball events for "+mo)+"\n\nReturn EXACTLY:\n===SUBJECT===\n[45-55 chars]\n\n===PREHEADER===\n[85-100 chars]\n\n===BODY===\n[Newsletter HTML with greeting, blog summaries, baseball events, CTA to theglovesos.com]";
   try{
-    var t=await AI(prompt,2000);
+    var t=await AI(prompt,3000,"newsletter");
     txt("nl-subject",extr(t,"SUBJECT"));txt("nl-preheader",extr(t,"PREHEADER"));
     G("nl-body").innerHTML=extr(t,"BODY")||t;show("nl-output");
   }catch(e){alert2("nl-alert","ERROR: "+e.message,"er");}
@@ -2679,36 +2812,126 @@ G("btn-copy-nl").addEventListener("click",function(){
 // ═══════════════════════════════════════════════════════
 // RESEARCH
 // ═══════════════════════════════════════════════════════
+// v4.1 RESEARCH
+//   Web search OFF: one quick, cheap brainstorm (Haiku model, about 1 cent).
+//   Web search ON : the AI searches up to 3 times, cites REAL articles,
+//                   and each saved idea gets its articles attached.
+var RES_SOURCES=[];   // [{url,title}] every page the research found
 G("btn-research").addEventListener("click",async function(){
   var topic=val("res-topic");if(!topic){alert("Enter a topic.");return;}
-  setBtn("btn-research",true," Researching...");
-  var prompt="Research for TheGloveSOS.com.\nTopic: "+topic+"\nFocus: "+val("res-focus")+"\n\nFind NATIONAL search demand (players, parents and coaches across the US) -- not local. Each idea must target one national search phrase people actually type.\nCategory must be one of: Glove Care, Glove Repair, Glove Provider Spotlight, Behind the Scenes, Customer Stories, General Tips.\n\nReturn:\n===SUMMARY===\n[Why this matters for glove repair audience nationally]\n\n===BLOG_IDEAS===\n1. [Title] | Category: [cat] | Angle: [angle]\n2. [Title] | Category: [cat] | Angle: [angle]\n3. [Title] | Category: [cat] | Angle: [angle]\n4. [Title] | Category: [cat] | Angle: [angle]\n5. [Title] | Category: [cat] | Angle: [angle + target keyword]\n\n===KEYWORDS===\n[12 national SEO keywords, highest search intent first]\n\n===SOURCES===\n[3-4 source types]";
+  var web=G("res-web").checked;
+  setBtn("btn-research",true,web?"... Searching the web (up to ~40s)...":"... Researching...");
+  txt("res-cost","");
+  var prompt="Research for TheGloveSOS.com (national glove repair directory).\nTopic: "+topic+"\nFocus: "+val("res-focus")+"\n\n"+
+    (web?"Use web search (3 searches at most) to see what players, parents and coaches across the US are actually asking and reading about this topic right now. Base the ideas on what you find.\n\n":"")+
+    "Find NATIONAL search demand -- not local. Each idea must target one national search phrase people actually type.\n"+
+    "Category must be one of: Glove Care, Glove Repair, Glove Provider Spotlight, Behind the Scenes, Customer Stories, General Tips.\n"+
+    "Keep it tight: no intro, no outro, just the sections.\n\n"+
+    "Return EXACTLY these sections:\n===SUMMARY===\n[3-4 sentences: why this matters for the glove repair audience nationally"+(web?", based on what you found":"")+"]\n\n"+
+    "===BLOG_IDEAS===\n"+[1,2,3,4,5].map(function(n){return n+". [Title] | Category: [cat] | Keyword: [target search phrase] | Angle: [one sentence]"+(web?" | Refs: [1-2 article URLs you found that back this idea, or none]":"");}).join("\n")+
+    "\n\n===KEYWORDS===\n[12 national SEO keywords, highest search intent first]"+
+    (web?"\n\n===SOURCES===\n[each article you used, one per line: URL - title]":"");
   try{
-    var t=await AI(prompt,1600,"research");  // v3.7: National SEO Playbook applied
-    txt("res-results",t);show("res-output");LASTRES=t;
+    startRun();
+    var t=await AI(prompt,web?6000:3000,"research",{webSearch:web?3:0});
+    LASTRES=t;
+    RES_SOURCES=(LAST_AI&&LAST_AI.sources)||[];
+    var S=sectionsOf(t);
+    // Show it clean: summary, ideas, keywords (the raw === markers are hidden).
+    var show_=["SUMMARY","BLOG_IDEAS","KEYWORDS"].filter(function(k){return S[k];}).map(function(k){
+      return k.replace("_"," ")+"\n"+S[k];}).join("\n\n");
+    txt("res-results",show_||t);show("res-output");
+    // The real articles (from the search itself, plus any URL the answer named)
+    var extra=String(S.SOURCES||"").match(/https?:\/\/[^\s)\]]+/g)||[];
+    extra.forEach(function(u){if(!RES_SOURCES.some(function(x){return x.url===u;}))RES_SOURCES.push({url:u,title:u});});
+    if(RES_SOURCES.length){
+      G("res-sources").innerHTML=RES_SOURCES.slice(0,12).map(function(x){
+        return "&#8226; <a href='"+esc(x.url)+"' target='_blank' rel='noopener' style='color:var(--teal)'>"+esc(x.title||x.url)+"</a> <span class='hint' style='margin:0'>"+esc((x.url.match(/^https?:\/\/([^\/]+)/)||[])[1]||"")+"</span>";
+      }).join("<br>");
+      show("res-sources-wrap");
+    }else hide("res-sources-wrap");
+    var u=LAST_AI&&LAST_AI.usage;
+    G("res-cost").innerHTML="&#128181; This research cost about "+centsText(RUN_COST)+(u&&u.web_searches?" ("+u.web_searches+" web search"+(u.web_searches>1?"es":"")+")":"")+".";
+    loadSpend();
   }catch(e){alert("ERROR: "+e.message);}
-  finally{setBtn("btn-research",false," Research Now");}
+  finally{setBtn("btn-research",false,"&#128269; Research Now");}
 });
+
+// Read one web article into a Source Doc. Free -- no AI involved.
+async function readArticleDoc(url){
+  var d=await API("web.read",{url:url});
+  var a=d.article;
+  return{name:(a.title||url).slice(0,120)+" -- "+a.url,type:"web",size:a.chars,chars:a.chars,text:"Article: "+a.title+"\nLink: "+a.url+"\n\n"+a.text,
+    added_at:new Date().toISOString(),cut:!!a.cut};
+}
+
 G("btn-save-res").addEventListener("click",async function(){
   if(!LASTRES){alert("Run research first.");return;}
-  var sec=extr(LASTRES,"BLOG_IDEAS");
+  var sec=sectionsOf(LASTRES).BLOG_IDEAS||extr(LASTRES,"BLOG_IDEAS");
   var lines=sec.split("\n").filter(function(l){return l.trim()&&/^\d+\./.test(l.trim());});
-  var saved=0,failed=0;
+  var saved=0,failed=0,attached=0;
+  setBtn("btn-save-res",true,"... Saving...");
   for(var k=0;k<lines.length;k++){
     var c=lines[k].replace(/^\d+\.\s*/,"").split("|");
-    var t=(c[0]||"").trim(),cm=(c[1]||"").match(/Category:\s*(.+)/i),am=(c[2]||"").match(/Angle:\s*(.+)/i);
-    if(!t)continue;
-    var idea={title:t,category:cm?cm[1].trim():"General Tips",notes:am?am[1].trim():""};
-    // The back office fixes the category to one of your 6 official ones.
+    var t=(c[0]||"").trim();if(!t)continue;
+    var part=function(name){var hit=c.filter(function(x){return new RegExp("^\\s*"+name+":","i").test(x);})[0];return hit?hit.replace(new RegExp("^\\s*"+name+":\\s*","i"),"").trim():"";};
+    var cat=part("Category")||"General Tips",kw=part("Keyword"),ang=part("Angle");
+    var refs=(part("Refs").match(/https?:\/\/[^\s,)\]]+/g)||[]).slice(0,2);
+    txt("res-save-status","Saving idea "+(k+1)+" of "+lines.length+(refs.length?" (reading "+refs.length+" article"+(refs.length>1?"s":"")+")":"")+"...");
+    // Read each idea's articles (in parallel) -- a site that blocks us just gets skipped.
+    var docs=(await Promise.all(refs.map(function(u){return readArticleDoc(u).catch(function(){return null;});}))).filter(Boolean);
+    var notes=(ang?ang:"")+(kw?"\n\nTarget keyword: "+kw:"")+
+      (refs.length?"\n\nReference articles (for facts -- not links to put in the blog):\n"+refs.map(function(u){return"- "+u.replace(/^https?:\/\/(www\.)?/i,"");}).join("\n"):"");
     try{
-      var d=await API("ideas.create",{title:idea.title,category:idea.category,notes:idea.notes,topic_keywords:idea.title});
-      IDEAS.unshift({id:d.idea.id,supabaseId:d.idea.id,title:d.idea.title,category:d.idea.category,notes:d.idea.notes||"",status:"New"});
-      saved++;
+      var d=await API("ideas.create",{title:t,category:cat,notes:notes.trim(),topic_keywords:kw||t,source_docs:docs});
+      IDEAS.unshift(ideaFromRow(d.idea));
+      saved++;attached+=docs.length;
     }catch(e){ failed++; }
   }
   saveIdeasLocal();updateCounts();
-  alert("OK: "+saved+" idea(s) saved to Supabase"+(failed?". "+failed+" failed -- try Save again.":"")+"!");
+  setBtn("btn-save-res",false,"&#128161; Save All as Ideas");txt("res-save-status","");
+  alert("OK: "+saved+" idea(s) saved to Supabase"+(attached?", with "+attached+" article(s) attached as Source Docs":"")+(failed?". "+failed+" failed -- try Save again.":"")+"!");
 });
+
+// v4.1: "Read Article" buttons in both Source Docs boxes
+function wireUrlReader(which){
+  var btn=G(which+"-docs-url-btn");if(!btn)return;
+  btn.addEventListener("click",async function(){
+    var url=val(which+"-docs-url"),st=G(which+"-docs-status");
+    if(!/^https?:\/\//i.test(url)){if(st)st.innerHTML="<span style='color:var(--orange)'>Paste a full link that starts with https://</span>";return;}
+    if(which==="idea"&&!IDEA_DOCS_READY){if(st)st.innerHTML="<span style='color:var(--orange)'>Wait for this idea's docs to finish loading, then try again.</span>";return;}
+    if(DOCS[which].length>=DOC_LIMITS.maxDocs){if(st)st.innerHTML="<span style='color:var(--orange)'>Limit is "+DOC_LIMITS.maxDocs+" docs -- remove one first.</span>";return;}
+    setBtn(which+"-docs-url-btn",true,"... Reading...");
+    try{
+      var doc=await readArticleDoc(url);
+      if(totalDocChars(DOCS[which])+doc.chars>DOC_LIMITS.maxTotal)throw new Error("all docs together are too long -- remove one first");
+      DOCS[which].push(doc);renderDocs(which);docsChanged(which);
+      G(which+"-docs-url").value="";
+      if(st)st.innerHTML="<span style='color:var(--green)'>&#10003; Read \""+esc(doc.name.split(" -- ")[0])+"\" (~"+docWords(doc.chars)+" words). Free -- no AI used.</span>";
+    }catch(e){if(st)st.innerHTML="<span style='color:var(--orange)'>"+esc(e.message)+"</span>";}
+    finally{setBtn(which+"-docs-url-btn",false,"&#128279; Read Article");}
+  });
+}
+wireUrlReader("idea");wireUrlReader("gen");
+
+// v4.1: AI SPEND card (Settings) + the little total in the sidebar
+async function loadSpend(){
+  if(!ST.pass)return;
+  try{
+    var d=await API("usage.summary");
+    txt("sf-ai","$"+Number(d.total||0).toFixed(2));
+    var box=G("spend-box");if(!box)return;
+    var rows=(d.byTask||[]).slice().sort(function(a,b){return b.cost_usd-a.cost_usd;});
+    var pct=d.budget>0?Math.min(100,Math.round(d.total/d.budget*100)):0;
+    box.innerHTML="<div style='font-size:22px;font-family:Oswald,sans-serif;color:var(--teal)'>$"+Number(d.total||0).toFixed(2)+
+      " <span style='font-size:13px;color:var(--t3)'>this month"+(d.budget>0?" of your $"+d.budget.toFixed(2)+" budget ("+pct+"%)":" (no budget set)")+"</span></div>"+
+      (d.budget>0?"<div style='height:6px;background:var(--bg3);border-radius:3px;margin:6px 0 10px'><div style='height:6px;width:"+pct+"%;background:"+(pct>=90?"var(--red)":pct>=70?"var(--orange)":"var(--teal)")+";border-radius:3px'></div></div>":"")+
+      (rows.length?"<table style='margin-top:6px'><thead><tr><th>What</th><th>Runs</th><th>Web searches</th><th>Cost</th></tr></thead><tbody>"+
+        rows.map(function(r){return"<tr><td>"+esc(r.task)+"</td><td>"+r.calls+"</td><td>"+(r.web_searches||0)+"</td><td>$"+Number(r.cost_usd).toFixed(3)+"</td></tr>";}).join("")+
+        "</tbody></table>":"<div class='hint'>No AI used yet this month.</div>");
+  }catch(e){ if(G("spend-box"))G("spend-box").innerHTML="<span style='color:var(--orange)'>Couldn't load AI spend: "+esc(e.message)+"</span>"; }
+}
+G("btn-spend-refresh").addEventListener("click",loadSpend);
 
 // ═══════════════════════════════════════════════════════
 // IMAGE STUDIO
@@ -2717,7 +2940,7 @@ G("btn-img-prompt").addEventListener("click",async function(){
   var tmap={hero:"landscape hero banner 1200x628px",social:"square social 1080x1080px",thumb:"YouTube thumbnail 1280x720px with text overlay space",product:"glove product closeup",composite:"glove with custom background composite"};
   var prompt="Generate a detailed image generation prompt for TheGloveSOS.com.\nType: "+(tmap[val("img-type")]||val("img-type"))+"\nContext: "+(val("img-context")||"baseball/softball glove repair")+"\nDetails: "+(val("img-details")||"professional photography")+"\nBrand: Dark moody atmosphere, teal #00cccc accents, deep purple highlights, authentic sports photography, leather texture focus.\nReturn ONLY the image prompt -- no explanation. Ready to paste into Midjourney, DALL-E, or Adobe Firefly.";
   setBtn("btn-img-prompt",true,"... Generating...");
-  try{var t=await AI(prompt,500);txt("img-prompt-text",t.trim());show("img-prompt-out");}
+  try{var t=await AI(prompt,800,"image");txt("img-prompt-text",t.trim());show("img-prompt-out");}
   catch(e){alert("ERROR: "+e.message);}
   finally{setBtn("btn-img-prompt",false," Generate Prompt");}
 });
