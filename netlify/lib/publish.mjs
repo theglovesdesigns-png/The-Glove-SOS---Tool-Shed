@@ -1,5 +1,5 @@
 // ============================================================
-// netlify/lib/publish.mjs  --  Tool Shed v3.9
+// netlify/lib/publish.mjs  --  Tool Shed v4.4
 // ------------------------------------------------------------
 // WHAT THIS FILE DOES (plain English):
 //   Holds the ONE correct way to publish (and unpublish) a blog.
