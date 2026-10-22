@@ -1,5 +1,9 @@
 // ============================================================
-// netlify/lib/seo.mjs  --  Tool Shed v4.0
+// netlify/lib/seo.mjs  --  Tool Shed v4.3
+// v4.3: THE WEBSITE NAME is always written "thegloveSOS.com".
+//       - BRAND_RULE is added to every AI prompt (see toolshed.mjs).
+//       - brandFix() corrects any other spelling the AI still writes,
+//         without touching real web links (https://...).
 // v4.0: "Use my words" (polish) now gets the FULL SEO treatment --
 //       keyword placement, search-style headings, an FAQ built from
 //       JB's own points, and a call to action -- while keeping his
@@ -12,7 +16,7 @@
 //      see what to fix BEFORE it goes in the queue.
 //
 // WHY NATIONAL (not Central Ohio):
-//   TheGloveSOS.com is a NATIONAL directory. Traffic from every
+//   thegloveSOS.com is a NATIONAL directory. Traffic from every
 //   state is what proves value to repair shops (providers) and
 //   convinces new shops to list. So blogs target searches people
 //   make anywhere in the US -- not one city.
@@ -27,9 +31,11 @@
 // THE DEFAULT PLAYBOOK
 // (Plain text, so it reads well both to JB and to the AI.)
 // ------------------------------------------------------------
-export const DEFAULT_PLAYBOOK = `NATIONAL SEO PLAYBOOK -- TheGloveSOS.com
+export const DEFAULT_PLAYBOOK = `NATIONAL SEO PLAYBOOK -- thegloveSOS.com
 
-WHO WE ARE: TheGloveSOS.com is a NATIONAL directory that connects baseball and softball players everywhere in the United States with trusted glove repair shops. Every blog must help the site rank nationally, earn trust, and send readers to find a repair shop or list their shop.
+THE WEBSITE NAME: always write it exactly as thegloveSOS.com (lowercase "the", lowercase "glove", capital "SOS", lowercase ".com"). Never TheGloveSOS.com, theglovesos.com or The Glove SOS. Web links (https://...) stay exactly as given.
+
+WHO WE ARE: thegloveSOS.com is a NATIONAL directory that connects baseball and softball players everywhere in the United States with trusted glove repair shops. Every blog must help the site rank nationally, earn trust, and send readers to find a repair shop or list their shop.
 
 1. NATIONAL, NOT LOCAL
 - Write for players, parents, and coaches in all 50 states.
@@ -59,8 +65,8 @@ WHO WE ARE: TheGloveSOS.com is a NATIONAL directory that connects baseball and s
 
 6. LINKS
 - Suggest 3-4 internal links to related TheGloveSOS blog topics.
-- Always include a call to action to find a trusted repair shop on TheGloveSOS.com.
-- When it fits, add a second call to action for repair shops: list your shop on TheGloveSOS.com.
+- Always include a call to action to find a trusted repair shop on thegloveSOS.com.
+- When it fits, add a second call to action for repair shops: list your shop on thegloveSOS.com.
 - Keep every link the writer provides, exactly as given.
 
 7. META & TITLE RULES
@@ -173,7 +179,7 @@ export function checkSeo(input) {
       polish ? "Short posts rank poorly. Add another story, tip or example from your own experience to the draft."
              : "Thin content ranks poorly. Add depth or pick a higher word count.", words.length >= 400);
   add(/theglovesos\.com/i.test(content) || /find (a|your) (trusted )?(glove )?repair/i.test(lower), 4,
-      "Call to action to find a repair shop on TheGloveSOS", "Add a closing line pointing readers to TheGloveSOS.com.");
+      "Call to action to find a repair shop on TheGloveSOS", "Add a closing line pointing readers to thegloveSOS.com.");
   const localHit = LOCAL_TERMS.filter((t) => lower.includes(t) || title.toLowerCase().includes(t));
   add(localHit.length === 0 || input.category === "Glove Provider Spotlight", 3,
       "National focus (no Central Ohio targeting)",
@@ -188,4 +194,27 @@ export function checkSeo(input) {
   const score = Math.round((earned / total) * 100);
   const grade = score >= 90 ? "A" : score >= 80 ? "B" : score >= 70 ? "C" : score >= 60 ? "D" : "F";
   return { score, grade, checks };
+}
+
+// ------------------------------------------------------------
+// v4.3: THE WEBSITE NAME
+// ------------------------------------------------------------
+export const BRAND_NAME = "thegloveSOS.com";
+export const BRAND_RULE =
+  'WEBSITE NAME RULE: whenever you write the website name, write it exactly as thegloveSOS.com ' +
+  '(lowercase "the", lowercase "glove", capital "SOS", lowercase ".com"). ' +
+  "Never TheGloveSOS.com, theglovesos.com or The Glove SOS. Web links (https://...) stay exactly as given. " +
+  "Hashtags like #TheGloveSOS are fine as they are.";
+
+// Fix any other spelling of the website name in AI text.
+//   "Visit TheGloveSOS.com"         -> "Visit thegloveSOS.com"
+//   "the glove sos .com"            -> "thegloveSOS.com"
+//   "https://theglovesos.com/blog"  -> unchanged (a real link -- the character
+//                                      before it is "/", so we skip it)
+//   "#TheGloveSOS"                  -> unchanged (no ".com")
+export function brandFix(text) {
+  return String(text == null ? "" : text).replace(
+    /(^|[^\/\w.@-])the[ \t]*glove[ \t]*sos[ \t]*\.[ \t]*com\b/gi,
+    (m, before) => before + BRAND_NAME
+  );
 }
