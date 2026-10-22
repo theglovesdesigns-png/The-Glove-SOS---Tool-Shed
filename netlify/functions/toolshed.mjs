@@ -1,5 +1,9 @@
 // ============================================================
-// netlify/functions/toolshed.mjs  --  Tool Shed v4.2 BACK OFFICE
+// netlify/functions/toolshed.mjs  --  Tool Shed v4.3 BACK OFFICE
+// ------------------------------------------------------------
+// v4.3 ADDED:
+//   - Every AI prompt gets the WEBSITE NAME RULE (thegloveSOS.com), and
+//     every AI answer is run through brandFix() as a safety net.
 // ------------------------------------------------------------
 // v4.2 ADDED:
 //   - Ideas can be saved with write mode "asis" (My words as-is:
@@ -62,7 +66,7 @@ import * as db from "../lib/supabase.mjs";
 import { askAI, askAIFull, DEFAULT_MODELS, CHEAP_MODEL } from "../lib/ai.mjs";
 import { readArticle } from "../lib/webread.mjs"; // v4.1
 import { publishPost, unpublishPost, nowInShopTZ, PUBLISH_HOUR } from "../lib/publish.mjs";
-import { withPlaybook, activePlaybook, DEFAULT_PLAYBOOK, checkSeo } from "../lib/seo.mjs"; // v3.7
+import { withPlaybook, activePlaybook, DEFAULT_PLAYBOOK, checkSeo, BRAND_RULE, brandFix } from "../lib/seo.mjs"; // v3.7 (+v4.3 brand name)
 
 // ------------------------------------------------------------
 // RULES THE DATABASE ENFORCES (copied from Supabase so we can
@@ -696,7 +700,8 @@ const actions = {
     const provider = s.ai_provider === "gemini" ? "gemini" : "claude";
     // v3.7: wrap SEO-related tasks ("blog", "polish", "seo", "research")
     // with the National SEO Playbook. Other tasks pass through unchanged.
-    const fullPrompt = withPlaybook(data.task, prompt, s.seo_playbook);
+    // v4.3: the website-name rule goes on EVERY prompt, whatever the task.
+    const fullPrompt = BRAND_RULE + "\n\n" + withPlaybook(data.task, prompt, s.seo_playbook);
     const task = String(data.task || "other").slice(0, 40);
 
     // v4.1 BUDGET GUARD: stop before spending past the monthly limit.
@@ -729,7 +734,8 @@ const actions = {
       web_searches: r.usage.web_searches, cost_usd: r.cost_usd || 0,
     });
     return {
-      text: r.text, provider, model: r.model, sources: r.sources || [],
+      text: brandFix(r.text), // v4.3: "TheGloveSOS.com" -> "thegloveSOS.com" (links untouched)
+      provider, model: r.model, sources: r.sources || [],
       usage: Object.assign({}, r.usage, { cost_usd: r.cost_usd }),
     };
   },
