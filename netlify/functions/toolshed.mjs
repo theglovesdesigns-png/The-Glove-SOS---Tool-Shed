@@ -1,5 +1,14 @@
 // ============================================================
-// netlify/functions/toolshed.mjs  --  Tool Shed v4.0 BACK OFFICE
+// netlify/functions/toolshed.mjs  --  Tool Shed v4.1 BACK OFFICE
+// ------------------------------------------------------------
+// v4.1 ADDED:
+//   - Every AI call is logged to ai_usage with its tokens + estimated
+//     cost. usage.summary shows this month's spend.
+//   - Optional MONTHLY BUDGET (Settings): once this month's AI spend
+//     hits it, AI calls stop with a clear message -- no surprise bills.
+//   - Research uses the cheap model (Haiku 5.5) unless Settings say
+//     otherwise, and can search the web (capped) for real articles.
+//   - web.read: paste an article link, get its text as a Source Doc.
 // ------------------------------------------------------------
 // v4.0 ADDED:
 //   - The editor (and "Refresh SEO Pack") can now save the SEO fields:
@@ -46,7 +55,8 @@
 
 import { timingSafeEqual, createHash } from "node:crypto";
 import * as db from "../lib/supabase.mjs";
-import { askAI, DEFAULT_MODELS } from "../lib/ai.mjs";
+import { askAI, askAIFull, DEFAULT_MODELS, CHEAP_MODEL } from "../lib/ai.mjs";
+import { readArticle } from "../lib/webread.mjs"; // v4.1
 import { publishPost, unpublishPost, nowInShopTZ, PUBLISH_HOUR } from "../lib/publish.mjs";
 import { withPlaybook, activePlaybook, DEFAULT_PLAYBOOK, checkSeo } from "../lib/seo.mjs"; // v3.7
 
@@ -70,7 +80,27 @@ const SETTING_KEYS = [
   "site_url", "notification_email", "sheet_id", "sheet_tab",
   "auto_generate", "auto_newsletter", "email_notify",
   "seo_playbook", // v3.7: JB's edited National SEO Playbook (blank = default)
+  "ai_monthly_budget",  // v4.1: dollars per month; blank or 0 = no limit
+  "ai_model_research",  // v4.1: model for Research Hub (blank = cheap Haiku)
 ];
+
+// v4.1: which tasks may use the web search tool, and the most searches allowed.
+const MAX_WEB_SEARCHES = 3;
+
+// v4.1: this month (Ohio time) as "2026-10".
+function thisMonth() {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit" }).format(new Date());
+}
+// v4.1: what has AI cost so far this month? (sum of the monthly view)
+async function monthSpend() {
+  const rows = await db.select("ai_usage_monthly", "select=task,calls,web_searches,cost_usd,input_tokens,output_tokens&month=eq." + thisMonth());
+  const total = rows.reduce((n, r) => n + Number(r.cost_usd || 0), 0);
+  return { total: Math.round(total * 10000) / 10000, rows };
+}
+// v4.1: write the receipt. Never fails the real work.
+async function logUsage(row) {
+  try { await db.insert("ai_usage", row); } catch (e) { console.log("[usage] couldn't log:", e.message); }
+}
 
 const BUCKET = "blog-images";
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // 4 MB (Netlify caps requests at ~6 MB)
@@ -662,8 +692,56 @@ const actions = {
     // v3.7: wrap SEO-related tasks ("blog", "polish", "seo", "research")
     // with the National SEO Playbook. Other tasks pass through unchanged.
     const fullPrompt = withPlaybook(data.task, prompt, s.seo_playbook);
-    const text = await askAI({ provider, model: s.ai_model, prompt: fullPrompt, maxTokens: data.maxTokens });
-    return { text, provider };
+    const task = String(data.task || "other").slice(0, 40);
+
+    // v4.1 BUDGET GUARD: stop before spending past the monthly limit.
+    const budget = Number(s.ai_monthly_budget) || 0;
+    if (budget > 0) {
+      const spent = await monthSpend().catch(() => null);
+      if (spent && spent.total >= budget) {
+        throw new Error("Monthly AI budget reached: $" + spent.total.toFixed(2) + " of $" + budget.toFixed(2) +
+          " spent this month. Raise the budget in Settings > AI Spend if you want to keep going.");
+      }
+    }
+
+    // v4.1: research runs on the cheap model (Haiku) unless Settings pick another.
+    let model = s.ai_model;
+    if (provider === "claude" && task === "research") model = String(s.ai_model_research || "").trim() || CHEAP_MODEL;
+    // v4.1: web search only for research, capped at MAX_WEB_SEARCHES, Claude only.
+    const webSearch = provider === "claude" && task === "research"
+      ? Math.max(0, Math.min(Number(data.webSearch) || 0, MAX_WEB_SEARCHES)) : 0;
+
+    let r;
+    try {
+      r = await askAIFull({ provider, model, prompt: fullPrompt, maxTokens: data.maxTokens, webSearch });
+    } catch (e) {
+      await logUsage({ task, provider, model: model || DEFAULT_MODELS[provider], ok: false });
+      throw e;
+    }
+    await logUsage({
+      task, provider, model: r.model, ok: true,
+      input_tokens: r.usage.input_tokens, output_tokens: r.usage.output_tokens,
+      web_searches: r.usage.web_searches, cost_usd: r.cost_usd || 0,
+    });
+    return {
+      text: r.text, provider, model: r.model, sources: r.sources || [],
+      usage: Object.assign({}, r.usage, { cost_usd: r.cost_usd }),
+    };
+  },
+
+  // ---------- v4.1: AI SPEND ----------
+  async "usage.summary"() {
+    const s = await loadSettings().catch(() => ({}));
+    const m = await monthSpend();
+    const recent = await db.select("ai_usage",
+      "select=created_at,task,model,input_tokens,output_tokens,web_searches,cost_usd,ok&order=created_at.desc&limit=15");
+    return { month: thisMonth(), total: m.total, byTask: m.rows, recent, budget: Number(s.ai_monthly_budget) || 0 };
+  },
+
+  // ---------- v4.1: READ A WEB ARTICLE (free -- no AI) ----------
+  async "web.read"(data) {
+    const a = await readArticle(data && data.url);
+    return { article: a };
   },
 
   // ---------- SEO (v3.7) ----------
