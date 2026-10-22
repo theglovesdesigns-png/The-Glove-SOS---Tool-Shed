@@ -1,6 +1,6 @@
 // ============================================================
-// netlify/lib/seo.mjs  --  Tool Shed v4.3
-// v4.3: THE WEBSITE NAME is always written "thegloveSOS.com".
+// netlify/lib/seo.mjs  --  Tool Shed v4.4
+// v4.4: THE WEBSITE NAME is always written "thegloveSOS.com".
 //       - BRAND_RULE is added to every AI prompt (see toolshed.mjs).
 //       - brandFix() corrects any other spelling the AI still writes,
 //         without touching real web links (https://...).
@@ -197,7 +197,7 @@ export function checkSeo(input) {
 }
 
 // ------------------------------------------------------------
-// v4.3: THE WEBSITE NAME
+// v4.4: THE WEBSITE NAME
 // ------------------------------------------------------------
 export const BRAND_NAME = "thegloveSOS.com";
 export const BRAND_RULE =
