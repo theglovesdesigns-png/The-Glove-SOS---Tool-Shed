@@ -1,5 +1,11 @@
 // ============================================================
-// netlify/lib/ai.mjs  --  Tool Shed v4.0
+// netlify/lib/ai.mjs  --  Tool Shed v4.1
+// v4.1: MONEY + RESEARCH.
+//       - Every call reports its tokens and an estimated COST, so the app
+//         can show "this run cost 2 cents" and a monthly total.
+//       - Optional WEB SEARCH (Claude's web_search tool, capped at a few
+//         searches) so research can find REAL articles with links.
+//       - Haiku 5.5 support (about 20x cheaper than Sonnet) for research.
 // v4.0: THE BIG FIX. Claude Sonnet 5.5 "thinks" before answering by
 //       default, and that hidden thinking used up the answer budget --
 //       SEO packs came back EMPTY and polished blogs got CUT OFF.
@@ -35,6 +41,29 @@ export const DEFAULT_MODELS = {
   gemini: "gemini-3.8-flash",
 };
 
+// v4.1: the cheap, fast model -- used for research by default.
+export const CHEAP_MODEL = "claude-haiku-5-5";
+
+// v4.1: PRICES in US dollars per 1 MILLION tokens (Claude pricing page).
+//   1 million tokens is roughly 750,000 words, so a whole blog costs pennies.
+//   If a model isn't listed, we estimate with Sonnet's price (the safe, higher guess).
+export const PRICES = {
+  "claude-sonnet-5-5": { in: 2.0, out: 10.0 },
+  "claude-haiku-5-5": { in: 0.1, out: 0.5 },
+  "claude-opus-5-5": { in: 4.0, out: 20.0 },
+};
+export const WEB_SEARCH_PRICE = 0.01; // $10 per 1,000 searches = 1 cent each
+
+// Turn token counts into dollars.  e.g. 3,000 in + 2,000 out on Sonnet = $0.026
+export function estimateCost(model, usage) {
+  const u = usage || {};
+  const key = Object.keys(PRICES).find((k) => String(model || "").startsWith(k));
+  const p = PRICES[key] || PRICES["claude-sonnet-5-5"];
+  const dollars = ((u.input_tokens || 0) * p.in + (u.output_tokens || 0) * p.out) / 1e6 +
+    (u.web_searches || 0) * WEB_SEARCH_PRICE;
+  return Math.round(dollars * 100000) / 100000; // 5 decimal places
+}
+
 const AI_TIMEOUT_MS = 50000; // 50 seconds
 const MAX_TOKENS_CAP = 12000; // v4.0: room for long blogs (you only pay for what's used)
 
@@ -43,8 +72,13 @@ const MAX_TOKENS_CAP = 12000; // v4.0: room for long blogs (you only pay for wha
 //   {type:"between_tools"} turns off the up-front thinking (with no tools in
 //   play, the answer is just text). Other models: leave it alone.
 //   If a model ever rejects this setting, askClaude retries once without it.
-function thinkingFor(model) {
-  return /^claude-sonnet-5-5/.test(model) ? { type: "between_tools" } : null;
+// v4.1: Haiku 5.5 is the opposite -- it ACCEPTS {type:"disabled"} and rejects
+//   "between_tools". But with web search on we leave Haiku's thinking alone:
+//   the docs warn that with thinking off it can skip a search it needed.
+function thinkingFor(model, webSearch) {
+  if (/^claude-sonnet-5-5/.test(model)) return { type: "between_tools" };
+  if (/^claude-haiku-5-5/.test(model) && !webSearch) return { type: "disabled" };
+  return null;
 }
 
 // ------------------------------------------------------------
@@ -55,7 +89,18 @@ function thinkingFor(model) {
 //   maxTokens roughly how long the answer is allowed to be
 //             (1 token is about 3/4 of a word)
 // ------------------------------------------------------------
-export async function askAI({ provider, model, prompt, maxTokens }) {
+// The simple version most of the app uses: just the text back.
+export async function askAI(opts) {
+  return (await askAIFull(opts)).text;
+}
+
+// ------------------------------------------------------------
+// v4.1: askAIFull -- same as askAI, plus the receipt.
+//   webSearch  0 = off. 1-5 = let Claude search the web up to that many times.
+// Returns { text, model, usage: {input_tokens, output_tokens, web_searches},
+//           cost_usd, sources: [{url, title}] }
+// ------------------------------------------------------------
+export async function askAIFull({ provider, model, prompt, maxTokens, webSearch }) {
   const which = provider === "gemini" ? "gemini" : "claude"; // anything else = Claude
   const useModel = (model || "").trim() || DEFAULT_MODELS[which];
   const limit = Math.min(Number(maxTokens) || 3000, MAX_TOKENS_CAP);
@@ -72,8 +117,12 @@ export async function askAI({ provider, model, prompt, maxTokens }) {
     // of our 50 seconds left for a real answer.
     for (let attempt = 1; ; attempt++) {
       try {
-        if (which === "gemini") return await askGemini(useModel, prompt, limit, stopper.signal);
-        return await askClaude(useModel, prompt, limit, stopper.signal);
+        const r = which === "gemini"
+          ? await askGemini(useModel, prompt, limit, stopper.signal)
+          : await askClaude(useModel, prompt, limit, stopper.signal, Math.min(Number(webSearch) || 0, 5));
+        // Gemini prices aren't in our table, so its cost shows as unknown (null).
+        r.cost_usd = which === "gemini" ? null : estimateCost(r.model || useModel, r.usage);
+        return r;
       } catch (e) {
         const timeLeft = AI_TIMEOUT_MS - (Date.now() - started);
         // A dropped connection ("fetch failed") is also worth one more try.
@@ -86,7 +135,9 @@ export async function askAI({ provider, model, prompt, maxTokens }) {
   } catch (e) {
     if (e.name === "AbortError") {
       throw new Error(
-        "The AI took longer than 50 seconds. Try a shorter word count, or switch AI provider in Settings."
+        webSearch
+          ? "The web search took longer than 50 seconds. Try again with fewer searches, or turn web search off."
+          : "The AI took longer than 50 seconds. Try a shorter word count, or switch AI provider in Settings."
       );
     }
     throw e;
@@ -138,32 +189,49 @@ function aiError(who, status, msg) {
 // ------------------------------------------------------------
 // CLAUDE  (Anthropic Messages API)
 // ------------------------------------------------------------
-async function askClaude(model, prompt, maxTokens, signal) {
+async function askClaude(model, prompt, maxTokens, signal, webSearch) {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) throw new Error("ANTHROPIC_API_KEY is missing in Netlify environment variables.");
 
   // v4.0: turn off the hidden up-front thinking (see thinkingFor above).
-  const thinking = thinkingFor(model);
+  const thinking = thinkingFor(model, webSearch);
   try {
-    return await callClaude(key, model, prompt, maxTokens, signal, thinking);
+    return await callClaude(key, model, prompt, maxTokens, signal, thinking, webSearch);
   } catch (e) {
     // Safety valve: if Claude says it doesn't accept that thinking
     // setting, try once more without it instead of failing.
-    if (thinking && e.status === 400 && /thinking|between_tools/i.test(e.message)) {
+    if (thinking && e.status === 400 && /thinking|between_tools|disabled/i.test(e.message)) {
       console.log("[ai] model rejected thinking setting -- retrying without it");
-      return await callClaude(key, model, prompt, maxTokens, signal, null);
+      return await callClaude(key, model, prompt, maxTokens, signal, null, webSearch);
+    }
+    // v4.1: if this model can't use web search, try the default model with search.
+    if (webSearch && e.status === 400 && /web_search|tool/i.test(e.message) && model !== DEFAULT_MODELS.claude) {
+      console.log("[ai] " + model + " can't web search -- retrying on " + DEFAULT_MODELS.claude);
+      return await callClaude(key, DEFAULT_MODELS.claude, prompt, maxTokens, signal,
+        thinkingFor(DEFAULT_MODELS.claude, webSearch), webSearch);
     }
     throw e;
   }
 }
 
-async function callClaude(key, model, prompt, maxTokens, signal, thinking) {
+async function callClaude(key, model, prompt, maxTokens, signal, thinking, webSearch) {
   const body = {
     model,
     max_tokens: maxTokens,
     messages: [{ role: "user", content: prompt }],
   };
   if (thinking) body.thinking = thinking;
+  // v4.1: WEB SEARCH -- Claude searches, reads the results, and cites them.
+  //   max_uses caps how many searches it may run (each one costs 1 cent).
+  //   user_location US = results that make sense for a national US audience.
+  if (webSearch) {
+    body.tools = [{
+      type: "web_search_20250305",
+      name: "web_search",
+      max_uses: webSearch,
+      user_location: { type: "approximate", country: "US" },
+    }];
+  }
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -199,6 +267,28 @@ async function callClaude(key, model, prompt, maxTokens, signal, thinking) {
   //   stop_reason "max_tokens" = it ran out of room mid-answer.
   //   stop_reason "refusal"    = it declined to answer.
   const used = data.usage ? " (" + data.usage.output_tokens + " of " + maxTokens + " tokens used)" : "";
+  // v4.1: the receipt -- tokens + searches actually used
+  const usage = {
+    input_tokens: (data.usage && data.usage.input_tokens) || 0,
+    output_tokens: (data.usage && data.usage.output_tokens) || 0,
+    web_searches: (data.usage && data.usage.server_tool_use && data.usage.server_tool_use.web_search_requests) || 0,
+  };
+  // v4.1: every web page Claude found or cited (no duplicates)
+  const sources = [];
+  const seen = {};
+  const addSrc = (url, title) => {
+    if (!url || seen[url]) return;
+    seen[url] = 1;
+    sources.push({ url, title: title || url });
+  };
+  (data.content || []).forEach((b) => {
+    if (b.type === "web_search_tool_result" && Array.isArray(b.content)) {
+      b.content.forEach((r) => addSrc(r.url, r.title));
+    }
+    if (b.type === "text" && Array.isArray(b.citations)) {
+      b.citations.forEach((c) => addSrc(c.url, c.title));
+    }
+  });
   if (data.stop_reason === "max_tokens") {
     throw aiError("Claude", "cutoff", "stop_reason max_tokens" + used);
   }
@@ -208,7 +298,7 @@ async function callClaude(key, model, prompt, maxTokens, signal, thinking) {
   if (!text.trim()) {
     throw new Error("Claude sent back an empty answer" + used + ". Click Generate again.");
   }
-  return text;
+  return { text, model: data.model || model, usage, sources };
 }
 
 // ------------------------------------------------------------
@@ -253,5 +343,6 @@ async function askGemini(model, prompt, maxTokens, signal) {
   // v4.0: same rule as Claude -- a cut-off answer is not a finished answer.
   if (cand.finishReason === "MAX_TOKENS") throw aiError("Gemini", "cutoff", "finishReason MAX_TOKENS");
   if (!text.trim()) throw new Error("Gemini sent back an empty answer. Click Generate again.");
-  return text;
+  const um = data.usageMetadata || {};
+  return { text, model, usage: { input_tokens: um.promptTokenCount || 0, output_tokens: um.candidatesTokenCount || 0, web_searches: 0 }, sources: [] };
 }
