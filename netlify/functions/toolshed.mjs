@@ -1,5 +1,9 @@
 // ============================================================
-// netlify/functions/toolshed.mjs  --  Tool Shed v4.1 BACK OFFICE
+// netlify/functions/toolshed.mjs  --  Tool Shed v4.2 BACK OFFICE
+// ------------------------------------------------------------
+// v4.2 ADDED:
+//   - Ideas can be saved with write mode "asis" (My words as-is:
+//     proofread only, no AI rewriting).
 // ------------------------------------------------------------
 // v4.1 ADDED:
 //   - Every AI call is logged to ai_usage with its tokens + estimated
@@ -269,7 +273,8 @@ function fixCategory(c) {
 // "polish" = JB wrote it, AI only proofreads. "write" = AI writes it.
 // Anything else falls back to "write" (the database only allows these two).
 function fixMode(m) {
-  return m === "polish" ? "polish" : "write";
+  // v4.2: "asis" = JB's own words, proofread only -- no AI rewriting.
+  return m === "polish" || m === "asis" ? m : "write";
 }
 
 // "Hello World!!" -> "hello-world"  (max 60 characters)
