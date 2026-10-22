@@ -179,7 +179,7 @@ mark.flash{outline:2px solid var(--teal)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v4.2</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v4.3</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -211,8 +211,8 @@ mark.flash{outline:2px solid var(--teal)}
   <div class="topbar">
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
-    <span class="topbar-badge">TheGloveSOS.com</span>
-    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v4.2</span>
+    <span class="topbar-badge">thegloveSOS.com</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v4.3</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -718,7 +718,7 @@ mark.flash{outline:2px solid var(--teal)}
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
     <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v4.2</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-21</span></div>
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v4.3</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-22</span></div>
         <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
       </div>
     </div>
@@ -760,7 +760,7 @@ mark.flash{outline:2px solid var(--teal)}
       <div class="card-title">🎙️ JB Voice Profile — Pre-fills Every Blog</div>
       <div class="fg"><label>Expert Background &amp; Voice</label>
         <textarea id="s-voice" rows="4" placeholder="e.g. I've been repairing gloves for 15+ years. I always say — take care of your glove and your glove will take care of you..."></textarea>
-        <div class="hint">Pre-fills the Expert Take field on every new blog automatically</div></div>
+        <div class="hint">Pre-fills the Expert Take field on every new blog automatically. <b>Put your story here</b> (years in the business, who you've fixed gloves for, your shop): the fact check trusts it and never flags it.</div></div>
       <div class="fg"><label>Brand DNA — Core Philosophies</label>
         <textarea id="s-dna" rows="4" placeholder="e.g. TheGloveSOS connects players with trusted local glove repair shops. Quality repair matters..."></textarea>
         <div class="hint">Injected into every blog — keeps brand voice consistent every time</div></div>
@@ -1661,7 +1661,7 @@ G("btn-generate").addEventListener("click",async function(){
     // ✍️ USE MY WORDS: JB wrote it. Proofread + smooth only.
     if(details.split(/\s+/).length<60){alert2("g-alert","'Use my words' needs your draft in the box (at least a few paragraphs). Or switch Mode to 'Write it for me'.","er");setBtn("btn-generate",false," Generate Master Blog");return;}
     // v4.1: JB's words + REAL SEO. The draft is his; the AI is his editor AND his SEO guy.
-    promptA="You are JB's editor and SEO specialist for TheGloveSOS.com (national glove repair directory). JB wrote the blog draft below himself. "+
+    promptA="You are JB's editor and SEO specialist for thegloveSOS.com (national glove repair directory). JB wrote the blog draft below himself. "+
       "Your job: polish it AND make it rank on Google -- while it still sounds 100% like JB.\n\n"+
       "STEP 1 -- PICK THE PRIMARY KEYWORD: the ONE phrase (2-5 words, lowercase) that people across the US actually type into Google "+
       "and that this draft truly answers (examples: \"glove repair near me\", \"how to break in a baseball glove\", \"baseball glove relacing\"). "+
@@ -1673,7 +1673,7 @@ G("btn-generate").addEventListener("click",async function(){
       "- Use the primary keyword 3-5 times in total, plus 2-4 closely related phrases, only where they read naturally. Never stuff keywords.\n"+
       "- **Bold** 2-4 of JB's key takeaways.\n"+
       "- End with \"## Frequently Asked Questions\": 2-3 ### questions people really search about this topic. Answer each in 2-3 sentences using ONLY points JB already made in his draft (reword them; add nothing new). Skip a question if his draft can't answer it.\n"+
-      "- Finish with a 1-2 sentence call to action in JB's voice: find a trusted glove repair shop on TheGloveSOS.com (and, if it fits, repair shops can list their shop there). If JB already wrote one, polish his.\n\n"+
+      "- Finish with a 1-2 sentence call to action in JB's voice: find a trusted glove repair shop on thegloveSOS.com (and, if it fits, repair shops can list their shop there). If JB already wrote one, polish his.\n\n"+
       "STRICT RULES -- JB'S WORDS COME FIRST:\n"+
       "- Keep his voice, slang, opinions, stories and the order of his points. Keep signature phrases exactly (for example: \"don't let the glove control you\").\n"+
       "- Do NOT invent facts, stats, prices, tips, claims or stories. Do NOT drop any of his points.\n"+
@@ -1684,7 +1684,7 @@ G("btn-generate").addEventListener("click",async function(){
       "JB'S DRAFT:\n"+details;
   }else{
     // 🤖 WRITE IT FOR ME: AI writes, but JB's notes are requirements, not suggestions.
-    promptA="You are writing a blog for TheGloveSOS.com -- the national glove repair directory.\n\nJB VOICE:\n"+voice+"\n\nBRAND DNA:\n"+dna+
+    promptA="You are writing a blog for thegloveSOS.com -- the national glove repair directory.\n\nJB VOICE:\n"+voice+"\n\nBRAND DNA:\n"+dna+
       "\n\nBLOG:\nTitle: "+title+"\nCategory: "+cat+"\nWords: "+wc+
       "\n\nJB'S NOTES -- REQUIREMENTS, NOT SUGGESTIONS: Cover every point below. Use any facts, numbers, names, quotes or stories exactly as JB gives them. Do not contradict anything he says.\n"+
       (details||"Write from expert perspective")+linkRule+accuracyRule+sourceRule+
@@ -1817,7 +1817,7 @@ var SEO_KEYS=["PRIMARY_KEYWORD","SEO_TITLE","SLUG","META_DESCRIPTION","KEYWORDS"
   "HERO_IMAGE_PROMPT","SOCIAL_IMAGE_PROMPT","THUMBNAIL_PROMPT","INSERT_IMAGE_PROMPTS","INTERNAL_LINKS","EXTERNAL_LINKS"];
 
 function seoPackPrompt(title,cat,body,pk){
-  return "You are the SEO editor for TheGloveSOS.com, a NATIONAL glove repair directory (players, parents and coaches in all 50 states). "+
+  return "You are the SEO editor for thegloveSOS.com, a NATIONAL glove repair directory (players, parents and coaches in all 50 states). "+
     "The blog below is final. Write its SEO + social pack.\n\n"+
     "Working title: "+title+"\nCategory: "+cat+"\n"+
     (pk?"PRIMARY KEYWORD (already chosen -- use exactly this): "+pk+"\n":"PRIMARY KEYWORD: pick the ONE phrase (2-5 words, lowercase) people across the US search that this blog answers. It must appear in the blog.\n")+
@@ -1828,7 +1828,7 @@ function seoPackPrompt(title,cat,body,pk){
     "- KEYWORDS: 10-12, lowercase, comma-separated, no duplicates. Primary keyword FIRST, then: 3-4 long-tail versions people search (questions/how-to), 2 \"near me\" or find-a-shop versions, and related terms ONLY if the blog covers them (glove parts, positions, brands).\n"+
     "- TAGS: 6-8, lowercase-hyphenated, comma-separated. Prefer these site tags when they fit: "+TAG_LIBRARY.join(", ")+". Add at most 2 new ones.\n"+
     "- EXCERPT: exactly 2 sentences, 35-55 words, in JB's straight-shooter voice. Includes the primary keyword. Hook + what the reader will learn. Shown on blog cards, so no \"In this blog\".\n"+
-    "- SOCIAL_CAPTION (Facebook/Instagram): line 1 = a scroll-stopping hook under 120 characters (a question or bold statement from the blog). Then 2-3 short lines with the main takeaway in JB's voice. Then a call to action: read the full blog at TheGloveSOS.com. Then a blank line and 5-8 hashtags that MUST include #TheGloveSOS #GloveRepair plus topic hashtags (like #BaseballGlove #SoftballGlove).\n"+
+    "- SOCIAL_CAPTION (Facebook/Instagram): line 1 = a scroll-stopping hook under 120 characters (a question or bold statement from the blog). Then 2-3 short lines with the main takeaway in JB's voice. Then a call to action: read the full blog at thegloveSOS.com. Then a blank line and 5-8 hashtags that MUST include #TheGloveSOS #GloveRepair plus topic hashtags (like #BaseballGlove #SoftballGlove).\n"+
     "- Never invent facts, numbers or claims that aren't in the blog.\n\n"+
     "THE BLOG:\n"+body.slice(0,14000)+"\n\n"+
     "Return EXACTLY these sections, each === marker on its own line:\n\n"+
@@ -1923,7 +1923,7 @@ async function runSeoPack(title,cat,body,pk){
   if(probs.length){
     // ONE fix-up pass with the exact problems -- only the broken sections.
     var keys=[];probs.forEach(function(x){if(keys.indexOf(x.k)<0)keys.push(x.k);});
-    var fixPrompt="You are fixing an SEO pack for a TheGloveSOS.com blog. Primary keyword: \""+(S.PRIMARY_KEYWORD||pk||"")+"\".\n\n"+
+    var fixPrompt="You are fixing an SEO pack for a thegloveSOS.com blog. Primary keyword: \""+(S.PRIMARY_KEYWORD||pk||"")+"\".\n\n"+
       "PROBLEMS TO FIX:\n- "+probs.map(function(x){return x.m;}).join("\n- ")+"\n\n"+
       "CURRENT PACK:\n"+sectionsText(S)+"\n\n"+
       "BLOG (for reference):\n"+body.slice(0,6000)+"\n\n"+
@@ -2134,11 +2134,16 @@ async function runFactCheck(){
   if(!GEN||FC_RUNNING)return;
   FC_RUNNING=true;GEN.factError="";renderFactCheck();
   var src=sourcesBlock(DOCS.gen,30000);
-  var prompt="You are a strict fact-checker for TheGloveSOS.com, a national baseball and softball glove repair directory. Check the BLOG below.\n\n"+
+  var prompt="You are a strict fact-checker for thegloveSOS.com, a national baseball and softball glove repair directory. Check the BLOG below.\n\n"+
     "Judge each claim against, in this order:\n"+
     "1. SOURCE DOCUMENTS from JB (trusted).\n"+
-    "2. JB'S NOTES (trusted -- JB is the expert).\n"+
-    "3. Widely known, undisputed baseball/softball glove knowledge.\n\n"+
+    "2. JB'S EXPERT TAKE and BRAND DNA (trusted -- JB's own life story and business, in his words).\n"+
+    "3. JB'S NOTES (trusted -- JB is the expert).\n"+
+    "4. Widely known, undisputed baseball/softball glove knowledge.\n\n"+
+    // v4.3: JB's own story is his to tell -- never "unverified".
+    "JB'S OWN STORY IS NOT A CLAIM TO CHECK: skip JB's personal experience and history told in first person "+
+    "(what he has done, since when, who he fixed gloves for, his customers, his shop, his opinions). Do not list those lines at all. "+
+    "The ONLY exception: if the blog CONTRADICTS his Expert Take, Brand DNA or notes (for example a different year), list it as CHECK.\n\n"+
     "List the blog's factual claims: numbers, measurements, prices, times, dates, brand or model details, materials, names, quotes, studies, statistics, \"most players...\" style claims, and how-to steps that could damage a glove or be unsafe if wrong. Skip opinions and JB's personal philosophy (for example \"don't let the glove control you\").\n\n"+
     "Give ONE line per claim in this exact format:\n"+
     "OK | exact words copied from the blog | what backs it up (source name, JB's notes, or common knowledge)\n"+
@@ -2146,12 +2151,14 @@ async function runFactCheck(){
     "BAD | exact words copied from the blog | why it can't be verified or looks wrong, and what to do\n\n"+
     "RULES:\n"+
     "- Copy the claim words EXACTLY from the blog, 4 to 25 words, plain text without ** or # marks, so they can be highlighted.\n"+
-    "- Use BAD for any statistic, study, survey, quote, price or specific number that is NOT in the source documents or JB's notes.\n"+
+    "- Use BAD for any statistic, study, survey, quote, price or specific number that is NOT in the source documents, JB's Expert Take, Brand DNA or JB's notes.\n"+
     "- Use BAD if the blog contradicts the source documents or JB's notes.\n"+
     "- Never invent a source. If you are unsure, use CHECK.\n"+
     "- At most 25 lines, most important first.\n\n"+
     "Return EXACTLY:\n===SUMMARY===\n[1-2 plain sentences: how trustworthy the blog looks, and the #1 thing to fix if anything]\n\n===CLAIMS===\n[the lines]\n\n"+
     "SOURCE DOCUMENTS:\n"+(src.text||"(none attached)")+"\n\n"+
+    "JB'S EXPERT TAKE:\n"+(val("g-exp")||ST.voice||"(none)")+"\n\n"+   // v4.3
+    "BRAND DNA:\n"+(val("g-dna")||ST.dna||"(none)")+"\n\n"+              // v4.3
     "JB'S NOTES:\n"+(GEN.notes||"(none available)")+"\n\n"+
     "BLOG:\n"+GEN.markdownContent.slice(0,16000);
   var g=GEN; // remember WHICH blog we're checking, in case you open another one meanwhile
@@ -2678,13 +2685,13 @@ G("btn-clear-idea").addEventListener("click",function(){
 //   highlighted (green = added, red = removed) before you use it.
 function proofreadPrompt(text){
   var voice=val("g-exp")||ST.voice||"";
-  return "You are JB's proofreader. JB is a glove repair pro (since 2009) who writes for TheGloveSOS.com. "+
+  return "You are JB's proofreader. JB is a glove repair pro (since 2009) who writes for thegloveSOS.com. "+
     "He talks like a straight shooter -- a regular guy, never talking down to anyone.\n"+
     (voice?"JB's own description of his voice: "+voice+"\n":"")+
     "\nGOAL: make it grammatically correct and easy to read, while it still sounds exactly like JB talking.\n\n"+
     "FIX:\n"+
     "- Spelling and typos.\n"+
-    "- Capitals: \"I\", the start of every sentence, names (TheGloveSOS.com, Rawlings, Wilson, Mizuno, 44 Pro, Nokona, A2000, Facebook, Instagram).\n"+
+    "- Capitals: \"I\", the start of every sentence, names (thegloveSOS.com, Rawlings, Wilson, Mizuno, 44 Pro, Nokona, A2000, Facebook, Instagram).\n"+
     "- Punctuation: run-on sentences, comma splices, missing periods, no space before ? or !, doubled punctuation.\n"+
     "- Mixed-up words: there/their/they're, your/you're, its/it's, then/than, to/too, lose/loose, weather/whether, where/were.\n"+
     "- Subject-verb agreement and switching tenses mid-thought.\n"+
@@ -2881,7 +2888,7 @@ G("btn-gen-nl").addEventListener("click",async function(){
   var blogs=QUEUE.filter(function(x){return x.uploadStatus==="Published to Site";}).slice(0,cnt);
   var bl=blogs.length?blogs.map(function(b,i){return(i+1)+". "+b.title+" ("+b.category+")";}).join("\n"):"(No published blogs yet)";
   setBtn("btn-gen-nl",true,"... Generating...");
-  var prompt="Monthly newsletter for TheGloveSOS.com.\nMonth: "+mo+" "+yr+"\nTOP BLOGS:\n"+bl+"\nEVENTS: "+(ev||"2-3 relevant baseball/softball events for "+mo)+"\n\nReturn EXACTLY:\n===SUBJECT===\n[45-55 chars]\n\n===PREHEADER===\n[85-100 chars]\n\n===BODY===\n[Newsletter HTML with greeting, blog summaries, baseball events, CTA to theglovesos.com]";
+  var prompt="Monthly newsletter for thegloveSOS.com.\nMonth: "+mo+" "+yr+"\nTOP BLOGS:\n"+bl+"\nEVENTS: "+(ev||"2-3 relevant baseball/softball events for "+mo)+"\n\nReturn EXACTLY:\n===SUBJECT===\n[45-55 chars]\n\n===PREHEADER===\n[85-100 chars]\n\n===BODY===\n[Newsletter HTML with greeting, blog summaries, baseball events, CTA to theglovesos.com]";
   try{
     var t=await AI(prompt,3000,"newsletter");
     txt("nl-subject",extr(t,"SUBJECT"));txt("nl-preheader",extr(t,"PREHEADER"));
@@ -2910,7 +2917,7 @@ G("btn-research").addEventListener("click",async function(){
   var web=G("res-web").checked;
   setBtn("btn-research",true,web?"... Searching the web (up to ~40s)...":"... Researching...");
   txt("res-cost","");
-  var prompt="Research for TheGloveSOS.com (national glove repair directory).\nTopic: "+topic+"\nFocus: "+val("res-focus")+"\n\n"+
+  var prompt="Research for thegloveSOS.com (national glove repair directory).\nTopic: "+topic+"\nFocus: "+val("res-focus")+"\n\n"+
     (web?"Use web search (3 searches at most) to see what players, parents and coaches across the US are actually asking and reading about this topic right now. Base the ideas on what you find.\n\n":"")+
     "Find NATIONAL search demand -- not local. Each idea must target one national search phrase people actually type.\n"+
     "Category must be one of: Glove Care, Glove Repair, Glove Provider Spotlight, Behind the Scenes, Customer Stories, General Tips.\n"+
@@ -3026,7 +3033,7 @@ G("btn-spend-refresh").addEventListener("click",loadSpend);
 // ═══════════════════════════════════════════════════════
 G("btn-img-prompt").addEventListener("click",async function(){
   var tmap={hero:"landscape hero banner 1200x628px",social:"square social 1080x1080px",thumb:"YouTube thumbnail 1280x720px with text overlay space",product:"glove product closeup",composite:"glove with custom background composite"};
-  var prompt="Generate a detailed image generation prompt for TheGloveSOS.com.\nType: "+(tmap[val("img-type")]||val("img-type"))+"\nContext: "+(val("img-context")||"baseball/softball glove repair")+"\nDetails: "+(val("img-details")||"professional photography")+"\nBrand: Dark moody atmosphere, teal #00cccc accents, deep purple highlights, authentic sports photography, leather texture focus.\nReturn ONLY the image prompt -- no explanation. Ready to paste into Midjourney, DALL-E, or Adobe Firefly.";
+  var prompt="Generate a detailed image generation prompt for thegloveSOS.com.\nType: "+(tmap[val("img-type")]||val("img-type"))+"\nContext: "+(val("img-context")||"baseball/softball glove repair")+"\nDetails: "+(val("img-details")||"professional photography")+"\nBrand: Dark moody atmosphere, teal #00cccc accents, deep purple highlights, authentic sports photography, leather texture focus.\nReturn ONLY the image prompt -- no explanation. Ready to paste into Midjourney, DALL-E, or Adobe Firefly.";
   setBtn("btn-img-prompt",true,"... Generating...");
   try{var t=await AI(prompt,800,"image");txt("img-prompt-text",t.trim());show("img-prompt-out");}
   catch(e){alert("ERROR: "+e.message);}
