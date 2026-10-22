@@ -179,7 +179,7 @@ mark.flash{outline:2px solid var(--teal)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v4.1</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v4.2</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -212,7 +212,7 @@ mark.flash{outline:2px solid var(--teal)}
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
     <span class="topbar-badge">TheGloveSOS.com</span>
-    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v4.1</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v4.2</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -261,6 +261,7 @@ mark.flash{outline:2px solid var(--teal)}
         <select id="g-mode">
           <option value="write">🤖 Write it for me -- follow my notes</option>
           <option value="polish">✍️ Use my words -- polish + SEO my draft</option>
+          <option value="asis">✅ My words as-is -- proofread only, then SEO &amp; schedule</option>
         </select></div>
       <div class="fg"><label id="g-det-label">Details &amp; Context</label>
         <textarea id="g-det" rows="6" placeholder="Angle, key points, audience, seasonal tie-ins... Paste links and they'll be in the blog."></textarea>
@@ -273,7 +274,8 @@ mark.flash{outline:2px solid var(--teal)}
           <div id="gen-proof-text" class="outbox" style="max-height:320px;white-space:pre-wrap"></div>
           <div id="gen-proof-changes" style="font-size:12px;color:var(--t2);margin:8px 0"></div>
           <div class="bgroup">
-            <button class="btn btn-teal btn-sm" id="btn-gproof-use">Use This Version</button>
+            <button class="btn btn-teal btn-sm" id="btn-gproof-go" title="Use the proofread words exactly as they are, then make the SEO pack and save it ready to schedule">🚀 Use This &amp; Get It Ready to Post</button>
+            <button class="btn btn-out btn-sm" id="btn-gproof-use">Just Put It in the Box</button>
             <button class="btn btn-out btn-sm" id="btn-gproof-keep">Keep Mine</button>
           </div>
         </div></div>
@@ -537,6 +539,7 @@ mark.flash{outline:2px solid var(--teal)}
         <select id="idea-mode">
           <option value="write">🤖 Write it for me -- follow my notes below</option>
           <option value="polish">✍️ Use my words -- just fix spelling &amp; make it flow</option>
+          <option value="asis">✅ My words as-is -- proofread only, no AI rewriting</option>
         </select>
         <div class="hint" id="idea-mode-hint">The AI writes the full blog, and every point, fact, and link in your notes MUST be included.</div></div>
       <div class="fg"><label>Your Draft, Notes &amp; Links</label><textarea id="idea-notes" rows="10" placeholder="Write as much or as little as you want. Paste links right in -- e.g. shout-out to https://example-glove-shop.com -- and they'll be clickable links in the blog."></textarea>
@@ -715,7 +718,7 @@ mark.flash{outline:2px solid var(--teal)}
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
     <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v4.1</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-20</span></div>
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v4.2</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-21</span></div>
         <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
       </div>
     </div>
@@ -1559,6 +1562,70 @@ G("btn-test-sb").addEventListener("click",async function(){
 // ═══════════════════════════════════════════════════════
 // BLOG GENERATOR
 // ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// v4.2 "MY WORDS AS-IS" -- JB's blog, proofread only.
+//   Step 1: proofread (skipped if the box already holds the proofread
+//           version you approved). Only spelling & grammar change.
+//   Step 2: SEO pack -- title, meta, keywords, tags, excerpt, caption.
+//           Your blog text is NOT touched by this step.
+//   Step 3: save as a draft -> Review & Approve -> hero -> schedule.
+//   No fact check by default (they're your own words) -- the
+//   "Run Fact Check" button is still there if you want one.
+// ═══════════════════════════════════════════════════════
+var GPROOF_TEXT="";
+async function generateAsIs(title,cat,details){
+  var label="&#9989; Proofread + Get It Ready to Post";
+  if(details.split(/\s+/).length<40){alert2("g-alert","'My words as-is' needs your blog in the box (at least a couple of paragraphs).","er");setBtn("btn-generate",false,label);return;}
+  backupForm("gen"); // safety net first
+  var body=details,proofMsg="";
+  try{
+    // STEP 1 -- proofread (unless you already approved a proofread version)
+    if(GPROOF_TEXT&&details===GPROOF_TEXT.trim()){
+      proofMsg="&#9989; Your proofread words are used exactly as they are.";
+    }else{
+      setBtn("btn-generate",true,"... Step 1 of 3: proofreading your words...");
+      var pr;
+      try{ pr=await runProofread(details,true); }
+      catch(e){
+        setBtn("btn-generate",true,"... Saving your work...");
+        var safe=await rescueToIdeas(title,cat,"asis",details);
+        alert2("g-alert","<b>Couldn't proofread the blog:</b> "+esc(e.message)+"<br><br>&#9989; "+safe+"<br>Nothing was lost -- click the button to try again.","er");
+        return;
+      }
+      body=pr.text.trim();GPROOF_TEXT=body;
+      showProof("gen",details,pr);            // show every change (green/red)
+      hide("btn-gproof-go");hide("btn-gproof-use");G("btn-gproof-keep").textContent="Hide Changes";
+      G("g-det").value=body;backupSoon("gen"); // the box now holds what will be posted
+      proofMsg="&#9989; Proofread -- see every change in green/red above. Only spelling &amp; grammar were fixed.";
+    }
+    // STEP 2 -- SEO pack (reads your blog, never rewrites it)
+    setBtn("btn-generate",true,"... Step 2 of 3: SEO &amp; social pack...");
+    var tB="",seoFail="",seoLeft=[];
+    try{ var pack=await runSeoPack(title,cat,body,""); tB=pack.text; seoLeft=pack.problems; }
+    catch(e){ seoFail=e.message; }
+    LINK_REPORT={total:findLinks(body).length,missing:[]};
+    parseBlog("===BLOG_CONTENT===\n"+body+"\n\n"+tB,title,cat);
+    GEN.mode="asis";GEN.notes=details;
+    runSeoCheck();
+    var msgs=[proofMsg];
+    if(seoFail)msgs.push("&#9888;&#65039; Your blog is kept, but the SEO pack didn't finish: "+esc(seoFail)+". Click <b>&#128257; Refresh SEO Pack</b> (under the SEO Score) to try again.");
+    else if(seoLeft.length)msgs.push("&#9888;&#65039; SEO pack is in, but check: "+esc(seoLeft.join("; "))+".");
+    else msgs.push("&#9989; SEO pack done: title, meta, keywords, tags, excerpt &amp; social caption.");
+    // STEP 3 -- save as a draft
+    setBtn("btn-generate",true,"... Step 3 of 3: saving your draft...");
+    try{ await saveDraft(); msgs.push("&#9989; Saved as a draft. Next: read it below, add a hero image, click <b>Approve As-Is</b>, then pick the upload day."); }
+    catch(e){
+      backupBlog();
+      alert2("rv-alert","ERROR: The draft didn't save to Supabase -- but your blog is still on screen AND kept in this browser. Click <b>Save Draft</b> to try again. ("+esc(e.message)+")","er");
+    }
+    msgs.push("<span class='hint'>&#128181; This blog cost about "+centsText(RUN_COST)+" in AI. (No fact check -- they're your own words. The Run Fact Check button is there if you want one.)</span>");
+    alert2("g-alert",msgs.join("<br>"),"in");
+    loadSpend();
+    var rc=G("review-card");if(rc)rc.scrollIntoView({behavior:"smooth",block:"start"});
+  }catch(e){alert2("g-alert","ERROR: "+esc(e.message),"er");}
+  finally{setBtn("btn-generate",false,label);}
+}
+
 G("btn-generate").addEventListener("click",async function(){
   var title=val("g-title"),cat=val("g-cat");
   if(!title){alert2("g-alert","Please enter a blog title.","er");return;}
@@ -1574,6 +1641,8 @@ G("btn-generate").addEventListener("click",async function(){
   var voice=val("g-exp")||ST.voice||"Knowledgeable glove expert with real passion for the game";
   var dna=val("g-dna")||ST.dna||"TheGloveSOS connects players with trusted local repair shops. Quality matters. Your glove is personal.";
   var mode=val("g-mode"),details=G("g-det").value.trim();
+  // v4.2: "My words as-is" has its own short pipeline (no AI writing).
+  if(mode==="asis"){await generateAsIs(title,cat,details);return;}
   var links=findLinks(details);   // every link JB pasted -- we'll verify each one later
   var linkRule=links.length
     ?"\n\nLINKS -- REQUIRED: Include EVERY one of these links in the blog as a markdown link [natural anchor text](url), placed where it fits naturally (credit, shout-out, or reference). Copy each URL exactly:\n"+links.map(function(u){return"- "+u;}).join("\n")
@@ -1955,7 +2024,7 @@ async function runSeoCheck(){
   if(!GEN)return;
   try{
     var r=await API("seo.check",{title:GEN.title,slug:GEN.slug,meta:GEN.metaDescription,
-      content:GEN.markdownContent,primaryKeyword:GEN.primaryKeyword,mode:GEN.mode,category:GEN.category});
+      content:GEN.markdownContent,primaryKeyword:GEN.primaryKeyword,mode:GEN.mode==="asis"?"polish":GEN.mode,category:GEN.category});
     var col=r.score>=80?"var(--green,#22c55e)":r.score>=70?"var(--orange)":"var(--red)";
     G("seo-grade").innerHTML="<span style='color:"+col+"'>"+r.grade+" &middot; "+r.score+"/100</span>";
     var icon={pass:"&#9989;",warn:"&#9888;&#65039;",fail:"&#10060;"};
@@ -1970,9 +2039,13 @@ async function runSeoCheck(){
 
 // Generator MODE switch: relabel the big box so it's clear what goes in it.
 G("g-mode").addEventListener("change",function(){
-  var polish=this.value==="polish";
-  txt("g-det-label",polish?"Your Draft (your words stay yours -- the AI proofreads, then adds the SEO: keyword, headings, FAQ from your points, call to action)":"Details & Context (the AI must follow these)");
+  var asis=this.value==="asis";              // v4.2
+  var polish=this.value==="polish"||asis;    // both = "your words" modes
+  txt("g-det-label",asis?"Your Blog (posts exactly as you wrote it -- only spelling & grammar get fixed, and you see every change)"
+    :polish?"Your Draft (your words stay yours -- the AI proofreads, then adds the SEO: keyword, headings, FAQ from your points, call to action)":"Details & Context (the AI must follow these)");
   G("g-det").rows=polish?14:6;
+  // v4.2: the big button says what it will do
+  setBtn("btn-generate",false,asis?"&#9989; Proofread + Get It Ready to Post":"&#10024; Generate Master Blog");
   // v3.7: in "Use my words" mode the docs never add content -- they only feed the fact check.
   txt("gen-docs-hint",polish
     ?"Your words stay yours: these docs are used ONLY by the fact check, to double-check what you wrote."
@@ -2271,7 +2344,7 @@ async function approveBlog(withEdits){
   if(!GEN||!GEN.postId)return;
   var fc=GEN.factCheck,bad=fc?fc.items.filter(function(it){return it.level==="bad";}).length:0;
   var warn="";
-  if(!fc)warn="This blog hasn't been fact-checked.";
+  if(!fc&&GEN.mode!=="asis")warn="This blog hasn't been fact-checked."; // v4.2: as-is = JB's own words
   else if(bad)warn="The fact check flagged "+bad+" claim(s) it can't verify.";
   if(withEdits&&fc)warn=(warn?warn+" ":"")+"Your edits haven't been fact-checked.";
   if(warn&&!confirm(warn+"\n\nApprove it anyway?"))return;
@@ -2529,7 +2602,9 @@ var EDIT_IDEA_ID=null; // set when you click Edit on an existing idea
 // Swap the little explanation under the mode picker.
 var MODE_HINTS={
   write:"The AI writes the full blog, and every point, fact, and link in your notes MUST be included.",
-  polish:"Your words stay YOUR words. The AI fixes spelling/grammar and makes it SEO-ready: one target keyword, search-style headings, an FAQ built from your own points, and a call to action. It won't add new facts."
+  polish:"Your words stay YOUR words. The AI fixes spelling/grammar and makes it SEO-ready: one target keyword, search-style headings, an FAQ built from your own points, and a call to action. It won't add new facts.",
+  // v4.2
+  asis:"Your blog posts exactly as you wrote it -- only spelling & grammar get fixed (you see every change). The SEO title, meta, keywords, tags, excerpt and caption are made separately, then you approve and schedule."
 };
 G("idea-mode").addEventListener("change",function(){txt("idea-mode-hint",MODE_HINTS[this.value]);});
 G("idea-notes").addEventListener("input",function(){showLinkCount("idea-notes","idea-link-count");});
@@ -2547,7 +2622,7 @@ function resetIdeaForm(){
 }
 function ideaFromRow(i){
   return{id:i.id,supabaseId:i.id,title:i.title,category:i.category||"General Tips",
-    notes:i.notes||"",status:i.status||"New",mode:i.write_mode==="polish"?"polish":"write",
+    notes:i.notes||"",status:i.status||"New",mode:(i.write_mode==="polish"||i.write_mode==="asis")?i.write_mode:"write",
     sourceDocCount:i.source_doc_count||0};   // v3.7
 }
 // v3.7: the Ideas list only knows HOW MANY docs an idea has.
@@ -2644,15 +2719,16 @@ function wordDiffHtml(a,b){
 }
 
 // Run the proofreader. Returns {text, changes, missingLinks, cost}.
-async function runProofread(mine){
+async function runProofread(mine,keepRun){
   var links=findLinks(mine),words=mine.split(/\s+/).length;
-  startRun();
+  var before=keepRun?RUN_COST:0; // v4.2: inside "as-is" the blog's total keeps adding up
+  if(!keepRun)startRun();
   var t=await AI(proofreadPrompt(mine),Math.min(Math.round(words*2.2)+800,8000),"proofread");
   var S=sectionsOf(t);
   var fixed=S.CORRECTED;
   if(!fixed)throw new Error("The proofreader's answer came back in the wrong shape -- try again.");
   var chk=ensureLinks(fixed,links); // safety net: put back any link it lost
-  return{text:chk.content,changes:S.CHANGES||"",missingLinks:chk.missing.length,cost:RUN_COST};
+  return{text:chk.content,changes:S.CHANGES||"",missingLinks:chk.missing.length,cost:RUN_COST-before};
 }
 // Show a result in one of the two proofread panels ("idea" or "gen").
 function showProof(which,mine,r){
@@ -2662,7 +2738,7 @@ function showProof(which,mine,r){
     "<br><span class='hint'>&#128181; Proofread cost about "+centsText(r.cost)+".</span>";
   show(which+"-proof-out");
 }
-var PROOF_TEXT="",GPROOF_TEXT="";
+var PROOF_TEXT=""; // (GPROOF_TEXT lives with the as-is pipeline, v4.2)
 G("btn-proof-idea").addEventListener("click",async function(){
   var mine=G("idea-notes").value;
   if(mine.trim().split(/\s+/).length<5){alert2("idea-alert","Type a few sentences first, then Proofread.","er");return;}
@@ -2681,7 +2757,10 @@ G("btn-proof-gen").addEventListener("click",async function(){
   var mine=G("g-det").value;
   if(mine.trim().split(/\s+/).length<5){alert2("g-alert","Type a few sentences first, then Proofread.","er");return;}
   setBtn("btn-proof-gen",true,"... Proofreading...");hide("gen-proof-out");
-  try{var r=await runProofread(mine);GPROOF_TEXT=r.text;showProof("gen",mine,r);loadSpend();}
+  try{
+    var r=await runProofread(mine);GPROOF_TEXT=r.text;showProof("gen",mine,r);loadSpend();
+    G("btn-gproof-go").style.display="";G("btn-gproof-use").style.display="";G("btn-gproof-keep").textContent="Keep Mine"; // v4.2
+  }
   catch(e){alert2("g-alert","ERROR: "+esc(e.message),"er");}
   finally{setBtn("btn-proof-gen",false,"&#128270; Proofread My Draft");}
 });
@@ -2690,13 +2769,22 @@ G("btn-gproof-use").addEventListener("click",function(){
   alert2("g-alert","OK: Proofread version is in the box. Generate when you're ready.","ok");
 });
 G("btn-gproof-keep").addEventListener("click",function(){hide("gen-proof-out");});
+// v4.2: one click -- use the proofread words as-is, make the SEO pack, save it ready to schedule
+G("btn-gproof-go").addEventListener("click",function(){
+  G("g-det").value=GPROOF_TEXT;hide("gen-proof-out");showLinkCount("g-det","g-link-count");backupSoon("gen");
+  G("g-mode").value="asis";G("g-mode").dispatchEvent(new Event("change"));
+  if(!val("g-title")||!val("g-cat")){alert2("g-alert","Proofread version is in the box. Add a <b>title</b> and <b>category</b>, then click <b>&#9989; Proofread + Get It Ready to Post</b>.","in");return;}
+  G("btn-generate").click();
+});
 
 function renderIdeas(){
   var list=G("ideas-list");
   if(!IDEAS.length){list.innerHTML="<div style='color:var(--t3);text-align:center;padding:24px;font-size:13px'>No ideas yet!</div>";return;}
   list.innerHTML=IDEAS.map(function(idea){
-    var badge=idea.mode==="polish"
-      ?"<span class='badge b-app' title='Use my words: proofread only'>My Words</span>"
+    var badge=idea.mode==="asis"
+      ?"<span class='badge b-pub' title='My words as-is: proofread only, no AI rewriting'>My Words As-Is</span>"
+      :idea.mode==="polish"
+      ?"<span class='badge b-app' title='Use my words: polish + SEO'>My Words</span>"
       :"<span class='badge b-rev' title='AI writes it from my notes'>AI Writes</span>";
     var nLinks=findLinks(idea.notes).length;
     var preview=idea.notes&&idea.notes.length>220?idea.notes.slice(0,220)+"...":idea.notes;
