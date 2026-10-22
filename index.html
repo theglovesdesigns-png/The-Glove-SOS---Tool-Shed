@@ -179,7 +179,7 @@ mark.flash{outline:2px solid var(--teal)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v4.3</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v4.4</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -212,7 +212,7 @@ mark.flash{outline:2px solid var(--teal)}
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
     <span class="topbar-badge">thegloveSOS.com</span>
-    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v4.3</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v4.4</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -262,13 +262,13 @@ mark.flash{outline:2px solid var(--teal)}
           <option value="write">🤖 Write it for me -- follow my notes</option>
           <option value="polish">✍️ Use my words -- polish + SEO my draft</option>
           <option value="asis">✅ My words as-is -- proofread only, then SEO &amp; schedule</option>
-        </select></div>
+        </select>
+        <!-- v4.4: says exactly what the big button will do in this mode -->
+        <div class="hint" id="g-mode-hint"></div></div>
       <div class="fg"><label id="g-det-label">Details &amp; Context</label>
         <textarea id="g-det" rows="6" placeholder="Angle, key points, audience, seasonal tie-ins... Paste links and they'll be in the blog."></textarea>
         <div class="hint" id="g-link-count"></div>
-        <!-- v4.1: proofread the draft right here, before generating -->
-        <div class="bgroup" style="margin-top:6px"><button class="btn btn-gold btn-sm" id="btn-proof-gen">🔎 Proofread My Draft</button>
-          <span class="hint" style="margin:0">Fixes grammar &amp; spelling, keeps it sounding like you. You see every change before it's used.</span></div>
+        <!-- v4.4: the Proofread button moved down next to the main button (one action row) -->
         <div id="gen-proof-out" style="display:none;margin-top:10px">
           <div class="card-title" style="font-size:13px">✅ Proofread Version <span class="hint" style="margin:0 0 0 8px"><span class="pf-ins">green</span> = added, <span class="pf-del">red</span> = removed</span></div>
           <div id="gen-proof-text" class="outbox" style="max-height:320px;white-space:pre-wrap"></div>
@@ -297,10 +297,13 @@ mark.flash{outline:2px solid var(--teal)}
           <textarea id="g-dna" rows="3" placeholder="Mission, values, key phrases..."></textarea></div>
       </div>
       <div id="g-alert"></div>
+      <!-- v4.4: ONE action row. The main button's name changes with the Mode. -->
       <div class="bgroup">
         <button class="btn btn-teal" id="btn-generate">✨ Generate Master Blog</button>
+        <button class="btn btn-gold btn-sm" id="btn-proof-gen" title="Just check spelling &amp; grammar and show the changes -- nothing is saved">🔎 Proofread Only (preview)</button>
         <button class="btn btn-out btn-sm" id="btn-clear-gen">Clear</button>
       </div>
+      <div class="hint">Your words always stay in the box above -- nothing gets wiped. The result shows below as a <b>draft</b>, and nothing goes live until you approve it.</div>
     </div>
     <div id="g-output" style="display:none">
       <div class="card" style="padding:0;overflow:hidden">
@@ -406,12 +409,22 @@ mark.flash{outline:2px solid var(--teal)}
         <div class="fg rv-section"><label>Review Notes <span style="font-size:10px;color:var(--t3)">(optional, private -- never shows on the website)</span></label>
           <textarea id="rv-notes" rows="2" placeholder="e.g. Double-checked the lace width with my supplier."></textarea></div>
 
+        <!-- v4.4: WHEN DOES IT GO LIVE -- the date box is always here (once saved) -->
+        <div id="rv-sched" class="rv-section" style="display:none">
+          <div style="font-family:Oswald,sans-serif;font-size:14px;color:var(--gold);margin-bottom:6px">📅 When should it go live?</div>
+          <div class="bgroup" style="align-items:center">
+            <input type="date" id="push-date" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:8px 10px;border-radius:7px;font-size:13px;width:auto"/>
+            <span class="hint" id="rv-sched-hint" style="margin:0">Goes live at 7 AM Eastern that day.</span>
+          </div>
+        </div>
+
         <!-- MAIN ACTIONS -->
         <div class="bgroup" id="rv-actions">
           <button class="btn btn-out" id="btn-save-draft" style="display:none">💾 Save Draft</button>
-          <button class="btn btn-teal" id="btn-approve">✅ Approve As-Is</button>
+          <button class="btn btn-teal" id="btn-approve">✅ Approve &amp; Schedule</button>
+          <button class="btn btn-gold" id="btn-approve-now" title="Approve it and put it on the website right now">🚀 Approve &amp; Post Now</button>
           <button class="btn btn-pur" id="btn-edit">✏️ Edit</button>
-          <button class="btn btn-teal" id="btn-approve-edits" style="display:none">✅ Approve Edits</button>
+          <button class="btn btn-teal" id="btn-approve-edits" style="display:none">✅ Approve Edits &amp; Schedule</button>
           <button class="btn btn-out btn-sm" id="btn-save-edits" style="display:none">💾 Save Edits (stay in Review)</button>
           <button class="btn btn-out btn-sm" id="btn-cancel-edit" style="display:none">Cancel</button>
         </div>
@@ -420,8 +433,8 @@ mark.flash{outline:2px solid var(--teal)}
         <div id="rv-after" class="rv-section" style="display:none">
           <div style="font-size:13px;color:var(--green);margin-bottom:8px" id="rv-after-msg">Approved! Pick its upload day -- it goes live at 7 AM Eastern that day.</div>
           <div class="bgroup">
-            <input type="date" id="push-date" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--text);padding:8px 10px;border-radius:7px;font-size:13px;width:auto"/>
             <button class="btn btn-teal" id="btn-schedule">📅 Schedule It</button>
+            <button class="btn btn-gold" id="btn-post-now" title="Put it on the website right now">🚀 Post Now</button>
             <button class="btn btn-out btn-sm" id="btn-go-queue">📋 Go to Blog Queue</button>
             <button class="btn btn-pur btn-sm" id="btn-unlock-edit" title="Take it off the schedule and back to Review so you can tweak it">✏️ Unschedule &amp; Edit</button>
           </div>
@@ -718,7 +731,7 @@ mark.flash{outline:2px solid var(--teal)}
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
     <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v4.3</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-22</span></div>
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v4.4</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-22</span></div>
         <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
       </div>
     </div>
@@ -1562,6 +1575,17 @@ G("btn-test-sb").addEventListener("click",async function(){
 // ═══════════════════════════════════════════════════════
 // BLOG GENERATOR
 // ═══════════════════════════════════════════════════════
+// v4.4: the big button's name + what it does, for each Mode.
+var GEN_MODE_HINT={
+  write:"AI writes a NEW blog from your notes (every point, fact and link you give it). Your notes stay in the box.",
+  polish:"Uses YOUR draft: fixes grammar, then adds SEO -- target keyword, headings, an FAQ from your own points, and a call to action. Your draft stays in the box.",
+  asis:"Posts YOUR words: only spelling & grammar get fixed (you see every change), then the SEO title, meta, keywords, tags & caption are made. Then you approve & schedule."
+};
+function genLabel(){
+  var m=val("g-mode");
+  return m==="asis"?"&#9989; Proofread + Get It Ready to Post":m==="polish"?"&#9997;&#65039; Polish + SEO My Draft":"&#10024; Generate Master Blog";
+}
+
 // ═══════════════════════════════════════════════════════
 // v4.2 "MY WORDS AS-IS" -- JB's blog, proofread only.
 //   Step 1: proofread (skipped if the box already holds the proofread
@@ -1613,7 +1637,7 @@ async function generateAsIs(title,cat,details){
     else msgs.push("&#9989; SEO pack done: title, meta, keywords, tags, excerpt &amp; social caption.");
     // STEP 3 -- save as a draft
     setBtn("btn-generate",true,"... Step 3 of 3: saving your draft...");
-    try{ await saveDraft(); msgs.push("&#9989; Saved as a draft. Next: read it below, add a hero image, click <b>Approve As-Is</b>, then pick the upload day."); }
+    try{ await saveDraft(); msgs.push("&#9989; Saved as a draft. Next: read it below, add a hero image, pick the day, and click <b>Approve &amp; Schedule</b> (or <b>Approve &amp; Post Now</b>)."); }
     catch(e){
       backupBlog();
       alert2("rv-alert","ERROR: The draft didn't save to Supabase -- but your blog is still on screen AND kept in this browser. Click <b>Save Draft</b> to try again. ("+esc(e.message)+")","er");
@@ -1659,7 +1683,7 @@ G("btn-generate").addEventListener("click",async function(){
   var promptA;
   if(mode==="polish"){
     // ✍️ USE MY WORDS: JB wrote it. Proofread + smooth only.
-    if(details.split(/\s+/).length<60){alert2("g-alert","'Use my words' needs your draft in the box (at least a few paragraphs). Or switch Mode to 'Write it for me'.","er");setBtn("btn-generate",false," Generate Master Blog");return;}
+    if(details.split(/\s+/).length<60){alert2("g-alert","'Use my words' needs your draft in the box (at least a few paragraphs). Or switch Mode to 'Write it for me'.","er");setBtn("btn-generate",false,genLabel());return;}
     // v4.1: JB's words + REAL SEO. The draft is his; the AI is his editor AND his SEO guy.
     promptA="You are JB's editor and SEO specialist for thegloveSOS.com (national glove repair directory). JB wrote the blog draft below himself. "+
       "Your job: polish it AND make it rank on Google -- while it still sounds 100% like JB.\n\n"+
@@ -1703,7 +1727,7 @@ G("btn-generate").addEventListener("click",async function(){
       // v3.8 SAFETY NET: the blog couldn't be written. Save the work first, then explain.
       setBtn("btn-generate",true,"... Saving your work...");
       var safe=await rescueToIdeas(title,cat,mode,details);
-      alert2("g-alert","<b>Couldn't write the blog:</b> "+esc(e.message)+"<br><br>&#9989; "+safe+"<br>Nothing was lost -- click <b>Generate Master Blog</b> to try again.","er");
+      alert2("g-alert","<b>Couldn't write the blog:</b> "+esc(e.message)+"<br><br>&#9989; "+safe+"<br>Nothing was lost -- click the <b>button</b> to try again.","er");
       return;
     }
     // LINK GUARANTEE: check every pasted link made it in; add any the AI dropped.
@@ -1751,7 +1775,7 @@ G("btn-generate").addEventListener("click",async function(){
     if(gA)gA.insertAdjacentHTML("beforeend","<div class='hint' style='margin:4px 0 8px'>&#128181; This blog cost about "+centsText(RUN_COST)+" in AI.</div>");
     loadSpend();
   }catch(e){alert2("g-alert","ERROR: "+e.message,"er");}
-  finally{setBtn("btn-generate",false," Generate Master Blog");}
+  finally{setBtn("btn-generate",false,genLabel());} // v4.4: label matches the mode
 });
 function parseBlog(t,title,cat){
   var S=sectionsOf(t); // v4.1: tolerant parser
@@ -2008,7 +2032,7 @@ function fillOutputs(){
   txt("out-markdown",GEN.markdownContent);
   txt("out-pk",GEN.primaryKeyword||"(none returned)");
   renderContentHighlights(); // the Content tab, with fact-check highlights
-  G("push-date").value=GEN.publishDate||localToday();
+  G("push-date").value=GEN.publishDate||tomorrowLocal(); // v4.4: default = tomorrow
   show("g-output");
   document.querySelectorAll(".tab-btn").forEach(function(b,i){b.classList.toggle("on",i===0);});
   document.querySelectorAll(".tab-pane").forEach(function(p,i){p.classList.toggle("on",i===0);});
@@ -2045,7 +2069,8 @@ G("g-mode").addEventListener("change",function(){
     :polish?"Your Draft (your words stay yours -- the AI proofreads, then adds the SEO: keyword, headings, FAQ from your points, call to action)":"Details & Context (the AI must follow these)");
   G("g-det").rows=polish?14:6;
   // v4.2: the big button says what it will do
-  setBtn("btn-generate",false,asis?"&#9989; Proofread + Get It Ready to Post":"&#10024; Generate Master Blog");
+  setBtn("btn-generate",false,genLabel());
+  txt("g-mode-hint",GEN_MODE_HINT[this.value]||""); // v4.4
   // v3.7: in "Use my words" mode the docs never add content -- they only feed the fact check.
   txt("gen-docs-hint",polish
     ?"Your words stay yours: these docs are used ONLY by the fact check, to double-check what you wrote."
@@ -2271,11 +2296,16 @@ function renderReview(){
   G("btn-cancel-edit").style.display=EDITING?"":"none";
   G("rv-edit").style.display=EDITING?"block":"none";
   G("rv-after").style.display=approved&&!live?"block":"none";
+  // v4.4: date box + one-click approve buttons
+  G("rv-sched").style.display=saved&&!live?"block":"none";
+  G("btn-approve-now").style.display=draft&&!EDITING?"":"none";
+  G("btn-post-now").style.display=approved&&!live?"":"none";
+  updateSchedLabels();
   renderHero(); // v3.9
   if(approved&&!live){
     txt("rv-after-msg",s==="Scheduled"&&GEN.publishDate
-      ?"Scheduled for "+GEN.publishDate+" -- it goes live at 7 AM Eastern that day. Change the day below if you need to."
-      :"Approved! Pick its upload day -- it goes live at 7 AM Eastern that day.");
+      ?"Scheduled for "+GEN.publishDate+" -- it goes live at 7 AM Eastern that day. To change it, pick a new day above and click Change the Day."
+      :"Approved! Pick a day above and click Schedule It -- or Post Now to put it live right away.");
   }
 }
 // Called before every new Generate.
@@ -2372,24 +2402,73 @@ async function approveBlog(withEdits){
     updateCounts();
     EDITING=false;fillOutputs();
     if(withEdits)runSeoCheck();
-    alert2("rv-alert",d.warning?"WARNING: "+esc(d.warning):"OK: Approved and confirmed in Supabase! Now pick its upload day.",d.warning?"er":"ok");
+    alert2("rv-alert",d.warning?"WARNING: "+esc(d.warning):"OK: Approved and confirmed in Supabase!",d.warning?"er":"ok");
     G("rv-after").scrollIntoView({behavior:"smooth",block:"center"});
-  }catch(e){alert2("rv-alert","ERROR: Not approved -- nothing was lost. ("+esc(e.message)+")","er");}
+    return true; // v4.4: tells approveFlow it worked
+  }catch(e){alert2("rv-alert","ERROR: Not approved -- nothing was lost. ("+esc(e.message)+")","er");return false;}
   finally{setBtn(id,false,label);}
 }
-G("btn-approve").addEventListener("click",function(){approveBlog(false);});
-G("btn-approve-edits").addEventListener("click",function(){approveBlog(true);});
+// ───────────────────────────────────────────────────────
+// v4.4 ONE-CLICK APPROVE
+//   "Approve & Schedule"  = approve, then schedule for the date in the box
+//                           (leave the date empty to just approve)
+//   "Approve & Post Now"  = approve, then put it on the website right now
+// ───────────────────────────────────────────────────────
+function tomorrowLocal(){var d=new Date();d.setDate(d.getDate()+1);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function updateSchedLabels(){
+  var day=val("push-date"),sched=GEN&&GEN.status==="Scheduled";
+  G("btn-approve").innerHTML=day?"&#9989; Approve &amp; Schedule":"&#9989; Approve";
+  G("btn-approve-edits").innerHTML=day?"&#9989; Approve Edits &amp; Schedule":"&#9989; Approve Edits";
+  G("btn-schedule").innerHTML=sched?"&#128197; Change the Day":"&#128197; Schedule It";
+  var h="Goes live at 7 AM Eastern that day.";
+  if(!day)h="No day picked -- it'll be approved and wait in the Blog Queue.";
+  else if(day<localToday())h="That day already passed -- it would go live within the hour.";
+  else if(day===localToday())h=(new Date().getHours()>=7?"Today -- it goes live within the hour.":"Today at 7 AM Eastern.");
+  txt("rv-sched-hint",h);
+}
+G("push-date").addEventListener("input",updateSchedLabels);
+G("push-date").addEventListener("change",updateSchedLabels);
+function confirmPostNow(){
+  return confirm("Put \""+GEN.title+"\" on thegloveSOS.com RIGHT NOW?"+(GEN.heroImageURL?"":"\n\nHeads up: it has NO hero image yet."));
+}
+async function scheduleDay(day){
+  var d=await API("queue.update",{id:GEN.postId,changes:{publish_date:day,upload_status:"Scheduled"}});
+  applyPostToGen(d.post);upsertQueueItem(d.post);renderReview();
+  alert2("rv-alert","OK: Approved &amp; scheduled for "+esc(day)+". "+esc(G("rv-sched-hint").textContent)+(GEN.heroImageURL?"":" Next: add a hero image just below."),"ok");
+}
+async function postNow(){
+  var d=await API("queue.publish",{id:GEN.postId});
+  applyPostToGen(d.post);upsertQueueItem(d.post);renderReview();
+  var url=d.post.blog_url||((ST.site||"https://theglovesos.com").replace(/\/+$/,"")+"/blog/"+d.post.slug);
+  alert2("rv-alert","&#127881; It's LIVE on thegloveSOS.com! <a href='"+esc(url)+"' target='_blank' style='color:var(--teal)'>View it</a> -- it's now in the Blogs Posted tab.","ok");
+}
+async function approveFlow(withEdits,next){
+  if(next==="now"&&!confirmPostNow())return;
+  var day=val("push-date");
+  var ok=await approveBlog(withEdits);
+  if(!ok)return;
+  try{
+    if(next==="now")await postNow();
+    else if(day)await scheduleDay(day);
+  }catch(e){alert2("rv-alert","Approved -- but "+(next==="now"?"posting":"scheduling")+" didn't go through: "+esc(e.message)+". Use the buttons below to try again.","er");}
+}
+G("btn-approve").addEventListener("click",function(){approveFlow(false,"schedule");});
+G("btn-approve-now").addEventListener("click",function(){approveFlow(false,"now");});
+G("btn-approve-edits").addEventListener("click",function(){approveFlow(true,"schedule");});
+G("btn-post-now").addEventListener("click",async function(){
+  if(!GEN||!GEN.postId||!confirmPostNow())return;
+  setBtn("btn-post-now",true,"... Posting...");
+  try{await postNow();}catch(e){alert2("rv-alert","ERROR: "+esc(e.message),"er");}
+  finally{setBtn("btn-post-now",false,"&#128640; Post Now");}
+});
 // SCHEDULE: set the upload day + status Scheduled in one save.
 G("btn-schedule").addEventListener("click",async function(){
   var day=val("push-date");
   if(!day){alert2("rv-alert","Pick an upload day first.","er");return;}
   setBtn("btn-schedule",true,"... Scheduling...");
-  try{
-    var d=await API("queue.update",{id:GEN.postId,changes:{publish_date:day,upload_status:"Scheduled"}});
-    applyPostToGen(d.post);upsertQueueItem(d.post);renderReview();
-    alert2("rv-alert","OK: Scheduled for "+esc(day)+". It goes live at 7 AM Eastern that day."+(GEN.heroImageURL?"":" Next: add a hero image just below."),"ok");
-  }catch(e){alert2("rv-alert","ERROR: "+esc(e.message),"er");}
-  finally{setBtn("btn-schedule",false,"&#128197; Schedule It");}
+  try{ await scheduleDay(day); }
+  catch(e){alert2("rv-alert","ERROR: "+esc(e.message),"er");}
+  finally{setBtn("btn-schedule",false,"&#128197; Schedule It");updateSchedLabels();}
 });
 G("btn-go-queue").addEventListener("click",function(){navTo("queue");});
 
@@ -2769,7 +2848,7 @@ G("btn-proof-gen").addEventListener("click",async function(){
     G("btn-gproof-go").style.display="";G("btn-gproof-use").style.display="";G("btn-gproof-keep").textContent="Keep Mine"; // v4.2
   }
   catch(e){alert2("g-alert","ERROR: "+esc(e.message),"er");}
-  finally{setBtn("btn-proof-gen",false,"&#128270; Proofread My Draft");}
+  finally{setBtn("btn-proof-gen",false,"&#128270; Proofread Only (preview)");}
 });
 G("btn-gproof-use").addEventListener("click",function(){
   G("g-det").value=GPROOF_TEXT;hide("gen-proof-out");showLinkCount("g-det","g-link-count");backupSoon("gen");
@@ -3397,6 +3476,7 @@ document.addEventListener("DOMContentLoaded",function(){
   // v3.8: bring back any unsaved work from last time, then keep autosaving.
   var gotGen=restoreForm("gen"),gotIdea=restoreForm("idea"),gotBlog=restoreBlog();
   wireBackups();
+  G("g-mode").dispatchEvent(new Event("change")); // v4.4: right button name + mode hint from the start
   renderToggles();updateCounts();
   if(ST.pass){
     loadSettings(); // pulls settings, queue and ideas fresh from Supabase
