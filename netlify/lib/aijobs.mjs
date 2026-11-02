@@ -1,5 +1,5 @@
 // ============================================================
-// netlify/lib/aijobs.mjs  --  Tool Shed v4.5  (NEW FILE)
+// netlify/lib/aijobs.mjs  --  Tool Shed v4.6  (NEW FILE)
 // ------------------------------------------------------------
 // WHAT THIS FILE DOES (plain English):
 //   Everything needed to run ONE AI request, shared by:
