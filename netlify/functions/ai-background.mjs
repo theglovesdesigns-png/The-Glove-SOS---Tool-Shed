@@ -1,5 +1,5 @@
 // ============================================================
-// netlify/functions/ai-background.mjs  --  Tool Shed v4.5  (NEW FILE)
+// netlify/functions/ai-background.mjs  --  Tool Shed v4.6  (NEW FILE)
 // ------------------------------------------------------------
 // A BACKGROUND function (the "-background" at the end of the file
 // name is what makes it one). Netlify answers the caller right away
