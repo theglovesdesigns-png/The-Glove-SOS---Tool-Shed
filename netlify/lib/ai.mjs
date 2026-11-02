@@ -1,6 +1,6 @@
 // ============================================================
-// netlify/lib/ai.mjs  --  Tool Shed v4.5
-// v4.5: BACKGROUND JOBS can ask for more time (timeoutMs) and more
+// netlify/lib/ai.mjs  --  Tool Shed v4.6
+// v4.6: BACKGROUND JOBS can ask for more time (timeoutMs) and more
 //       room (bigCap) -- see netlify/functions/ai-background.mjs.
 // v4.1: MONEY + RESEARCH.
 //       - Every call reports its tokens and an estimated COST, so the app
@@ -43,10 +43,10 @@ export const DEFAULT_MODELS = {
   gemini: "gemini-3.8-flash",
 };
 
-// v4.1: the cheap, fast model -- used for research by default.
+// v4.6: the cheap, fast model -- used for research by default.
 export const CHEAP_MODEL = "claude-haiku-5-5";
 
-// v4.1: PRICES in US dollars per 1 MILLION tokens (Claude pricing page).
+// v4.6: PRICES in US dollars per 1 MILLION tokens (Claude pricing page).
 //   1 million tokens is roughly 750,000 words, so a whole blog costs pennies.
 //   If a model isn't listed, we estimate with Sonnet's price (the safe, higher guess).
 export const PRICES = {
