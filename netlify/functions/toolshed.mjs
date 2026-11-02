@@ -1,7 +1,7 @@
 // ============================================================
-// netlify/functions/toolshed.mjs  --  Tool Shed v4.5 BACK OFFICE
+// netlify/functions/toolshed.mjs  --  Tool Shed v4.6 BACK OFFICE
 // ------------------------------------------------------------
-// v4.5 ADDED:
+// v4.6 ADDED:
 //   - BACKGROUND AI JOBS: "ai.start" saves the request as a job and
 //     starts ai-background.mjs (up to 15 minutes, no 30-second wall);
 //     "ai.job" lets the app check on it. Shared AI code now lives in
@@ -71,7 +71,7 @@ import { timingSafeEqual, createHash } from "node:crypto";
 import * as db from "../lib/supabase.mjs";
 import { askAI, askAIFull, DEFAULT_MODELS, CHEAP_MODEL } from "../lib/ai.mjs";
 import { readArticle } from "../lib/webread.mjs"; // v4.1
-import { prepareAI, runAI, monthSpend, thisMonth } from "../lib/aijobs.mjs"; // v4.5
+import { prepareAI, runAI, monthSpend, thisMonth } from "../lib/aijobs.mjs"; // v4.6
 import { publishPost, unpublishPost, nowInShopTZ, PUBLISH_HOUR } from "../lib/publish.mjs";
 import { withPlaybook, activePlaybook, DEFAULT_PLAYBOOK, checkSeo, BRAND_RULE, brandFix } from "../lib/seo.mjs"; // v3.7 (+v4.3 brand name)
 
@@ -99,10 +99,10 @@ const SETTING_KEYS = [
   "ai_model_research",  // v4.1: model for Research Hub (blank = cheap Haiku)
 ];
 
-// v4.5: web-search cap, monthSpend(), thisMonth() and logUsage() moved to
+// v4.6: web-search cap, monthSpend(), thisMonth() and logUsage() moved to
 // netlify/lib/aijobs.mjs so the background function can use them too.
 
-// v4.5: the address this request came in on, so we can start the background function.
+// v4.6: the address this request came in on, so we can start the background function.
 let REQ_ORIGIN = "";
 
 const BUCKET = "blog-images";
@@ -689,11 +689,11 @@ const actions = {
 
   // ---------- AI ----------
   async "ai.generate"(data) {
-    // v4.5: prepare (model, prompt rules, budget check) + run -- shared with background jobs.
+    // v4.6: prepare (model, prompt rules, budget check) + run -- shared with background jobs.
     return runAI(await prepareAI(data || {}), false);
   },
 
-  // ---------- v4.5: BACKGROUND AI JOBS ----------
+  // ---------- v4.6: BACKGROUND AI JOBS ----------
   // Start a long AI job. Returns { jobId, started }.
   //   started = false means the background function couldn't be reached;
   //   the app then simply runs it the quick way instead.
@@ -834,7 +834,7 @@ export default async (req) => {
   // 3) Read what the app is asking for.
   let body;
   try { body = await req.json(); } catch (e) { return reply(400, { error: "Request was not valid JSON." }); }
-  try { REQ_ORIGIN = new URL(req.url).origin; } catch (e) { /* keep last */ } // v4.5
+  try { REQ_ORIGIN = new URL(req.url).origin; } catch (e) { /* keep last */ } // v4.6
   const handler = actions[body && body.action];
   if (!handler) return reply(400, { error: "Unknown action: " + (body && body.action) });
 
