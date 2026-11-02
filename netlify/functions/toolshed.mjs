@@ -1,5 +1,11 @@
 // ============================================================
-// netlify/functions/toolshed.mjs  --  Tool Shed v4.3 BACK OFFICE
+// netlify/functions/toolshed.mjs  --  Tool Shed v4.5 BACK OFFICE
+// ------------------------------------------------------------
+// v4.5 ADDED:
+//   - BACKGROUND AI JOBS: "ai.start" saves the request as a job and
+//     starts ai-background.mjs (up to 15 minutes, no 30-second wall);
+//     "ai.job" lets the app check on it. Shared AI code now lives in
+//     netlify/lib/aijobs.mjs.
 // ------------------------------------------------------------
 // v4.3 ADDED:
 //   - Every AI prompt gets the WEBSITE NAME RULE (thegloveSOS.com), and
@@ -65,6 +71,7 @@ import { timingSafeEqual, createHash } from "node:crypto";
 import * as db from "../lib/supabase.mjs";
 import { askAI, askAIFull, DEFAULT_MODELS, CHEAP_MODEL } from "../lib/ai.mjs";
 import { readArticle } from "../lib/webread.mjs"; // v4.1
+import { prepareAI, runAI, monthSpend, thisMonth } from "../lib/aijobs.mjs"; // v4.5
 import { publishPost, unpublishPost, nowInShopTZ, PUBLISH_HOUR } from "../lib/publish.mjs";
 import { withPlaybook, activePlaybook, DEFAULT_PLAYBOOK, checkSeo, BRAND_RULE, brandFix } from "../lib/seo.mjs"; // v3.7 (+v4.3 brand name)
 
@@ -92,23 +99,11 @@ const SETTING_KEYS = [
   "ai_model_research",  // v4.1: model for Research Hub (blank = cheap Haiku)
 ];
 
-// v4.1: which tasks may use the web search tool, and the most searches allowed.
-const MAX_WEB_SEARCHES = 3;
+// v4.5: web-search cap, monthSpend(), thisMonth() and logUsage() moved to
+// netlify/lib/aijobs.mjs so the background function can use them too.
 
-// v4.1: this month (Ohio time) as "2026-10".
-function thisMonth() {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit" }).format(new Date());
-}
-// v4.1: what has AI cost so far this month? (sum of the monthly view)
-async function monthSpend() {
-  const rows = await db.select("ai_usage_monthly", "select=task,calls,web_searches,cost_usd,input_tokens,output_tokens&month=eq." + thisMonth());
-  const total = rows.reduce((n, r) => n + Number(r.cost_usd || 0), 0);
-  return { total: Math.round(total * 10000) / 10000, rows };
-}
-// v4.1: write the receipt. Never fails the real work.
-async function logUsage(row) {
-  try { await db.insert("ai_usage", row); } catch (e) { console.log("[usage] couldn't log:", e.message); }
-}
+// v4.5: the address this request came in on, so we can start the background function.
+let REQ_ORIGIN = "";
 
 const BUCKET = "blog-images";
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // 4 MB (Netlify caps requests at ~6 MB)
@@ -694,49 +689,53 @@ const actions = {
 
   // ---------- AI ----------
   async "ai.generate"(data) {
-    const prompt = String((data && data.prompt) || "");
-    if (!prompt) throw new Error("Empty prompt.");
-    const s = await loadSettings().catch(() => ({}));
-    const provider = s.ai_provider === "gemini" ? "gemini" : "claude";
-    // v3.7: wrap SEO-related tasks ("blog", "polish", "seo", "research")
-    // with the National SEO Playbook. Other tasks pass through unchanged.
-    // v4.3: the website-name rule goes on EVERY prompt, whatever the task.
-    const fullPrompt = BRAND_RULE + "\n\n" + withPlaybook(data.task, prompt, s.seo_playbook);
-    const task = String(data.task || "other").slice(0, 40);
+    // v4.5: prepare (model, prompt rules, budget check) + run -- shared with background jobs.
+    return runAI(await prepareAI(data || {}), false);
+  },
 
-    // v4.1 BUDGET GUARD: stop before spending past the monthly limit.
-    const budget = Number(s.ai_monthly_budget) || 0;
-    if (budget > 0) {
-      const spent = await monthSpend().catch(() => null);
-      if (spent && spent.total >= budget) {
-        throw new Error("Monthly AI budget reached: $" + spent.total.toFixed(2) + " of $" + budget.toFixed(2) +
-          " spent this month. Raise the budget in Settings > AI Spend if you want to keep going.");
-      }
-    }
-
-    // v4.1: research runs on the cheap model (Haiku) unless Settings pick another.
-    let model = s.ai_model;
-    if (provider === "claude" && task === "research") model = String(s.ai_model_research || "").trim() || CHEAP_MODEL;
-    // v4.1: web search only for research, capped at MAX_WEB_SEARCHES, Claude only.
-    const webSearch = provider === "claude" && task === "research"
-      ? Math.max(0, Math.min(Number(data.webSearch) || 0, MAX_WEB_SEARCHES)) : 0;
-
-    let r;
+  // ---------- v4.5: BACKGROUND AI JOBS ----------
+  // Start a long AI job. Returns { jobId, started }.
+  //   started = false means the background function couldn't be reached;
+  //   the app then simply runs it the quick way instead.
+  async "ai.start"(data) {
+    const prep = await prepareAI(data || {}); // budget check happens here, before anything runs
+    // Tidy up: forget finished jobs older than 2 days.
+    try { await db.remove("ai_jobs", "created_at=lt." + new Date(Date.now() - 2 * 864e5).toISOString()); } catch (e) { /* not important */ }
+    const job = await db.insert("ai_jobs", { status: "queued", task: prep.task, request: prep });
+    let started = false, why = "";
     try {
-      r = await askAIFull({ provider, model, prompt: fullPrompt, maxTokens: data.maxTokens, webSearch });
-    } catch (e) {
-      await logUsage({ task, provider, model: model || DEFAULT_MODELS[provider], ok: false });
-      throw e;
+      const stopper = new AbortController();
+      const timer = setTimeout(() => stopper.abort(), 8000);
+      const res = await fetch((process.env.URL && !REQ_ORIGIN ? process.env.URL : REQ_ORIGIN) + "/.netlify/functions/ai-background", {
+        method: "POST", signal: stopper.signal,
+        headers: { "Content-Type": "application/json", "x-toolshed-passcode": process.env.TOOLSHED_PASSCODE || "" },
+        body: JSON.stringify({ jobId: job.id }),
+      });
+      clearTimeout(timer);
+      started = res.status === 202 || res.ok;
+      if (!started) why = "HTTP " + res.status;
+    } catch (e) { why = e.message; }
+    if (!started) {
+      console.log("[ai.start] background function not reachable (" + why + ") -- app will run it the quick way");
+      await db.update("ai_jobs", "id=eq." + job.id, { status: "error", error: "not started: " + why }).catch(() => {});
     }
-    await logUsage({
-      task, provider, model: r.model, ok: true,
-      input_tokens: r.usage.input_tokens, output_tokens: r.usage.output_tokens,
-      web_searches: r.usage.web_searches, cost_usd: r.cost_usd || 0,
-    });
+    return { jobId: job.id, started };
+  },
+
+  // Check on a job. { id, cancel } -- cancel only stops a job that hasn't started yet.
+  async "ai.job"(data) {
+    const id = needId(data && data.id);
+    if (data.cancel) {
+      await db.update("ai_jobs", "id=eq." + id + "&status=eq.queued", { status: "error", error: "cancelled" });
+    }
+    const rows = await db.select("ai_jobs", "select=id,status,created_at,updated_at,result_text,result,error&id=eq." + id);
+    if (!rows.length) throw new Error("That AI job wasn't found.");
+    const j = rows[0], r = j.result || {};
     return {
-      text: brandFix(r.text), // v4.3: "TheGloveSOS.com" -> "thegloveSOS.com" (links untouched)
-      provider, model: r.model, sources: r.sources || [],
-      usage: Object.assign({}, r.usage, { cost_usd: r.cost_usd }),
+      status: j.status, error: j.error || "",
+      seconds: Math.round((Date.now() - new Date(j.created_at).getTime()) / 1000),
+      // same shape as ai.generate, so the app treats both the same way
+      text: j.result_text || "", provider: r.provider, model: r.model, sources: r.sources || [], usage: r.usage || null,
     };
   },
 
@@ -835,6 +834,7 @@ export default async (req) => {
   // 3) Read what the app is asking for.
   let body;
   try { body = await req.json(); } catch (e) { return reply(400, { error: "Request was not valid JSON." }); }
+  try { REQ_ORIGIN = new URL(req.url).origin; } catch (e) { /* keep last */ } // v4.5
   const handler = actions[body && body.action];
   if (!handler) return reply(400, { error: "Unknown action: " + (body && body.action) });
 
