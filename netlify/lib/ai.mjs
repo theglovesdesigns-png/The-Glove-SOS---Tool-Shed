@@ -1,5 +1,7 @@
 // ============================================================
-// netlify/lib/ai.mjs  --  Tool Shed v4.1
+// netlify/lib/ai.mjs  --  Tool Shed v4.5
+// v4.5: BACKGROUND JOBS can ask for more time (timeoutMs) and more
+//       room (bigCap) -- see netlify/functions/ai-background.mjs.
 // v4.1: MONEY + RESEARCH.
 //       - Every call reports its tokens and an estimated COST, so the app
 //         can show "this run cost 2 cents" and a monthly total.
@@ -64,8 +66,11 @@ export function estimateCost(model, usage) {
   return Math.round(dollars * 100000) / 100000; // 5 decimal places
 }
 
-const AI_TIMEOUT_MS = 50000; // 50 seconds
+const AI_TIMEOUT_MS = 50000; // 50 seconds (normal, quick calls)
 const MAX_TOKENS_CAP = 12000; // v4.0: room for long blogs (you only pay for what's used)
+// v4.5: background jobs get up to 10 minutes and 20,000 tokens of room.
+export const BIG_TIMEOUT_MS = 10 * 60 * 1000;
+export const BIG_TOKENS_CAP = 20000;
 
 // v4.0: Which thinking setting to send each Claude model.
 //   Sonnet 5.5 thinks by default and REJECTS {type:"disabled"}; the docs say
@@ -100,14 +105,16 @@ export async function askAI(opts) {
 // Returns { text, model, usage: {input_tokens, output_tokens, web_searches},
 //           cost_usd, sources: [{url, title}] }
 // ------------------------------------------------------------
-export async function askAIFull({ provider, model, prompt, maxTokens, webSearch }) {
+export async function askAIFull({ provider, model, prompt, maxTokens, webSearch, timeoutMs, bigCap }) {
   const which = provider === "gemini" ? "gemini" : "claude"; // anything else = Claude
   const useModel = (model || "").trim() || DEFAULT_MODELS[which];
-  const limit = Math.min(Number(maxTokens) || 3000, MAX_TOKENS_CAP);
+  const limit = Math.min(Number(maxTokens) || 3000, bigCap ? BIG_TOKENS_CAP : MAX_TOKENS_CAP);
+  const waitMs = Number(timeoutMs) || AI_TIMEOUT_MS; // v4.5: background jobs wait longer
+  const secs = Math.round(waitMs / 1000);
 
   // AbortController = a "stop button" we can press on the request.
   const stopper = new AbortController();
-  const timer = setTimeout(() => stopper.abort(), AI_TIMEOUT_MS);
+  const timer = setTimeout(() => stopper.abort(), waitMs);
   const started = Date.now();
 
   try {
@@ -124,7 +131,7 @@ export async function askAIFull({ provider, model, prompt, maxTokens, webSearch 
         r.cost_usd = which === "gemini" ? null : estimateCost(r.model || useModel, r.usage);
         return r;
       } catch (e) {
-        const timeLeft = AI_TIMEOUT_MS - (Date.now() - started);
+        const timeLeft = waitMs - (Date.now() - started);
         // A dropped connection ("fetch failed") is also worth one more try.
         const retryable = e.busy || (e.name === "TypeError" && /fetch/i.test(e.message));
         if (!retryable || attempt >= 3 || timeLeft < 20000) throw e;
@@ -136,8 +143,8 @@ export async function askAIFull({ provider, model, prompt, maxTokens, webSearch 
     if (e.name === "AbortError") {
       throw new Error(
         webSearch
-          ? "The web search took longer than 50 seconds. Try again with fewer searches, or turn web search off."
-          : "The AI took longer than 50 seconds. Try a shorter word count, or switch AI provider in Settings."
+          ? "The web search took longer than " + secs + " seconds. Try again with fewer searches, or turn web search off."
+          : "The AI took longer than " + secs + " seconds. Try again in a minute, or try a shorter word count."
       );
     }
     throw e;
