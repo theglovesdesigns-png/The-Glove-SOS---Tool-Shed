@@ -165,6 +165,53 @@ mark.flash{outline:2px solid var(--teal)}
 .rv-section{border-top:1px solid var(--bdr);padding-top:12px;margin-top:12px}
 /* v3.9: hero image pictures (Review panel + Blogs Posted) */
 .hero-box{width:100%;max-width:480px;aspect-ratio:1200/628;object-fit:cover;border-radius:7px;border:1px solid var(--bdr);display:block;background:var(--bg3)}
+/* v4.6: CALENDAR -- same look as the rest of Tool Shed (cards, Oswald, teal/purple/gold) */
+.cal-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:14px 16px}
+.cal-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;position:relative}
+.cal-nav{background:transparent;border:1px solid var(--bdr2);color:var(--t2);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:18px;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.cal-nav:hover{border-color:var(--teal);color:var(--teal);background:var(--tdim)}
+.cal-title-btn{background:none;border:none;color:var(--text);font-family:Oswald,sans-serif;font-size:24px;font-weight:600;letter-spacing:.3px;cursor:pointer;padding:2px 10px;border-radius:8px;display:inline-flex;align-items:center;gap:8px}
+.cal-title-btn:hover{background:var(--tdim);color:var(--teal)}
+.cal-title-btn .cal-caret{font-size:12px;color:var(--teal)}
+.cal-jump{display:none;gap:8px;align-items:center;background:var(--bg3);border:1px solid var(--bdr2);border-radius:10px;padding:10px;position:absolute;top:46px;left:120px;z-index:5;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.cal-jump select{width:auto}
+.cal-legend{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.cal-legend .badge{gap:5px;background:var(--bg3);color:var(--t2);border:1px solid var(--bdr)}
+.cal-dot{width:9px;height:9px;border-radius:3px;display:inline-block}
+.cal-head{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:6px}
+.cal-head div{text-align:center;font-family:Oswald,sans-serif;font-size:12px;font-weight:600;color:var(--t2);letter-spacing:1.2px;text-transform:uppercase;padding:4px 0;border-bottom:2px solid var(--bdr)}
+.cal-head div.cal-wknd{color:var(--gold)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;height:calc(100vh - 395px);min-height:420px}
+.cal-day{position:relative;border-radius:10px;padding:6px 7px 5px;overflow:hidden;display:flex;flex-direction:column;gap:3px;min-height:0;
+  background:var(--bg3);border:1px solid var(--bdr);transition:transform .12s,border-color .12s,background .12s}
+/* OPEN = green (soft gradient + green top bar) */
+.cal-open{background:linear-gradient(180deg,rgba(0,204,136,.20),rgba(0,204,136,.06));border-color:rgba(0,204,136,.55);box-shadow:inset 0 3px 0 var(--green);cursor:pointer}
+.cal-open:hover{transform:translateY(-1px);border-color:var(--green);background:linear-gradient(180deg,rgba(0,204,136,.30),rgba(0,204,136,.10))}
+.cal-open .cal-free{margin-top:auto;font-size:10px;font-weight:600;color:var(--green);opacity:.75;letter-spacing:.4px}
+.cal-open:hover .cal-free{opacity:1}
+/* BOOKED = red (a blog is scheduled or went live that day) */
+.cal-booked{background:linear-gradient(180deg,rgba(204,51,68,.26),rgba(204,51,68,.08));border-color:rgba(204,51,68,.7);box-shadow:inset 0 3px 0 var(--red)}
+.cal-past{background:var(--bg);border-color:rgba(80,80,112,.25)}
+.cal-past .cal-num{color:var(--t3)}
+.cal-out{opacity:.38}
+.cal-num{display:flex;align-items:center;justify-content:space-between;font-family:Oswald,sans-serif;font-size:15px;font-weight:600;color:var(--text)}
+.cal-num span{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 4px;border-radius:13px}
+/* TODAY = teal ring + glow, date in a teal pill */
+.cal-today{border:2px solid var(--teal);box-shadow:0 0 0 1px rgba(0,204,204,.35),0 0 18px rgba(0,204,204,.25)}
+.cal-today.cal-open,.cal-today.cal-booked{box-shadow:inset 0 3px 0 var(--teal),0 0 18px rgba(0,204,204,.25)}
+.cal-today .cal-num span{background:var(--teal);color:#07070f}
+.cal-today-tag{font-family:Inter,sans-serif;font-size:9px;font-weight:700;color:var(--teal);letter-spacing:.8px;text-transform:uppercase}
+/* HOLIDAYS = gold (federal = solid, observance = outline) */
+.cal-hol{font-size:10.5px;font-weight:700;color:#07070f;background:var(--gold);border-radius:5px;padding:2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-obs{background:rgba(240,165,0,.12);color:var(--gold2);border:1px solid rgba(240,165,0,.45);font-weight:600}
+/* BLOGS = the same colors as the Blog Queue status badges */
+.cal-blog{font-size:11px;font-weight:600;padding:3px 6px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;border-left:3px solid}
+.cal-b-sched{background:rgba(109,61,156,.35);color:#e6d6ff;border-color:var(--pur2)}
+.cal-b-appr{background:rgba(0,204,136,.18);color:var(--green);border-color:var(--green)}
+.cal-b-live{background:rgba(0,204,204,.18);color:var(--teal);border-color:var(--teal)}
+.cal-blog:hover{filter:brightness(1.25)}
+.cal-stat-sub{font-size:11px;color:var(--t2);margin-top:3px}
+@media (max-width:760px){.cal-grid{height:auto;grid-auto-rows:minmax(78px,auto)}.cal-legend{margin-left:0}.cal-title-btn{font-size:20px}}
 /* v4.1: proofread changes -- green = added, red = removed */
 .pf-ins{background:rgba(0,204,136,.18);color:var(--green);border-radius:3px;padding:0 1px}
 .pf-del{background:rgba(204,51,68,.15);color:var(--red);text-decoration:line-through;border-radius:3px;padding:0 1px}
@@ -179,7 +226,7 @@ mark.flash{outline:2px solid var(--teal)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v4.5</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v4.6</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -191,6 +238,7 @@ mark.flash{outline:2px solid var(--teal)}
     <div class="sitem" data-page="generator"><span class="sico">✍️</span><span class="stxt">Blog Generator</span></div>
     <div class="sitem" data-page="queue"><span class="sico">📋</span><span class="stxt">Blog Queue</span><span class="sbdg" id="bdg-q">0</span></div>
     <div class="sitem" data-page="posted"><span class="sico">🏆</span><span class="stxt">Blogs Posted</span><span class="sbdg" id="bdg-p">0</span></div>
+    <div class="sitem" data-page="calendar"><span class="sico">📅</span><span class="stxt">Calendar</span></div>
     <div class="sitem" data-page="ideas"><span class="sico">💡</span><span class="stxt">Blog Ideas</span><span class="sbdg" id="bdg-i">0</span></div>
   </div>
   <div class="sgrp">
@@ -212,7 +260,7 @@ mark.flash{outline:2px solid var(--teal)}
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
     <span class="topbar-badge">thegloveSOS.com</span>
-    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v4.5</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v4.6</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -538,6 +586,41 @@ mark.flash{outline:2px solid var(--teal)}
     </div>
   </div>
 
+  <!-- v4.6: CALENDAR -->
+  <div class="page" id="page-calendar">
+    <div class="page-hdr"><h2>Content Calendar</h2><p>Green = open day for a blog. Red = a blog is scheduled or went live that day. Stays in sync on its own.</p></div>
+    <div class="stats-row stats-4">
+      <div class="stat-box"><div class="stat-num" id="cal-s-open" style="color:var(--green)">0</div><div class="stat-lbl">Open Days Left</div></div>
+      <div class="stat-box"><div class="stat-num" id="cal-s-sched" style="color:var(--pur2)">0</div><div class="stat-lbl">Scheduled</div></div>
+      <div class="stat-box"><div class="stat-num" id="cal-s-live">0</div><div class="stat-lbl">Live This Month</div></div>
+      <div class="stat-box"><div class="stat-num" id="cal-s-next" style="font-size:18px;line-height:26px;color:var(--gold)">--</div><div class="stat-lbl">Next Open Day</div></div>
+    </div>
+    <div class="cal-card">
+      <div class="cal-bar">
+        <button class="btn btn-out btn-sm" id="cal-today">Today</button>
+        <button class="cal-nav" id="cal-prev" title="Previous month">&#8249;</button>
+        <button class="cal-nav" id="cal-next" title="Next month">&#8250;</button>
+        <button class="cal-title-btn" id="cal-title-btn" title="Pick a month or year"><span id="cal-title">Month</span><span class="cal-caret">&#9660;</span></button>
+        <div class="cal-jump" id="cal-jump">
+          <select id="cal-jump-m"></select><select id="cal-jump-y"></select>
+          <button class="btn btn-teal btn-sm" id="cal-jump-go">Go</button>
+        </div>
+        <div class="cal-legend">
+          <span class="badge"><i class="cal-dot" style="background:var(--green)"></i>Open</span>
+          <span class="badge"><i class="cal-dot" style="background:var(--red)"></i>Blog that day</span>
+          <span class="badge"><i class="cal-dot" style="background:var(--pur2)"></i>Scheduled</span>
+          <span class="badge"><i class="cal-dot" style="background:var(--teal)"></i>Live</span>
+          <span class="badge"><i class="cal-dot" style="background:var(--gold)"></i>US holiday</span>
+        </div>
+      </div>
+      <div class="cal-head"><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div class="cal-wknd">Sat</div><div class="cal-wknd">Sun</div></div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="hint" id="cal-summary" style="margin-top:8px"></div>
+    </div>
+    <div id="cal-pick" class="card" style="display:none;margin-top:14px"></div>
+    <div class="hint" style="margin-top:6px">Click a <b style="color:var(--green)">green</b> day to schedule an approved blog there. Click a blog to open it. Re-checks Supabase every minute.</div>
+  </div>
+
   <!-- IDEAS -->
   <div class="page" id="page-ideas">
     <div class="page-hdr"><h2>Blog Ideas</h2><p>Ideas save to Supabase — accessible from any device</p></div>
@@ -731,7 +814,7 @@ mark.flash{outline:2px solid var(--teal)}
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
     <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v4.5</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-11-02</span></div>
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v4.6</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-11-02</span></div>
         <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
       </div>
     </div>
@@ -1384,6 +1467,7 @@ var PAGE_META={
   generator:{t:"Blog Generator",s:"Generate complete SEO-optimized blog content"},
   queue:{t:"Blog Queue",s:"Blogs on their way to the website"},
   posted:{t:"Blogs Posted",s:"Every blog that's live on the website"},
+  calendar:{t:"Calendar",s:"Green = open day. Red = a blog is scheduled or live that day."},
   ideas:{t:"Blog Ideas",s:"Ideas save to Supabase"},
   newsletter:{t:"Newsletter",s:"Auto-build monthly newsletter from top blogs"},
   research:{t:"Research Hub",s:"Find trending topics to fuel your content"},
@@ -1400,6 +1484,7 @@ function navTo(page){
   txt("page-title",m.t);txt("page-sub",m.s);
   if(page==="queue")renderQueue();
   if(page==="posted")renderPosted(); // v3.9
+  if(page==="calendar")openCalendar(); // v4.6
   if(page==="ideas")renderIdeas();
   if(page==="images")fillAttachList();
   if(page==="settings")loadSpend(); // v4.1
@@ -2072,7 +2157,7 @@ function fillOutputs(){
   txt("out-markdown",GEN.markdownContent);
   txt("out-pk",GEN.primaryKeyword||"(none returned)");
   renderContentHighlights(); // the Content tab, with fact-check highlights
-  G("push-date").value=GEN.publishDate||tomorrowLocal(); // v4.4: default = tomorrow
+  G("push-date").value=GEN.publishDate||CAL_NEXT_DAY||tomorrowLocal(); // v4.4: default = tomorrow (v4.6: or the day picked on the Calendar)
   show("g-output");
   document.querySelectorAll(".tab-btn").forEach(function(b,i){b.classList.toggle("on",i===0);});
   document.querySelectorAll(".tab-pane").forEach(function(p,i){p.classList.toggle("on",i===0);});
@@ -2150,6 +2235,7 @@ function upsertQueueItem(post){
   QUEUE=QUEUE.map(function(x){if(String(x.id)===String(fresh.id)){found=true;return fresh;}return x;});
   if(!found)QUEUE.unshift(fresh);
   saveQueueLocal();updateCounts();
+  if(G("page-calendar")&&G("page-calendar").classList.contains("on"))renderCalendar(); // v4.6
 }
 // Copy the saved blog's wording back into GEN (after edits/approval).
 function applyPostToGen(p){
@@ -3504,6 +3590,237 @@ G("btn-sync-posted").addEventListener("click",async function(){
 // Queue page shortcuts to Blogs Posted
 G("q-to-posted").addEventListener("click",function(e){e.preventDefault();navTo("posted");});
 G("q-pub-box").addEventListener("click",function(){navTo("posted");});
+
+// ═══════════════════════════════════════════════════════
+// CALENDAR (v4.6) -- a Google-Calendar-style month view.
+//   🟢 green = open day (nothing scheduled -- room for a blog)
+//   🔴 red   = a blog is scheduled, or already went live, that day
+//   grey     = a past day with no blog (can't schedule in the past)
+//   Today is outlined and its number circled.
+//   US federal holidays are labeled on their day.
+// It reads the same blog list as the Blog Queue (QUEUE), so it is
+// always in sync: it redraws whenever a blog is saved, scheduled or
+// published, and re-checks Supabase every minute while it's open.
+// ═══════════════════════════════════════════════════════
+var CAL={y:new Date().getFullYear(),m:new Date().getMonth()}; // month shown (m: 0=Jan)
+var CAL_TIMER=null,CAL_PICK=null;
+var MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+// "2026-11-02" for a year, month (0-11) and day
+function ymd(y,m,d){return y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");}
+// The Nth weekday of a month.  nthWeekday(2026,0,1,3) = 3rd Monday of Jan 2026
+//   wd: 0=Sun..6=Sat.  n=-1 means the LAST one in the month.
+function nthWeekday(y,m,wd,n){
+  if(n>0){var first=new Date(y,m,1).getDay();return 1+((wd-first+7)%7)+(n-1)*7;}
+  var lastDay=new Date(y,m+1,0).getDate(),lastWd=new Date(y,m,lastDay).getDay();
+  return lastDay-((lastWd-wd+7)%7);
+}
+// US FEDERAL HOLIDAYS for a year -> { "2026-11-26": ["Thanksgiving Day"], ... }
+// Fixed-date holidays that land on a weekend are also shown on the weekday
+// they're observed (Saturday -> Friday before, Sunday -> Monday after).
+function usHolidays(y){
+  var out={};
+  function add(date,name){(out[date]=out[date]||[]).push(name);}
+  function fixed(m,d,name){
+    add(ymd(y,m,d),name);
+    var wd=new Date(y,m,d).getDay();
+    if(wd===6){var f=new Date(y,m,d-1);add(ymd(f.getFullYear(),f.getMonth(),f.getDate()),name+" (observed)");}
+    if(wd===0){var mo=new Date(y,m,d+1);add(ymd(mo.getFullYear(),mo.getMonth(),mo.getDate()),name+" (observed)");}
+  }
+  fixed(0,1,"New Year's Day");
+  add(ymd(y,0,nthWeekday(y,0,1,3)),"Martin Luther King Jr. Day");
+  add(ymd(y,1,nthWeekday(y,1,1,3)),"Presidents' Day");
+  add(ymd(y,4,nthWeekday(y,4,1,-1)),"Memorial Day");
+  fixed(5,19,"Juneteenth");
+  fixed(6,4,"Independence Day");
+  add(ymd(y,8,nthWeekday(y,8,1,1)),"Labor Day");
+  add(ymd(y,9,nthWeekday(y,9,1,2)),"Columbus Day");
+  fixed(10,11,"Veterans Day");
+  add(ymd(y,10,nthWeekday(y,10,4,4)),"Thanksgiving Day");
+  fixed(11,25,"Christmas Day");
+  // Common US OBSERVANCES (shown lighter -- not federal days off). "*" marks them.
+  var e=easterSunday(y);
+  add(ymd(y,1,14),"*Valentine's Day");
+  add(ymd(y,2,17),"*St. Patrick's Day");
+  add(ymd(e.getFullYear(),e.getMonth(),e.getDate()),"*Easter Sunday");
+  add(ymd(y,4,nthWeekday(y,4,0,2)),"*Mother's Day");
+  add(ymd(y,5,nthWeekday(y,5,0,3)),"*Father's Day");
+  add(ymd(y,9,31),"*Halloween");
+  // Election Day: the Tuesday after the first Monday in November
+  add(ymd(y,10,nthWeekday(y,10,1,1)+1),"*Election Day");
+  var tg=nthWeekday(y,10,4,4);
+  add(ymd(y,10,tg+1),"*Black Friday");
+  add(ymd(y,11,24),"*Christmas Eve");
+  add(ymd(y,11,31),"*New Year's Eve");
+  // Next year's New Year's Day can be observed on Dec 31 of this year.
+  if(new Date(y+1,0,1).getDay()===6)add(ymd(y,11,31),"New Year's Day (observed)");
+  return out;
+}
+// Easter Sunday (Gregorian "computus" -- the standard math every calendar uses)
+function easterSunday(y){
+  var a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),
+      h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),
+      month=Math.floor((h+l-7*m+114)/31),day=((h+l-7*m+114)%31)+1;
+  return new Date(y,month-1,day);
+}
+// The day a blog takes up: the day it went live, or its upload day.
+function blogDay(b){
+  if(b.isPublished&&b.publishedAt){
+    // published_at is a moment in time -- show it on its Ohio (Eastern) date
+    return new Intl.DateTimeFormat("en-CA",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(b.publishedAt));
+  }
+  return b.publishDate||"";
+}
+// { "2026-11-05": [blog, blog], ... } -- only blogs with a real day
+function blogsByDay(){
+  var map={};
+  QUEUE.forEach(function(b){
+    var d=blogDay(b);if(!d)return;
+    if(!b.isPublished&&b.uploadStatus!=="Scheduled"&&b.uploadStatus!=="Approved")return; // drafts don't take a day
+    (map[d]=map[d]||[]).push(b);
+  });
+  return map;
+}
+
+function renderCalendar(){
+  var grid=G("cal-grid");if(!grid)return;
+  var y=CAL.y,m=CAL.m,today=localToday();
+  txt("cal-title",MONTHS[m]+" "+y);
+  var hol=usHolidays(y);
+  // also the neighbours (days from the previous/next month show in the grid)
+  var holPrev=usHolidays(y-1),holNext=usHolidays(y+1);
+  var byDay=blogsByDay();
+  var first=(new Date(y,m,1).getDay()+6)%7;        // weekday of the 1st (Mon=0 ... Sun=6, like your Google Calendar)
+  var days=new Date(y,m+1,0).getDate();             // days in this month
+  var weeks=Math.ceil((first+days)/7);
+  grid.style.gridTemplateRows="repeat("+weeks+",1fr)";
+  var html="",open=0,booked=0;
+  for(var i=0;i<weeks*7;i++){
+    var dt=new Date(y,m,1-first+i),dy=dt.getFullYear(),dm=dt.getMonth(),dd=dt.getDate();
+    var key=ymd(dy,dm,dd),inMonth=dm===m;
+    var hols=(dy===y?hol:dy<y?holPrev:holNext)[key]||[];
+    var blogs=byDay[key]||[];
+    var past=key<today,isToday=key===today;
+    var state=blogs.length?"booked":past?"past":"open";
+    if(inMonth&&state==="open")open++;
+    if(inMonth&&state==="booked")booked++;
+    html+="<div class='cal-day cal-"+state+(inMonth?"":" cal-out")+(isToday?" cal-today":"")+"' data-day='"+key+"' title='"+
+      esc(key+(state==="open"?" -- open":state==="booked"?" -- "+blogs.length+" blog(s)":""))+"'>"+
+      "<div class='cal-num'><span>"+(dd===1&&!inMonth?MONTHS[dm].slice(0,3)+" 1":dd)+"</span>"+(isToday?"<span class='cal-today-tag'>Today</span>":"")+"</div>"+
+      hols.map(function(h){
+        var obs=h.indexOf("*")===0,name=obs?h.slice(1):h; // * = observance (not a federal day off)
+        return"<div class='cal-hol"+(obs?" cal-obs":"")+"' title='"+esc(name+(obs?" (observance)":" (federal holiday)"))+"'>"+esc(name)+"</div>";
+      }).join("")+
+      blogs.map(function(b){
+        var st=b.isPublished?"live":b.uploadStatus==="Scheduled"?"sched":"appr";
+        var tag=b.isPublished?"Live":b.uploadStatus==="Scheduled"?"7 AM":"Approved";
+        return"<div class='cal-blog cal-b-"+st+"' data-id='"+b.id+"' title='"+esc(b.title+" ("+tag+") -- click to open")+"'>"+
+          (b.heroUrl?"":"<span title='No hero image yet'>&#128247;? </span>")+esc(b.title)+"</div>";
+      }).join("")+
+      (state==="open"&&inMonth?"<div class='cal-free'>+ Open</div>":"")+
+      "</div>";
+  }
+  grid.innerHTML=html;
+  calStats(byDay,today);
+  txt("cal-summary",MONTHS[m]+": "+open+" open day"+(open===1?"":"s")+" left, "+booked+" day"+(booked===1?"":"s")+" with a blog");
+  // clicks: a blog opens it; an open day offers to schedule something there
+  grid.querySelectorAll(".cal-blog").forEach(function(el){
+    el.addEventListener("click",function(e){e.stopPropagation();openForReview(this.getAttribute("data-id"));});
+  });
+  grid.querySelectorAll(".cal-open").forEach(function(el){
+    el.addEventListener("click",function(){showCalPick(this.getAttribute("data-day"));});
+  });
+  if(CAL_PICK)showCalPick(CAL_PICK); // keep the open-day panel in sync
+}
+
+// The 4 boxes above the calendar (for the month on screen).
+function calStats(byDay,today){
+  var y=CAL.y,m=CAL.m,days=new Date(y,m+1,0).getDate(),open=0,sched=0,live=0;
+  for(var d=1;d<=days;d++){
+    var k=ymd(y,m,d),b=byDay[k]||[];
+    if(!b.length&&k>=today)open++;
+    b.forEach(function(x){if(x.isPublished)live++;else if(x.uploadStatus==="Scheduled")sched++;});
+  }
+  txt("cal-s-open",open);txt("cal-s-sched",sched);txt("cal-s-live",live);
+  // next open day from today forward (up to a year out)
+  var next="--",t=new Date(today+"T12:00:00");
+  for(var i=0;i<366;i++){
+    var c=new Date(t.getFullYear(),t.getMonth(),t.getDate()+i),k2=ymd(c.getFullYear(),c.getMonth(),c.getDate());
+    if(!(byDay[k2]||[]).length){next=i===0?"Today":c.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});break;}
+  }
+  txt("cal-s-next",next);
+}
+// Clicked an OPEN day: offer the approved blogs that don't have a day yet.
+function showCalPick(day){
+  CAL_PICK=day;
+  var box=G("cal-pick");if(!box)return;
+  var waiting=QUEUE.filter(function(b){return !b.isPublished&&b.uploadStatus==="Approved"&&!b.publishDate;});
+  var nice=new Date(day+"T12:00:00").toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+  box.innerHTML="<div style='display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap'>"+
+    "<div class='card-title' style='margin:0;color:var(--green)'>&#128197; "+esc(nice)+" is open</div>"+
+    "<button class='btn btn-out btn-xs' id='cal-pick-x'>Close</button></div>"+
+    (waiting.length
+      ?"<div class='hint' style='margin:6px 0'>Schedule an approved blog here (it goes live at 7 AM Eastern):</div>"+
+        waiting.map(function(b){return"<button class='btn btn-teal btn-sm cal-sched-btn' data-id='"+b.id+"' style='margin:0 6px 6px 0'>&#128197; "+esc(b.title)+"</button>";}).join("")
+      :"<div class='hint' style='margin:6px 0'>No approved blogs are waiting for a day. Write one in the Blog Generator, approve it, and pick this day.</div>")+
+    "<div><button class='btn btn-out btn-sm' id='cal-pick-gen'>&#9997;&#65039; Write a blog for this day</button></div>";
+  box.style.display="block";
+  G("cal-pick-x").addEventListener("click",function(){CAL_PICK=null;box.style.display="none";});
+  G("cal-pick-gen").addEventListener("click",function(){
+    CAL_PICK=null;box.style.display="none";
+    CAL_NEXT_DAY=day; // the Review panel's date box will use this day
+    navTo("generator");
+    alert2("g-alert","&#128197; Writing a blog for <b>"+esc(nice)+"</b>. When it's ready, that day will already be in the date box.","in");
+  });
+  box.querySelectorAll(".cal-sched-btn").forEach(function(btn){
+    btn.addEventListener("click",async function(){
+      var id=this.getAttribute("data-id");
+      setBtn(null,true,"");this.disabled=true;this.textContent="... Scheduling...";
+      try{
+        var d=await API("queue.update",{id:id,changes:{publish_date:day,upload_status:"Scheduled"}});
+        upsertQueueItem(d.post);CAL_PICK=null;box.style.display="none";renderCalendar();
+      }catch(e){alert("Couldn't schedule it: "+e.message);showCalPick(day);}
+    });
+  });
+}
+var CAL_NEXT_DAY=""; // set by "Write a blog for this day"
+
+// Month / year jumper (click the title, like Google Calendar)
+function fillCalJump(){
+  var ms=G("cal-jump-m"),ys=G("cal-jump-y");
+  ms.innerHTML=MONTHS.map(function(n,i){return"<option value='"+i+"'"+(i===CAL.m?" selected":"")+">"+n+"</option>";}).join("");
+  var now=new Date().getFullYear(),opts="";
+  for(var yy=now-5;yy<=now+10;yy++)opts+="<option"+(yy===CAL.y?" selected":"")+">"+yy+"</option>";
+  ys.innerHTML=opts;
+}
+function calGo(y,m){
+  var d=new Date(y,m,1);CAL.y=d.getFullYear();CAL.m=d.getMonth();CAL_PICK=null;
+  if(G("cal-pick"))G("cal-pick").style.display="none";
+  renderCalendar();
+}
+G("cal-prev").addEventListener("click",function(){calGo(CAL.y,CAL.m-1);});
+G("cal-next").addEventListener("click",function(){calGo(CAL.y,CAL.m+1);});
+G("cal-today").addEventListener("click",function(){var n=new Date();calGo(n.getFullYear(),n.getMonth());});
+G("cal-title-btn").addEventListener("click",function(){
+  var j=G("cal-jump");
+  if(j.style.display==="flex"){j.style.display="none";return;}
+  fillCalJump();j.style.display="flex";
+});
+G("cal-jump-go").addEventListener("click",function(){
+  calGo(Number(G("cal-jump-y").value),Number(G("cal-jump-m").value));G("cal-jump").style.display="none";
+});
+// Keep it current: fresh from Supabase when you open it, then every minute.
+async function openCalendar(){
+  var n=new Date();
+  if(!CAL.opened){CAL.y=n.getFullYear();CAL.m=n.getMonth();CAL.opened=true;} // first visit = this month
+  renderCalendar();
+  try{await loadQueueFromSB();updateCounts();renderCalendar();}catch(e){console.log("Calendar sync:",e.message);}
+  clearInterval(CAL_TIMER);
+  CAL_TIMER=setInterval(async function(){
+    if(!G("page-calendar").classList.contains("on")){clearInterval(CAL_TIMER);return;}
+    try{await loadQueueFromSB();updateCounts();renderCalendar();}catch(e){}
+  },60000);
+}
 
 // ═══════════════════════════════════════════════════════
 // INIT
