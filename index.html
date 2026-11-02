@@ -179,7 +179,7 @@ mark.flash{outline:2px solid var(--teal)}
 <div id="sb">
   <div class="sh">
     <div class="slogo" id="slogo"><span id="slogo-txt">SOS</span><img id="slogo-img" src="" alt=""/></div>
-    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v4.4</div></div>
+    <div class="sbrand"><div class="sname">TheGloveSOS</div><div class="ssub" id="app-version">Tool Shed v4.5</div></div>
     <button id="tog-sb">&#9664;</button>
   </div>
   <div class="sgrp">
@@ -212,7 +212,7 @@ mark.flash{outline:2px solid var(--teal)}
     <span style="font-size:20px">🧤</span>
     <div class="topbar-title" id="page-title">Home</div>
     <span class="topbar-badge">thegloveSOS.com</span>
-    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v4.4</span>
+    <span style="background:var(--pdim);border:1px solid rgba(109,61,156,.3);color:var(--pur2);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600" id="topbar-version">v4.5</span>
     <div class="topbar-sub" id="page-sub">Welcome to the Tool Shed</div>
   </div>
   <div class="content">
@@ -731,7 +731,7 @@ mark.flash{outline:2px solid var(--teal)}
     <div class="page-hdr"><h2>Settings</h2><p>All settings save to Supabase — accessible from any device</p></div>
     <div class="card" style="border-color:rgba(0,204,204,.2);padding:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v4.4</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-10-22</span></div>
+        <div style="font-size:13px;color:var(--t2)">App Version: <strong id="version-display" style="color:var(--teal)">v4.5</strong> &nbsp;|&nbsp; Last updated: <span id="version-date" style="color:var(--t3)">2026-11-02</span></div>
         <div style="font-size:11px;color:var(--t3)">Version history saved to Supabase</div>
       </div>
     </div>
@@ -1242,7 +1242,10 @@ function setBtn(id,loading,label){
   var b=G(id);if(!b)return;
   b.disabled=loading;
   b.innerHTML=loading?"<div class='spin'></div> "+label:label;
+  // v4.5: remember which button is busy, so a long AI job can add "(25s)" to it
+  if(loading)BUSY_BTN={id:id,label:label};else if(BUSY_BTN&&BUSY_BTN.id===id)BUSY_BTN=null;
 }
+var BUSY_BTN=null;
 
 // ═══════════════════════════════════════════════════════
 // BACK OFFICE CONNECTION (v3.4)
@@ -1290,11 +1293,43 @@ function centsText(dollars){
   var c=(Number(dollars)||0)*100;
   return c<0.1?"less than 0.1&cent;":c<10?c.toFixed(1)+"&cent;":"$"+(c/100).toFixed(2);
 }
+// v4.5: LONG jobs (writing, polishing, proofreading, fact checks, web research)
+//   run as BACKGROUND jobs -- no 30-second wall. Short ones answer directly.
+var LONG_TASKS={blog:1,polish:1,proofread:1,factcheck:1};
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
 async function AI(prompt,max,task,opts){
-  var d=await API("ai.generate",{prompt:prompt,maxTokens:max||3000,task:task||"other",webSearch:(opts&&opts.webSearch)||0});
+  var payload={prompt:prompt,maxTokens:max||3000,task:task||"other",webSearch:(opts&&opts.webSearch)||0};
+  var d=(LONG_TASKS[task]||payload.webSearch)?await AIJob(payload):await API("ai.generate",payload);
   LAST_AI=d;
   if(d.usage&&d.usage.cost_usd)RUN_COST+=d.usage.cost_usd;
   return d.text||"";
+}
+
+// v4.5: start a background job, then check on it every 2 seconds.
+//   If the background function never picks it up (not deployed yet, or
+//   Netlify hiccup), fall back to the quick way so nothing is stuck.
+async function AIJob(payload){
+  var st;
+  try{ st=await API("ai.start",payload); }
+  catch(e){ if(/budget/i.test(e.message))throw e; return await API("ai.generate",payload); }
+  if(!st.started)return await API("ai.generate",payload);
+  var t0=Date.now(),running=false,btn=BUSY_BTN;
+  while(true){
+    await sleep(2000);
+    var j;
+    try{ j=await API("ai.job",{id:st.jobId}); }
+    catch(e){ if((Date.now()-t0)>60000)throw e; continue; } // a blip -- keep checking
+    if(j.status==="done")return j;
+    if(j.status==="error")throw new Error(j.error||"The AI job failed.");
+    if(j.status==="running")running=true;
+    var secs=Math.round((Date.now()-t0)/1000);
+    if(btn&&G(btn.id)&&G(btn.id).disabled)G(btn.id).innerHTML="<div class='spin'></div> "+btn.label+" ("+secs+"s)";
+    if(!running&&secs>=25){ // never started -- cancel it and run it the quick way
+      try{await API("ai.job",{id:st.jobId,cancel:true});}catch(e){}
+      return await API("ai.generate",payload);
+    }
+    if(secs>660)throw new Error("The AI has been working for over 10 minutes -- something's stuck. Try again.");
+  }
 }
 
 // Turn a blog row from Supabase into the shape the Queue page uses.
@@ -1722,7 +1757,12 @@ G("btn-generate").addEventListener("click",async function(){
     var tA;
     // v4.1: roomy budget (~2.2 tokens per word + 1,000 spare). You only pay for what's used,
     // and a cut-off answer is now caught as an error instead of saved half-done.
-    try{ tA=await AI(promptA,Math.min(Math.round(targetWords*2.2)+1000,12000),mode==="polish"?"polish":"blog"); }
+    // v4.5: room is sized by CHARACTERS, not words -- numbers like "$250,000,000"
+    // cost the AI 3-4x more room than normal words. Unused room costs nothing.
+    var room=mode==="polish"
+      ?Math.round(details.length/1.6)+3500
+      :Math.round(Number(wc)*2.5+details.length/2+src.text.length/8)+3000;
+    try{ tA=await AI(promptA,Math.min(room,20000),mode==="polish"?"polish":"blog"); }
     catch(e){
       // v3.8 SAFETY NET: the blog couldn't be written. Save the work first, then explain.
       setBtn("btn-generate",true,"... Saving your work...");
@@ -2188,7 +2228,7 @@ async function runFactCheck(){
     "BLOG:\n"+GEN.markdownContent.slice(0,16000);
   var g=GEN; // remember WHICH blog we're checking, in case you open another one meanwhile
   try{
-    var t=await AI(prompt,3500,"factcheck"); // v4.1: more room -- long blogs were close to the limit
+    var t=await AI(prompt,6000,"factcheck"); // v4.5: runs as a background job, plenty of room
     var fc=parseFactCheck(t);
     if(src.cut)fc.summary+=" (Your docs are long -- the checker read the first ~5,000 words of them.)";
     g.factCheck=fc;g.factStale=false;
@@ -2809,7 +2849,8 @@ async function runProofread(mine,keepRun){
   var links=findLinks(mine),words=mine.split(/\s+/).length;
   var before=keepRun?RUN_COST:0; // v4.2: inside "as-is" the blog's total keeps adding up
   if(!keepRun)startRun();
-  var t=await AI(proofreadPrompt(mine),Math.min(Math.round(words*2.2)+800,8000),"proofread");
+  // v4.5: sized by characters (numbers need more room than words)
+  var t=await AI(proofreadPrompt(mine),Math.min(Math.round(mine.length/1.6)+1500,20000),"proofread");
   var S=sectionsOf(t);
   var fixed=S.CORRECTED;
   if(!fixed)throw new Error("The proofreader's answer came back in the wrong shape -- try again.");
